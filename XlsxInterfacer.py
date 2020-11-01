@@ -59,40 +59,66 @@ class interfacer:
     def read(self, readtype, y, x):
         """
         Read will attempt to read a value at x,y and return said type
+        If a lambda is passed, it will run the lamdba (e.g. lamda v: something=v)
         """
+
         if readtype == blankable:
             if self.isEmpty(y,x): return ""
             return str(self.frame.at[y,x])
         
-        if self.isEmpty(y,x): raise EmptyCell("Expected cell at x,y: "+str(x)+","+str(y))
+        if self.isEmpty(y,x): raise EmptyCell("Expected cell at y,x: "+str(y)+","+str(x))
 
-        value = self.frame.at[y,x]
+        rawvalue = self.frame.at[y,x]
 
-        if readtype == str:
-            return str(value)
-        elif readtype == int:
-            return int(value)
-        elif readtype == float:
-            return float(value)
-        elif readtype == bool:
-            if type(value) == bool:
-                return value
-            elif type(value) == str:
-                return value!=""
-            elif type(value) in [int,float]:
-                return value>0
-            elif type(value) == numpy.float64:
-                # this must be seaparate from the other numbers because the comparison will create a
-                # numpy.bool_ which will crash the json dumps
-                return bool(value>0)
+        try:
+            if readtype == str:
+                return str(rawvalue)
+            elif readtype == int:
+                return int(rawvalue)
+            elif readtype == float:
+                return float(rawvalue)
+            elif readtype == bool:
+                if type(rawvalue) == bool:
+                    return rawvalue
+                elif type(rawvalue) == str:
+                    return rawvalue.upper()=="TRUE"
+                elif type(rawvalue) in [int,float]:
+                    return rawvalue>0
+                elif type(rawvalue) == numpy.float64:
+                    # this must be seaparate from the other numbers because the comparison will create a
+                    # numpy.bool_ which will crash the json dumps
+                    return bool(rawvalue>0)
+        except ValueError:
+            raise ValueError("Interface failed to read an item of type \""+readtype.__name__+"\" at y,x "+str(y)+","+str(x)+" due to an incorrect read type")
 
-        raise Exception("Interface failed to read an item of type: "+readtype.__name__)
+        raise Exception("Interface failed to read an item of type \""+readtype.__name__+"\" at y,x "+str(y)+","+str(x))
+
+    def readIntoDict(self, readtype, y, x, dict, key):
+        """
+        ReadIntoDict will attempt to read a value at x,y
+        If such a value exists, it will set dict[key] to the value
+        If no such value exists, it will return None
+        """
+
+        try:
+            v = self.read(readtype, y, x)
+            dict[key] = v
+            return v
+        except EmptyCell:
+            return None
 
 if __name__ == "__main__":
+    """Test code to read the first 4 cells of a test sheet and put the values into a dict"""
     i = interfacer(pandas.read_excel("test.xlsx", "Sheet1", header=None))
     print(i.read(str, 0, 0))
     print(i.read(int, 1, 0))
     print(i.read(float, 2, 0))
     print(i.read(bool, 3, 0))
-    print(i.read(int, 4, 0))
+    # print(i.read(int, 4, 0))
+    a={}
+    i.readIntoDict(str, 0, 0, a, "String1")
+    i.readIntoDict(int, 1, 0, a, "Int1")
+    i.readIntoDict(float, 2, 0, a, "Float1")
+    i.readIntoDict(int, 4, 0, a, "Int2") # should not end up in the dict
+    print(a)
     input("Done.")
