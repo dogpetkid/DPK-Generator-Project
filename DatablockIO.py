@@ -35,6 +35,26 @@ class datablock:
         self.blockfile.seek(0)
         json.dump(self.data,self.blockfile,ensure_ascii=False,allow_nan=False,indent=2)
 
+def nameToId(datablock, name):
+    """Convert a name into an id"""
+    try:return datablock.data["Blocks"][datablock.find(name)]["persistentID"]
+    except IndexError:raise IndexError("No such block exists with name \""+name+"\" within "+datablock.blockfile.name)
+
+def idToName(datablock, persistantId):
+    """Convert an id into a name"""
+    try:return datablock.data["Blocks"][datablock.find(persistantId)]["name"]
+    except IndexError:raise IndexError("No such block exists with id "+persistantId+" within "+datablock.blockfile.name)
+
+def nameInDict(datablock, dict, key):
+    """Convert a name into an id from inside of a dictionary"""
+    try:dict[key] = nameToId(datablock, dict[key])
+    except KeyError:pass
+
+def idInDict(datablock, dict, key):
+    """Convert an id into a name from inside of a dictionary"""
+    try:dict[key] = idToName(datablock, dict[key])
+    except KeyError:pass
+
 if __name__ == "__main__":
     d = datablock(open("../Datablocks/ChainedPuzzleDataBlock.json", "r+"))
     print(d.find("Single x1"))

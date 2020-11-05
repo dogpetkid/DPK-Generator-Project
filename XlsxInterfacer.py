@@ -43,7 +43,7 @@ class interfacer:
             raise TypeError("Interfacer must be passed a pandas.DataFrame")
         self.frame = frame
     
-    def isEmpty(self, y, x):
+    def isEmpty(self, x, y):
         """isEmpty will return false if a value is present in the cell"""
         try:
             # if the value isnan, there is no value present
@@ -56,17 +56,17 @@ class interfacer:
             return False
         return False
 
-    def read(self, readtype, y, x):
+    def read(self, readtype, x, y):
         """
         Read will attempt to read a value at x,y and return said type
         If a lambda is passed, it will run the lamdba (e.g. lamda v: something=v)
         """
 
         if readtype == blankable:
-            if self.isEmpty(y,x): return ""
+            if self.isEmpty(x,y): return ""
             return str(self.frame.at[y,x])
         
-        if self.isEmpty(y,x): raise EmptyCell("Expected cell at y,x: "+str(y)+","+str(x))
+        if self.isEmpty(x,y): raise EmptyCell("Expected cell at y,x: "+str(y)+","+str(x))
 
         rawvalue = self.frame.at[y,x]
 
@@ -93,7 +93,7 @@ class interfacer:
 
         raise Exception("Interface failed to read an item of type \""+readtype.__name__+"\" at y,x "+str(y)+","+str(x))
 
-    def readIntoDict(self, readtype, y, x, dict, key):
+    def readIntoDict(self, readtype, x, y, dict, key):
         """
         ReadIntoDict will attempt to read a value at x,y
         If such a value exists, it will set dict[key] to the value
@@ -101,7 +101,7 @@ class interfacer:
         """
 
         try:
-            v = self.read(readtype, y, x)
+            v = self.read(readtype, x, y)
             dict[key] = v
             return v
         except EmptyCell:

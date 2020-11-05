@@ -31,6 +31,16 @@ def enumToIndex(enum, name):
         index+= 1
     raise IndexError("No enum value exists with the name \""+name+"\" within "+enum.name)
 
+def enumInDict(enum, dict, key):
+    """Convert an enum into an index from inside of a dictionary"""
+    try:dict[key] = enumToIndex(enum, dict[key])
+    except KeyError:pass
+
+def indexInDict(enum, dict, key):
+    """Convert an index into an enum from inside of a dictionary"""
+    try:dict[key] = indexToEnum(enum, dict[key])
+    except KeyError:pass
+
 if __name__ == "__main__":
     ENUM_eWantedZoneHeighs = open("../Datablocks/TypeList/Enums/eWantedZoneHeighs.txt")
     print("0",indexToEnum(ENUM_eWantedZoneHeighs,0))
