@@ -4,7 +4,11 @@ This is a tool created by DPK
 This tool can convert GTFO enums and indexes.
 """
 
-def indexToEnum(enum, index):
+import io
+
+# io:   used to read from files
+
+def indexToEnum(enum:io.FileIO, index:int):
     """
     Takes an enum file and index
     It will return the name of the enum value with said index
@@ -17,7 +21,7 @@ def indexToEnum(enum, index):
     except IndexError:
         raise IndexError("No enum value exists with that index "+index+" within "+enum.name)
 
-def enumToIndex(enum, name):
+def enumToIndex(enum:io.FileIO, name:int):
     """
     Takes an enum file and enum name
     It will return the index of the enum value with said name
@@ -31,14 +35,14 @@ def enumToIndex(enum, name):
         index+= 1
     raise IndexError("No enum value exists with the name \""+name+"\" within "+enum.name)
 
-def enumInDict(enum, dict, key):
+def enumInDict(enum:io.FileIO, dictionary:dict, key:str):
     """Convert an enum into an index from inside of a dictionary"""
-    try:dict[key] = enumToIndex(enum, dict[key])
+    try:dictionary[key] = enumToIndex(enum, dictionary[key])
     except KeyError:pass
 
-def indexInDict(enum, dict, key):
+def indexInDict(enum:io.FileIO, dictionary:dict, key:str):
     """Convert an index into an enum from inside of a dictionary"""
-    try:dict[key] = indexToEnum(enum, dict[key])
+    try:dictionary[key] = indexToEnum(enum, dictionary[key])
     except KeyError:pass
 
 if __name__ == "__main__":

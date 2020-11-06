@@ -5,19 +5,23 @@ This tool can to read and write to datablocks.
 """
 
 import json
+import io
+import typing
 
-# json: used to import data from the json or piece to a json
+# json:     used to import data from the json or piece to a json
+# io:       used to read from and write to files
+# typing:   used to give types to function parameters
 
 class datablock:
     """
     A class to interface with the "blocks" part of the datablocks
     Use datablock.data["Blocks"] to interact with the data within the datablock
     """
-    def __init__(self, blockfile):
+    def __init__(self, blockfile:io.FileIO):
         self.blockfile = blockfile
         self.data = json.load(blockfile)
     
-    def find(self, find):
+    def find(self, find: typing.Union[int, str]):
         """
         Finds the index of a block in the blocks array using find
         'find' can be the persistantID (int) or name (str) of the datablock
@@ -30,29 +34,41 @@ class datablock:
             i+= 1
         return -1
 
-    def writeblock(self):
+    def writeblock(self, block:dict):
+        """
+        Write a block (type dict)
+        It will add the block if the persistentID does not already exist and override the existing block
+        (Note: this uses persistentID instead of name because no two blocks should have the same id)
+        """
+        blockindex = self.find(block["persistentID"])
+        if blockindex == -1:
+            self.data["Blocks"].append(block)
+        else:
+            self.data["Blocks"][blockindex] = block
+
+    def writedatablock(self):
         """Writes the datablocks data back into its file"""
         self.blockfile.seek(0)
         json.dump(self.data,self.blockfile,ensure_ascii=False,allow_nan=False,indent=2)
 
-def nameToId(datablock, name):
+def nameToId(block:datablock, name:str):
     """Convert a name into an id"""
-    try:return datablock.data["Blocks"][datablock.find(name)]["persistentID"]
-    except IndexError:raise IndexError("No such block exists with name \""+name+"\" within "+datablock.blockfile.name)
+    try:return block.data["Blocks"][block.find(name)]["persistentID"]
+    except IndexError:raise IndexError("No such block exists with name \""+name+"\" within "+block.blockfile.name)
 
-def idToName(datablock, persistantId):
+def idToName(block:datablock, persistantId:int):
     """Convert an id into a name"""
-    try:return datablock.data["Blocks"][datablock.find(persistantId)]["name"]
-    except IndexError:raise IndexError("No such block exists with id "+persistantId+" within "+datablock.blockfile.name)
+    try:return block.data["Blocks"][block.find(persistantId)]["name"]
+    except IndexError:raise IndexError("No such block exists with id "+persistantId+" within "+block.blockfile.name)
 
-def nameInDict(datablock, dict, key):
+def nameInDict(block:datablock, dictionary:dict, key:str):
     """Convert a name into an id from inside of a dictionary"""
-    try:dict[key] = nameToId(datablock, dict[key])
+    try:dictionary[key] = nameToId(block, dictionary[key])
     except KeyError:pass
 
-def idInDict(datablock, dict, key):
+def idInDict(block:datablock, dictionary:dict, key:str):
     """Convert an id into a name from inside of a dictionary"""
-    try:dict[key] = idToName(datablock, dict[key])
+    try:dictionary[key] = idToName(block, dictionary[key])
     except KeyError:pass
 
 if __name__ == "__main__":
@@ -63,4 +79,4 @@ if __name__ == "__main__":
     print(d.data["Blocks"][d.find(6)])
     d.data["Blocks"][d.find(6)]["DPKTestCounter"]+= 1
     print(d.data["Blocks"][d.find(6)])
-    d.writeblock()
+    d.writedatablock()

@@ -12,7 +12,7 @@ import numpy
 # xlrd:     used to catch and throw excel errors when initially reading the sheets
 # numpy:    used to manipulate the inconsistant numpy data read by pandas
 
-def ctn(col):
+def ctn(col:str):
     """"Column To Number", converts a column to its index, e.g. A = 0, Z = 25, AA = 26, AAA = 702"""
     col = col.upper()
     index = 0
@@ -35,15 +35,15 @@ class EmptyCell(Exception):
     """EmptyCell is an exception that is raised when a cell lacks a value"""
     pass
 
-class interfacer:
+class interface:
     """A tool to read and write to xlsx files to garuntee datatypes, sits on top of pandas DataFrame"""
 
-    def __init__(self, frame):
+    def __init__(self, frame:pandas.DataFrame):
         if not isinstance(frame, pandas.DataFrame):
             raise TypeError("Interfacer must be passed a pandas.DataFrame")
         self.frame = frame
     
-    def isEmpty(self, x, y):
+    def isEmpty(self, x:int, y:int):
         """isEmpty will return false if a value is present in the cell"""
         try:
             # if the value isnan, there is no value present
@@ -56,10 +56,9 @@ class interfacer:
             return False
         return False
 
-    def read(self, readtype, x, y):
+    def read(self, readtype:object, x:int, y:int):
         """
         Read will attempt to read a value at x,y and return said type
-        If a lambda is passed, it will run the lamdba (e.g. lamda v: something=v)
         """
 
         if readtype == blankable:
@@ -93,7 +92,7 @@ class interfacer:
 
         raise Exception("Interface failed to read an item of type \""+readtype.__name__+"\" at y,x "+str(y)+","+str(x))
 
-    def readIntoDict(self, readtype, x, y, dict, key):
+    def readIntoDict(self, readtype:object, x:int, y:int, dictionary:dict, key:str):
         """
         ReadIntoDict will attempt to read a value at x,y
         If such a value exists, it will set dict[key] to the value
@@ -102,14 +101,14 @@ class interfacer:
 
         try:
             v = self.read(readtype, x, y)
-            dict[key] = v
+            dictionary[key] = v
             return v
         except EmptyCell:
             return None
 
 if __name__ == "__main__":
     """Test code to read the first 4 cells of a test sheet and put the values into a dict"""
-    i = interfacer(pandas.read_excel("test.xlsx", "Sheet1", header=None))
+    i = interface(pandas.read_excel("test.xlsx", "Sheet1", header=None))
     print(i.read(str, 0, 0))
     print(i.read(int, 1, 0))
     print(i.read(float, 2, 0))
