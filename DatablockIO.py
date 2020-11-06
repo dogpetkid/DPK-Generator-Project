@@ -48,6 +48,7 @@ class datablock:
 
     def writedatablock(self):
         """Writes the datablocks data back into its file"""
+        self.blockfile.truncate(0)
         self.blockfile.seek(0)
         json.dump(self.data,self.blockfile,ensure_ascii=False,allow_nan=False,indent=2)
 
