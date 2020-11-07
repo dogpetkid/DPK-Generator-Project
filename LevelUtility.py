@@ -178,8 +178,8 @@ def GenericEnemyWaveData(interface:XlsxInterfacer.interface, col:int, row:int, h
     interface.readIntoDict(str, col+horizontal, row+(not horizontal), data, "WavePopulation")
     DatablockIO.nameInDict(DATABLOCK_SurvivalWavePopulation, data, "WavePopulation")
     interface.readIntoDict(float, col+2*horizontal, row+2*(not horizontal), data, "SpawnDelay")
-    interface.readIntoDict(bool, col+3*horizontal, row+3*(not horizontal), "TriggerAlarm")
-    interface.readIntoDict(str, col+4*horizontal, row+4*(not horizontal), "IntelMessage")
+    interface.readIntoDict(bool, col+3*horizontal, row+3*(not horizontal), data, "TriggerAlarm")
+    interface.readIntoDict(str, col+4*horizontal, row+4*(not horizontal), data, "IntelMessage")
     return data
 
 def GenericEnemyWaveDataList(interface:XlsxInterfacer.interface, col:int, row:int, horizontal:bool=True):
@@ -191,10 +191,9 @@ def GenericEnemyWaveDataList(interface:XlsxInterfacer.interface, col:int, row:in
     datalist = []
     while not(interface.isEmpty(col,row)):
         # the direction of the set of waves and values in the data are perpendicular
-        datalist+= GenericEnemyWaveData(interface, col, row, horizontal=(not horizontal))
+        datalist.append(GenericEnemyWaveData(interface, col, row, horizontal=(not horizontal)))
         col+= horizontal
         row+= not horizontal
-
     return datalist
 
 def WardenObjectiveEventData(interface:XlsxInterfacer.interface, col:int, row:int, horizontal:bool=False):
@@ -204,16 +203,16 @@ def WardenObjectiveEventData(interface:XlsxInterfacer.interface, col:int, row:in
     horizontal is true if the values are in the same row
     """
     data = {}
-    interface(str, col, row, data, "Trigger")
+    interface.readIntoDict(str, col, row, data, "Trigger")
     EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveEventTrigger, data, "Trigger")
-    interface(str, col+horizontal, row+(not horizontal), data, "Type")
+    interface.readIntoDict(str, col+horizontal, row+(not horizontal), data, "Type")
     EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveEventType, data, "Type")
-    interface(str, col+2*horizontal, row+2*(not horizontal), data, "Layer")
+    interface.readIntoDict(str, col+2*horizontal, row+2*(not horizontal), data, "Layer")
     EnumConverter.enumInDict(ENUMFILE_LG_LayerType, data, "Layer")
-    interface(str, col+3*horizontal, row+3*(not horizontal), data, "LocalIndex")
+    interface.readIntoDict(str, col+3*horizontal, row+3*(not horizontal), data, "LocalIndex")
     EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, data, "LocalIndex")
-    interface(float, col+4*horizontal, row+4*(not horizontal), data, "Delay")
-    interface(str, col+5*horizontal, row+5*(not horizontal), data, "WardenIntel")
+    interface.readIntoDict(float, col+4*horizontal, row+4*(not horizontal), data, "Delay")
+    interface.readIntoDict(str, col+5*horizontal, row+5*(not horizontal), data, "WardenIntel")
     return data
 
 def LayerData(interface:XlsxInterfacer.interface, col:int, row:int):
@@ -554,7 +553,7 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     DatablockIO.nameInDict(DATABLOCK_EnemyGroup, data["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")
     iExpeditionZoneData.readIntoDict(str, colPuzzleType+8, row, data["ActiveEnemyWave"], "EnemyGroupInArea")
     DatablockIO.nameInDict(DATABLOCK_EnemyGroup, data["ActiveEnemyWave"], "EnemyGroupInArea")
-    iExpeditionZoneData.readIntoDict(int, colPuzzleType+8, row, data["ActiveEnemyWave"], "EnemyGroupsInArea")
+    iExpeditionZoneData.readIntoDict(int, colPuzzleType+9, row, data["ActiveEnemyWave"], "EnemyGroupsInArea")
     data["EnemySpawningInZone"] = listdata.EnemySpawningInZone(zonestr)
 
     iExpeditionZoneData.readIntoDict(int, colHSUClustersInZone, row, data, "HSUClustersInZone")
@@ -616,12 +615,12 @@ class ReactorWaveData:
             waveNo = iWardenObjectiveReactorWaves.read(str, startcolEnemyWaves-1, row)
             iWardenObjectiveReactorWaves.readIntoDict(str, startcolEnemyWaves, row, Snippet, "WaveSettings")
             DatablockIO.nameInDict(DATABLOCK_SurvivalWaveSettings, Snippet, "WaveSettings")
-            iWardenObjectiveReactorWaves.readIntoDict(str, startcolEnemyWaves, row, Snippet, "WavePopulation")
+            iWardenObjectiveReactorWaves.readIntoDict(str, startcolEnemyWaves+1, row, Snippet, "WavePopulation")
             DatablockIO.nameInDict(DATABLOCK_SurvivalWavePopulation, Snippet, "WavePopulation")
-            iWardenObjectiveReactorWaves.readIntoDict(float, startcolEnemyWaves, row, Snippet, "SpawnTimeRel")
-            iWardenObjectiveReactorWaves.readIntoDict(str, startcolEnemyWaves, row, Snippet, "SpawnType")
+            iWardenObjectiveReactorWaves.readIntoDict(float, startcolEnemyWaves+2, row, Snippet, "SpawnTimeRel")
+            iWardenObjectiveReactorWaves.readIntoDict(str, startcolEnemyWaves+3, row, Snippet, "SpawnType")
             EnumConverter.enumInDict(ENUMFILE_eReactorWaveSpawnType, Snippet, "SpawnType")
-            EnsureKeyInDictArray(Snippet, waveNo)
+            EnsureKeyInDictArray(self.stubEnemyWaves, waveNo)
             self.stubEnemyWaves[waveNo].append(Snippet)
             row+= 1
 
@@ -631,7 +630,7 @@ class ReactorWaveData:
             Snippet = {}
             waveNo = iWardenObjectiveReactorWaves.read(str, startcolEvents-1, row)
             Snippet["Events"] = WardenObjectiveEventData(iWardenObjectiveReactorWaves, startcolEvents, row, horizontal=True)
-            EnsureKeyInDictArray(Snippet, waveNo)
+            EnsureKeyInDictArray(self.stubEvents, waveNo)
             self.stubEvents[waveNo].append(Snippet)
             row+= 1
 
@@ -639,7 +638,7 @@ class ReactorWaveData:
         row = startrow
         while not(iWardenObjectiveReactorWaves.isEmpty(startcolReactorWaves, row)):
             wave = {}
-            waveNo = iWardenObjectiveReactorWaves.read(str, startcolReactorWaves, row)
+            waveNo = iWardenObjectiveReactorWaves.read(str, startcolReactorWaves-1, row)
             iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves, row, wave, "Warmup")
             iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves+1, row, wave, "WarmupFail")
             iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves+2, row, wave, "Wave")
@@ -670,9 +669,9 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     # set up some checkpoints so if some of the data gets reformatted, not the entire function needs to be altered,
     # just the headings and contents of the section will need edited column values
     rowWavesOnElevatorLand = 22-1
-    rowChainedPuzzleToActive = 46-1
-    rowLightsOnFromBeginning = 60-1
-    rowActivateHSU_ItemFromStart = 81-1
+    rowChainedPuzzleToActive = 54-1
+    rowLightsOnFromBeginning = 68-1
+    rowActivateHSU_ItemFromStart = 84-1
 
     data = {}
 
@@ -702,7 +701,12 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     iWardenObjective.readIntoDict(bool, 1, rowWavesOnElevatorLand+14, data, "StopAllWavesBeforeGotoWin")
     data["WavesOnGotoWin"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+17, horizontal=True)
     iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+22, data, "WaveOnGotoWinTrigger")
-    EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveWinCondition, data, "WaveOnGotoWinTrigger")
+    EnumConverter.enumInDict(ENUMFILE_eRetrieveExitWaveTrigger, data, "WaveOnGotoWinTrigger")
+    data["EventsOnGotoWin"] = []
+    col,row = 2,rowWavesOnElevatorLand+25
+    while not(iWardenObjective.isEmpty(col, row)):
+        data["EventsOnGotoWin"].append(WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False))
+        col+= 1
 
     iWardenObjective.readIntoDict(str, 1, rowChainedPuzzleToActive, data, "ChainedPuzzleToActive")
     DatablockIO.nameInDict(DATABLOCK_ChainedPuzzle, data, "ChainedPuzzleToActive")
@@ -719,7 +723,7 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     data["Retrieve_Items"] = []
     col,row = 1,rowChainedPuzzleToActive+10
     while not(iWardenObjective.isEmpty(col, row)):
-        data["Retrieve_Items"].append(DatablockIO.nameToId(DATABLOCK_Item, iWardenObjective(str, col, row)))
+        data["Retrieve_Items"].append(DatablockIO.nameToId(DATABLOCK_Item, iWardenObjective.read(str, col, row)))
         col+= 1
     data["ReactorWaves"] = ReactorWaveData(iWardenObjectiveReactorWaves).waves
 
@@ -731,7 +735,7 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     data["PostCommandOutput"] = []
     col,row = 1,rowLightsOnFromBeginning+6
     while not(iWardenObjective.isEmpty(col, row)):
-        data["PostCommandOutput"].append(iWardenObjective(str, col, row))
+        data["PostCommandOutput"].append(iWardenObjective.read(str, col, row))
         col+= 1
     iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+8, data, "PowerCellsToDistribute")
     iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+10, data, "Uplink_NumberOfVerificationRounds")
@@ -930,6 +934,8 @@ def main():
     global args
     args = parser.parse_args()
 
+    if args.silent: args.noinput = args.silent
+
     log = open("debug.log","w")
 
     def output(s:str, logonly=False):
@@ -1010,11 +1016,14 @@ def main():
 
 
     # Save manipulated datablocks
-    output("Writing blocks...")
-    RundownDataBlock.writedatablock()
-    LevelLayoutDataBlock.writedatablock()
-    WardenObjectiveDataBlock.writedatablock()
-    output("Blocks written.")
+    if anythingDone:
+        output("Writing blocks...")
+        RundownDataBlock.writedatablock()
+        LevelLayoutDataBlock.writedatablock()
+        WardenObjectiveDataBlock.writedatablock()
+        output("Blocks written.")
+    else:
+        output("Nothing to write.")
 
     # handle end of program commands
     if (not anythingDone):
@@ -1024,4 +1033,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    input("Done")
