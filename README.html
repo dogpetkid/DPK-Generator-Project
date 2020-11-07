@@ -1,0 +1,55 @@
+<h1 id="dpk-generator-project">DPK Generator Project</h1>
+<!-- Author: Dogpetkid -->
+<!-- Date: 2020-11-06 -->
+<!-- Revised: 2020-11-06 -->
+<p>This is a project to generate levels for GTFO.</p>
+<p><a href="https://drive.google.com/drive/folders/1i37s30b550z84D27A6i4AsH7p4zlRGdS">Project releases.</a></p>
+<h2 id="project-dependencies">Project dependencies</h2>
+<ul>
+<li><a href="https://numpy.org/doc/stable/">numpy</a></li>
+<li><a href="https://xlrd.readthedocs.io/en/latest/">xlrd</a></li>
+<li><a href="https://pandas.pydata.org/docs/">pandas</a></li>
+</ul>
+<h2 id="project-contents">Project contents</h2>
+<ul>
+<li><a href="#XlsxInterfacer">XlsxInterfacer.py</a></li>
+<li><a href="#DatablockIO">DatablockIO.py</a></li>
+<li><a href="#EnumConverter">EnumConverter.py</a></li>
+<li><a href="#LevelUtility">LevelUtility.py</a>
+<ul>
+<li><a href="#Template">Template</a></li>
+</ul></li>
+</ul>
+<hr />
+<h2 id="xlsxinterfacer">XlsxInterfacer</h2>
+<p>A module created to interface with the pandas.DataFrame and read specific typed values.</p>
+<h2 id="datablockio">DatablockIO</h2>
+<p>A module created to read from and write to GTFO Datablocks including search blocks based on name or persistantID.</p>
+<h2 id="enumconverter">EnumConverter</h2>
+<p>A module created to convert between GTFO Enumerator names and indexes.</p>
+<hr />
+<h2 id="levelutility">LevelUtility</h2>
+<p>This is a file that is able to take a templated xlsx file and convert it into GTFO ExpeditionInTier, LevelLayout, and WardenObjective data. It takes arguments of which files to convert, converts the xlsx into dictionaries, and then writes those into the Datablocks.</p>
+<h3 id="template">Template</h3>
+<p><a href="https://docs.google.com/spreadsheets/d/1FLA-eHv9NhU3IdxcdQ29ueW8Qav9IlknaLdb4xbGZCI">Template is here</a>.</p>
+<p>Notes:</p>
+<ul>
+<li>The sheet tries it’s best to stop you from doing illegal or irrational things for data types (ie you can’t put a word where a number should go) but it is not idiot proof and cannot detect logical issues (eg to go into a zone with a key, it requires that key or a level doesn’t have enough cells).</li>
+<li>Lots of variables have notes on them, look at the notes for more specific information about variables.</li>
+<li>Most values can be left blank, if leaving a value blank could be problematic, the program will probably describe a cell as empty.</li>
+<li>Some values are already filled out in the template, these are just typical values and can be changed.</li>
+</ul>
+<p>Below is a description of the sheets in the template:</p>
+<ul>
+<li>Key: A sheet describing datatypes and the version of the sheet.</li>
+<li>Meta: Data for which rundown, tier, and index the level should be in.</li>
+<li>ExpeditionInTier: Data about the expedition as a whole (eg population, fog, tileset) and general information about the sectors.</li>
+</ul>
+<p>All sheets labed LX should be duplicated per layer and renamed accordingly (eg L1, L2, L3).</p>
+<ul>
+<li>LX ExpeditionZoneData: List of all zones and information about them.</li>
+<li><p>LX ExpeditionZoneData Lists: Different lists of items a zone can have more than one of (eg terminals, enemy spawning, etc.)</p></li>
+<li>LX WardenObjective: Data about the objective, the enemy waves, objective events, etc.</li>
+<li><p>LX WardenObjective ReactorWaves: Data about the Reactor objective</p></li>
+</ul>
+<p>Note: The program requires the Zone and Objective sheets to come as a pair (even if the second is blank). If you have L1 ExpeditionZoneData, you must have L1 ExpeditionZoneData. If you have L1 WardenObjective, you must have L1 WardenObjective.</p>
