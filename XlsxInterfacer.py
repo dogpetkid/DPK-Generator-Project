@@ -108,16 +108,16 @@ class interface:
 
 if __name__ == "__main__":
     """Test code to read the first 4 cells of a test sheet and put the values into a dict"""
-    i = interface(pandas.read_excel("test.xlsx", "Sheet1", header=None))
+    i = interface(pandas.read_excel("./test/testinterface.xlsx", "Sheet1", header=None))
     print(i.read(str, 0, 0))
-    print(i.read(int, 1, 0))
-    print(i.read(float, 2, 0))
-    print(i.read(bool, 3, 0))
+    print(i.read(int, 0, 1))
+    print(i.read(float, 0, 2))
+    print(i.read(bool, 0, 3))
     # print(i.read(int, 4, 0))
     a={}
     i.readIntoDict(str, 0, 0, a, "String1")
-    i.readIntoDict(int, 1, 0, a, "Int1")
-    i.readIntoDict(float, 2, 0, a, "Float1")
-    i.readIntoDict(int, 4, 0, a, "Int2") # should not end up in the dict
+    i.readIntoDict(int, 0, 1, a, "Int1")
+    i.readIntoDict(float, 0, 2, a, "Float1")
+    i.readIntoDict(int, 0, 4, a, "Int2") # should not end up in the dict
     print(a)
     input("Done.")

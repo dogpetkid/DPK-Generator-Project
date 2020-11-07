@@ -81,3 +81,4 @@ if __name__ == "__main__":
     d.data["Blocks"][d.find(6)]["DPKTestCounter"]+= 1
     print(d.data["Blocks"][d.find(6)])
     d.writedatablock()
+    input("Done.")
