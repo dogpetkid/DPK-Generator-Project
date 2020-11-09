@@ -354,7 +354,7 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.readIntoDict(str, startcolEventsOnEnter+6, row, Snippet["Intel"], "IntelMessage")
             Snippet["Sound"] = {}
             iExpeditionZoneDataLists.readIntoDict(bool, startcolEventsOnEnter+7, row, Snippet["Sound"], "Enabled")
-            iExpeditionZoneDataLists.readIntoDict(int, startcolEventsOnEnter+7, row, Snippet["Sound"], "SoundEvent")
+            iExpeditionZoneDataLists.readIntoDict(int, startcolEventsOnEnter+8, row, Snippet["Sound"], "SoundEvent")
             # TODO convert sound placeholders
             EnsureKeyInDictArray(self.stubEventsOnEnter, iExpeditionZoneDataLists.read(str, startcolEventsOnEnter, row))
             self.stubEventsOnEnter[iExpeditionZoneDataLists.read(str, startcolEventsOnEnter, row)].append(Snippet)
@@ -572,7 +572,7 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+10, row, data, "ConsumableDistributionInZone")
     DatablockIO.nameInDict(DATABLOCK_ConsumableDistribution, data, "ConsumableDistributionInZone")
     iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+11, row, data, "BigPickupDistributionInZone")
-    DatablockIO.nameInDict(DATABLOCK_ConsumableDistribution, data, "BigPickupDistributionInZone")
+    DatablockIO.nameInDict(DATABLOCK_BigPickupDistribution, data, "BigPickupDistributionInZone")
     data["TerminalPlacements"] = listdata.TerminalPlacements(zonestr)
     iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+12, row, data, "ForbidTerminalsInZone")
     data["PowerGeneratorPlacements"] = listdata.PowerGeneratorPlacements(zonestr)
