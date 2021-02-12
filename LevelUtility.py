@@ -216,6 +216,18 @@ def WardenObjectiveEventData(interface:XlsxInterfacer.interface, col:int, row:in
     interface.readIntoDict(str, col+5*horizontal, row+5*(not horizontal), data, "WardenIntel")
     return data
 
+def GeneralFogDataStep(interface:XlsxInterfacer.interface, col:int, row:int, horizontal:bool=False):
+    """
+    return a GeneralFogDataStep dict \n
+    col and row define the upper left value (not header) \n
+    horizontal is true if the values are in the same row
+    """
+    data = {}
+    interface.readIntoDict(str, col, row, data, "m_fogDataId")
+    DatablockIO.nameInDict(DATABLOCK_FogSettings, data, "m_fogDataId")
+    interface.readIntoDict(float, col+horizontal, row+(not horizontal), data, "m_transitionToTime")
+    return data
+
 def LayerData(interface:XlsxInterfacer.interface, col:int, row:int):
     """
     return a LayerData dict \n
@@ -694,7 +706,7 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
 
     data["Type"] = iWardenObjective.read(str, 1, 1)
     EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveType, data, "Type")
-    data["Header"] = iWardenObjective.read(str, 1, 3)
+    data["Header"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 3)
     data["MainObjective"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 4)
     data["FindLocationInfo"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 5)
     data["FindLocationInfoHelp"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 6)
@@ -765,6 +777,11 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+11, data, "Uplink_NumberOfTerminals")
     iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+13, data, "CentralPowerGenClustser_NumberOfGenerators")
     iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+14, data, "CentralPowerGenClustser_NumberOfPowerCells")
+    data["CentralPowerGenClustser_FogDataSteps"] = []
+    col,row = 1,rowLightsOnFromBeginning+16
+    while not(iWardenObjective.isEmpty(col,row)):
+        data["CentralPowerGenClustser_FogDataSteps"].append(GeneralFogDataStep(iWardenObjective, col, row, False))
+        col+= 1
 
     iWardenObjective.readIntoDict(str, 1, rowActivateHSU_ItemFromStart, data, "ActivateHSU_ItemFromStart")
     DatablockIO.nameInDict(DATABLOCK_Item, data, "ActivateHSU_ItemFromStart")
