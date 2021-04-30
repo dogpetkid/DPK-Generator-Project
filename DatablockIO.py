@@ -20,7 +20,7 @@ class datablock:
     def __init__(self, blockfile:io.FileIO):
         self.blockfile = blockfile
         self.data = json.load(blockfile)
-    
+
     def find(self, find: typing.Union[int, str]):
         """
         Finds the index of a block in the blocks array using find

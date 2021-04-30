@@ -19,14 +19,14 @@ import DatablockIO
 import EnumConverter
 import XlsxInterfacer
 
+# argparse: used to get arguments in CLI (to decide which files to turn into levels encoding/decoding and which file)
+# io:       used to read from and write to files
+# json:     used to export the data to a json
+# re:       used to preform regex searches
+# typing:   used to give types to function parameters
+# numpy:    used to manipulate the inconsistant numpy data read by pandas
 # pandas:   used to read the excel data
 # xlrd:     used to catch and throw excel errors when initially reading the sheets
-# numpy:    used to manipulate the inconsistant numpy data read by pandas
-# re:       used to preform regex searches
-# json:     used to export the data to a json
-# io:       used to read from and write to files
-# typing:   used to give types to function parameters
-# argparse: used to get arguments in CLI (to decide which files to turn into levels encoding/decoding and which file)
 
 # a regex to capture the newlines the devs put into their json
 devnewlnregex = "(\\\\n|\\\\r){1,2}"
@@ -262,9 +262,9 @@ def ExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface):
     EnumConverter.enumInDict(ENUMFILE_eExpeditionAccessibility, data, "Accessibility")
     data["CustomProgressionLock"] = {}
     iExpeditionInTier.readIntoDict(int, 12, 12, data["CustomProgressionLock"], "MainSectors")
-    iExpeditionInTier.readIntoDict(int, 12, 12, data["CustomProgressionLock"], "SecondarySectors")
-    iExpeditionInTier.readIntoDict(int, 12, 12, data["CustomProgressionLock"], "ThirdSectors")
-    iExpeditionInTier.readIntoDict(int, 12, 12, data["CustomProgressionLock"], "AllClearedSectors")
+    iExpeditionInTier.readIntoDict(int, 12, 13, data["CustomProgressionLock"], "SecondarySectors")
+    iExpeditionInTier.readIntoDict(int, 12, 14, data["CustomProgressionLock"], "ThirdSectors")
+    iExpeditionInTier.readIntoDict(int, 12, 15, data["CustomProgressionLock"], "AllClearedSectors")
     data["Descriptive"] = {}
     data["Descriptive"]["Prefix"] = iExpeditionInTier.read(str, 12, 2)
     data["Descriptive"]["PublicName"] = iExpeditionInTier.read(str, 12, 3)
@@ -1045,7 +1045,8 @@ def main():
             continue
         
         try:
-            UtilityJob(fxlsx, RundownDataBlock.data["Blocks"][RundownDataBlock.find(rundownID)], LevelLayoutDataBlock, WardenObjectiveDataBlock, tierName, expeditionIndex, silent=True, debug=False) # use true for silent and false for debug because those are handled outside of the function in this case
+            # TODO rewrite log output to let the entire program write logs
+            UtilityJob(fxlsx, RundownDataBlock.data["Blocks"][RundownDataBlock.find(rundownID)], LevelLayoutDataBlock, WardenObjectiveDataBlock, tierName, expeditionIndex, silent=True, debug=False) # Utilty job should stay silenced because it is currently unable to write to the log file
         except Exception as e:
             # This if condition is to not write this twice in the debug log when something goes wrong
             if not(args.debug):warnUser("Something went wrong reading the sheet: \""+path+"\"\n\t"+str(e))

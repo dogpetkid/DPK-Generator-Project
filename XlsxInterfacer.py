@@ -4,11 +4,16 @@ This is a tool created by DPK
 This tool can interface xlsx files and give out consistant datatypes.
 """
 
+import typing
+
+import numpy
+import openpyxl
 import pandas
 import xlrd
-import numpy
 
+# typing:   used to give types to function parameters
 # pandas:   used to read the excel data
+# openpyxl: used to keep the pre-existing formatting of a sheet
 # xlrd:     used to catch and throw excel errors when initially reading the sheets
 # numpy:    used to manipulate the inconsistant numpy data read by pandas
 
@@ -36,7 +41,10 @@ class EmptyCell(Exception):
     pass
 
 class interface:
-    """A tool to read and write to xlsx files to garuntee datatypes, sits on top of pandas DataFrame"""
+    """
+    A tool to read and write to xlsx files to garuntee datatypes, contains a pandas DataFrame
+    Use interface.frame to interact with the pandas DataFrame contained within the interface
+    """
 
     def __init__(self, frame:pandas.DataFrame):
         if not isinstance(frame, pandas.DataFrame):
@@ -92,6 +100,9 @@ class interface:
 
         raise Exception("Interface failed to read an item of type \""+readtype.__name__+"\" at y,x "+str(y)+","+str(x))
 
+    def write(self, value:typing.Union[bool,int,float,str], x:int, y:int):
+        self.frame.loc[y,x] = value
+
     def readIntoDict(self, readtype:object, x:int, y:int, dictionary:dict, key:str):
         """
         ReadIntoDict will attempt to read a value at x,y
@@ -106,8 +117,45 @@ class interface:
         except EmptyCell:
             return None
 
+    def writeFromDict(self, x:int, y:int, dictionary:dict, key:str):
+        """
+        ReadIntoDict will attempt to write a value at x,y
+        The value to be written is from dict[key], if no such value for the key exists, the function does nothing
+        returns True when a value is written, returns False when nothing is written
+        """
+
+        try:
+            v = dictionary[key]
+            self.write(v, x, y)
+            return True
+        except KeyError:
+            return False
+
+    def save(self, filename:str, sheet:str):
+        """
+        Save a dataframe onto an existing sheet that has pre-existing formatting
+        """
+        workbook = openpyxl.load_workbook(filename=filename)
+        try:
+            sheet = workbook[sheet]
+        except KeyError:
+            sheet = workbook.create_sheet(sheet)
+
+        # iterate over all cells and copy the data
+        for y in self.frame.axes[0]:
+            for x in self.frame.axes[1]:
+                v = self.frame.at[y,x]
+                try:
+                    # NaNs should not be written
+                    if numpy.isnan(v): continue
+                except: pass
+                # add 1 to row and column since openpyxl starts counting at 1
+                sheet.cell(row=y+1, column=x+1).value = v
+
+        workbook.save(filename = filename)
+
 if __name__ == "__main__":
-    """Test code to read the first 4 cells of a test sheet and put the values into a dict"""
+    """Test code to read/write to 12 cells of a test sheet and put the values into a dict and pull values from a dict"""
     i = interface(pandas.read_excel("./test/testinterface.xlsx", "Sheet1", header=None))
     print(i.read(str, 0, 0))
     print(i.read(int, 0, 1))
@@ -120,4 +168,16 @@ if __name__ == "__main__":
     i.readIntoDict(float, 0, 2, a, "Float1")
     i.readIntoDict(int, 0, 4, a, "Int2") # should not end up in the dict
     print(a)
+
+    i.write(0, 1, 0)
+    i.write("c", 1, 1)
+    i.write(True, 1, 2)
+    i.write(5.6, 1, 3)
+
+    i.writeFromDict(2, 0, a, "String1")
+    i.writeFromDict(2, 1, a, "Int1")
+    i.writeFromDict(2, 2, a, "Float1")
+    i.writeFromDict(2, 3, a, "Int2") # should not be written as Int2 should not end up in the dict
+
+    i.frame.to_excel("./test/testinterface.xlsx", sheet_name="Sheet1", index=False, header=None)
     input("Done.")
