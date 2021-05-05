@@ -20,7 +20,7 @@ import XlsxInterfacer
 # argparse: used to get arguments in CLI (to decide which files to turn into levels encoding/decoding and which file)
 # io:       used to read from and write to files
 # json:     used to export the data to a json
-# re:       used to preform regex searches
+# re:       used to preform regex searches and replaces
 # shutil:   used to copy the template
 # typing:   used to give types to function parameters
 # numpy:    used to manipulate the inconsistant numpy data read by pandas
@@ -52,11 +52,12 @@ def writePublicNameFromDict(datablock:DatablockIO.datablock, interface:XlsxInter
     """
     Takes a datablock and writes the publicName associated to the persisentID in the specified cell
     """
-    DatablockIO.idInDict(datablock, dictionary, key)
     try:
         if(str(dictionary[key])=="0"):return
         # This is to catch and not write any "0" datablocks used by the devs
+        # This should let past all non-zero, even ones not in the blocks
     except KeyError:return
+    DatablockIO.idInDict(datablock, dictionary, key)
     interface.writeFromDict(x, y, dictionary, key)
     # convert the name back into a persistentID since the value that was changed is still part of the dictionary
     DatablockIO.nameInDict(datablock, dictionary, key)
@@ -124,7 +125,7 @@ def ZonePlacementData(interface:XlsxInterfacer.interface, data:dict, col:int, ro
     horizontal is true if the values are in the same row
     """
     writeEnumFromDict(ENUMFILE_eLocalZoneIndex, interface, col, row, data, "LocalIndex")
-    try:ZonePlacementWeights(interface, data["Weights"], col+horizontal, row+(nothorizontal), horizontal)
+    try:ZonePlacementWeights(interface, data["Weights"], col+horizontal, row+(not horizontal), horizontal)
     except KeyError:pass
 
 def BulkheadDoorPlacementData(interface:XlsxInterfacer.interface, data:dict, col:int, row:int, horizontal=False):
@@ -183,10 +184,10 @@ def GenericEnemyWaveData(interface:XlsxInterfacer.interface, data:dict, col:int,
     horizontal is true if the values are in the same row
     """
     writePublicNameFromDict(DATABLOCK_SurvivalWaveSettings, interface, col, row, data, "WaveSettings")
-    writePublicNameFromDict(DATABLOCK_SurvivalWavePopulation, interface, col+horizontal, row+data)
-    interface.writeFromDict(col+2*horizonta, row+2*(not horizontal), data, "SpawnDelay")
-    interface.writeFromDict(col+3*horizonta, row+3*(not horizontal), data, "TriggerAlarm")
-    interface.writeFromDict(col+4*horizonta, row+4*(not horizontal), data, "IntelMessage")
+    writePublicNameFromDict(DATABLOCK_SurvivalWavePopulation, interface, col+horizontal, row+(not horizontal), data, "WavePopulation")
+    interface.writeFromDict(col+2*horizontal, row+2*(not horizontal), data, "SpawnDelay")
+    interface.writeFromDict(col+3*horizontal, row+3*(not horizontal), data, "TriggerAlarm")
+    interface.writeFromDict(col+4*horizontal, row+4*(not horizontal), data, "IntelMessage")
 
 def GenericEnemyWaveDataList(interface:XlsxInterfacer.interface, data:typing.List[dict], col:int, row:int, horizontal:bool=True):
     """
@@ -349,6 +350,87 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
     try:
         iExpeditionInTier.writeFromDict(5, 6, ExpeditionInTierData["SpecialOverrideData"], "WeakResourceContainerWithPackChanceForLocked")
     except KeyError:pass
+
+def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, ExpeditionZoneData:list, row:int):
+    """
+    adds a zone to the iExpeditionZoneData (does not include any lists)
+    (this would end up getting called once per layer)
+    """
+    # set up some checkpoints so if some of the data gets reformatted, not the entire function needs to be altered,
+    # just the headings and contents of the section will need edited column values
+    colPuzzleType = XlsxInterfacer.ctn("Q")
+    colHSUClustersInZone = XlsxInterfacer.ctn("AH")
+    colHealthMulti = XlsxInterfacer.ctn("AY")
+
+    writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneData, 0, row, ExpeditionZoneData, "LocalIndex")
+    iExpeditionZoneData.writeFromDict(1, row, ExpeditionZoneData, "SubSeed")
+    iExpeditionZoneData.writeFromDict(2, row, ExpeditionZoneData, "BulkheadDCScanSeed")
+    writeEnumFromDict(ENUMFILE_SubComplex, iExpeditionZoneData, 3, row, ExpeditionZoneData, "SubComplex")
+    iExpeditionZoneData.writeFromDict(4, row, ExpeditionZoneData, "CustomGeomorph")
+    try:
+        iExpeditionZoneData.writeFromDict(5, row, ExpeditionZoneData["CoverageMinMax"], "x")
+        iExpeditionZoneData.writeFromDict(6, row, ExpeditionZoneData["CoverageMinMax"], "y")
+    except KeyError:pass
+    writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneData, 7, row, ExpeditionZoneData, "BuildFromLocalIndex")
+    writeEnumFromDict(ENUMFILE_eZoneBuildFromType, iExpeditionZoneData, 8, row, ExpeditionZoneData, "StartPosition")
+    iExpeditionZoneData.writeFromDict(9, row, ExpeditionZoneData, "StartPosition_IndexWeight")
+    writeEnumFromDict(ENUMFILE_eZoneBuildFromExpansionType, iExpeditionZoneData, 10, row, ExpeditionZoneData, "StartExpansion")
+    writeEnumFromDict(ENUMFILE_eZoneExpansionType, iExpeditionZoneData, 11, row, ExpeditionZoneData, "ZoneExpansion")
+    writePublicNameFromDict(DATABLOCK_LightSettings, iExpeditionZoneData, 12, row, ExpeditionZoneData, "LightSettings")
+    try:
+        writeEnumFromDict(ENUMFILE_eWantedZoneHeighs, iExpeditionZoneData, 13, row, ExpeditionZoneData, "AllowedZoneAltitude")
+        iExpeditionZoneData.writeFromDict(14, row, ExpeditionZoneData, "ChanceToChange")
+    except KeyError:pass
+    # EventsOnEnter in lists
+
+    try:
+        writeEnumFromDict(ENUMFILE_eProgressionPuzzleType, iExpeditionZoneData, colPuzzleType, row, ExpeditionZoneData["ProgressionPuzzleToEnter"], "PuzzleType")
+        iExpeditionZoneData.writeFromDict(colPuzzleType+1, row, ExpeditionZoneData["ProgressionPuzzleToEnter"], "CustomText")
+        iExpeditionZoneData.writeFromDict(colPuzzleType+2, row, ExpeditionZoneData["ProgressionPuzzleToEnter"], "PlacementCount")
+        # ProgressionPuzzleToEnter's ZonePlacementData in lists
+    except KeyError:pass
+    writePublicNameFromDict(DATABLOCK_ChainedPuzzle, iExpeditionZoneData, colPuzzleType+4, row, ExpeditionZoneData, "ChainedPuzzleToEnter")
+    writeEnumFromDict(ENUMFILE_eSecurityGateType, iExpeditionZoneData, colPuzzleType+5, row, ExpeditionZoneData, "SecurityGateToEnter")
+    try:
+        iExpeditionZoneData.writeFromDict(colPuzzleType+6, row, ExpeditionZoneData["ActiveEnemyWave"], "HasActiveEnemyWave")
+        writePublicNameFromDict(DATABLOCK_EnemyGroup, iExpeditionZoneData, colPuzzleType+7, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")
+        writePublicNameFromDict(DATABLOCK_EnemyGroup, iExpeditionZoneData, colPuzzleType+8, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupInArea")
+        iExpeditionZoneData.writeFromDict(colPuzzleType+9, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupsInArea")
+    except KeyError:pass
+    # EnemySpawningInZone in lists
+    iExpeditionZoneData.writeFromDict(colPuzzleType+10, row, ExpeditionZoneData, "EnemyRespawning")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+11, row, ExpeditionZoneData, "EnemyRespawnRequireOtherZone")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+12, row, ExpeditionZoneData, "EnemyRespawnRoomDistance")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+13, row, ExpeditionZoneData, "EnemyRespawnTimeInterval")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+14, row, ExpeditionZoneData, "EnemyRespawnCountMultiplier")
+    # EnemyRespawnExcludeList in lists
+
+    iExpeditionZoneData.writeFromDict(colHSUClustersInZone, row, ExpeditionZoneData, "HSUClustersInZone")
+    iExpeditionZoneData.writeFromDict(colHSUClustersInZone+1, row, ExpeditionZoneData, "CorpseClustersInZone")
+    iExpeditionZoneData.writeFromDict(colHSUClustersInZone+2, row, ExpeditionZoneData, "ResourceContainerClustersInZone")
+    iExpeditionZoneData.writeFromDict(colHSUClustersInZone+3, row, ExpeditionZoneData, "GeneratorClustersInZone")
+    writeEnumFromDict(ENUMFILE_eZoneDistributionAmount, iExpeditionZoneData, colHSUClustersInZone+4, row, ExpeditionZoneData, "CorpsesInZone")
+    writeEnumFromDict(ENUMFILE_eZoneDistributionAmount, iExpeditionZoneData, colHSUClustersInZone+5, row, ExpeditionZoneData, "GroundSpawnersInZone")
+    writeEnumFromDict(ENUMFILE_eZoneDistributionAmount, iExpeditionZoneData, colHSUClustersInZone+6, row, ExpeditionZoneData, "HSUsInZone")
+    writeEnumFromDict(ENUMFILE_eZoneDistributionAmount, iExpeditionZoneData, colHSUClustersInZone+7, row, ExpeditionZoneData, "DeconUnitsInZone")
+    iExpeditionZoneData.writeFromDict(colHSUClustersInZone+8, row, ExpeditionZoneData, "AllowSmallPickupsAllocation")
+    iExpeditionZoneData.writeFromDict(colHSUClustersInZone+9, row, ExpeditionZoneData, "AllowResourceContainerAllocation")
+    iExpeditionZoneData.writeFromDict(colHSUClustersInZone+10, row, ExpeditionZoneData, "ForceBigPickupsAllocation")
+    writePublicNameFromDict(DATABLOCK_EnemyGroup, iExpeditionZoneData, colPuzzleType+7, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")
+    writePublicNameFromDict(DATABLOCK_EnemyGroup, iExpeditionZoneData, colPuzzleType+7, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")
+    # XXX finish me
+
+def ExpeditionZoneDataLists(iExpeditionZoneDataLists:XlsxInterfacer.interface, LevelLayoutDataBlock:dict):
+    """
+    adds all zones to the iExpeditionZoneDataLists (only includes any lists)
+    """
+    pass
+
+def LevelLayoutBlock(iExpeditionZoneData:XlsxInterfacer.interface, iExpeditionZoneDataLists:XlsxInterfacer.interface, LevelLayoutDataBlock:dict):
+    """
+    edit the iExpeditionZoneData and iExpeditionZoneDataLists pandas dataFrame
+    """
+    pass
 
 def getExpeditionInTierData(levelIdentifier:str, RundownDataBlock:DatablockIO.datablock):
     """
