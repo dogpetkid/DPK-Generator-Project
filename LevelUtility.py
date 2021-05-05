@@ -2,7 +2,7 @@
 This is a tool created by DPK
 
 This tool can convert xlsx to a bunch of GTFO Datablock pieces and also convert levels from the Datablocks back into the templated form
-Template: https://docs.google.com/spreadsheets/d/1h8_x696sogM0EfCk12Obe5s54njQnwDFdKBTKDK5pCA/edit?usp=sharing
+Template: https://docs.google.com/spreadsheets/d/1ENa6McJnomHa5ugB-VBFjMF62nslj4VwdgM_5ERVRqw/edit?usp=sharing
 """
 
 import argparse
@@ -37,14 +37,14 @@ devnewlnregex = "(\\\\n|\\\\r){1,2}"
 # R.G.S
 # R: Rundown
 # G: Generator
-# S: Sheet (minor changes to the sheet are insignificant to the generator)
-Version = "4e.1"
+# S: Sheet (minor changes to the sheet are insignificant to the utility)
+Version = "5.1"
 # relative path to location for datablocks, defaultly its folder should be on the same layer as this project's folder
 blockpath = "../Datablocks/"
 # default paths to xlsx files when running the program
 defaultpaths = ["in.xlsx"]
 # persistantID of the default rundown to insert levels into
-rundowndefault = 25 # R4
+rundowndefault = 26 # R5
 #####
 
 def EnsureKeyInDictArray(dictionary:dict, key:str):
@@ -58,44 +58,46 @@ if True:
     # DATABLOCK_Rundown = DatablockIO.datablock(open(blockpath+"RundownDataBlock.json", 'r', encoding="utf8"))
     # DATABLOCK_LevelLayout = DatablockIO.datablock(open(blockpath+"LevelLayoutDataBlock.json", 'r', encoding="utf8"))
     # DATABLOCK_WardenObjective = DatablockIO.datablock(open(blockpath+"WardenObjectiveDataBlock.json", 'r', encoding="utf8"))
+    DATABLOCK_ArtifactDistributionDataBlock = DatablockIO.datablock(open(blockpath+"ArtifactDistributionDataBlock.json", 'r', encoding="utf8"))
+    DATABLOCK_BigPickupDistribution = DatablockIO.datablock(open(blockpath+"BigPickupDistributionDataBlock.json", 'r', encoding="utf8"))
+    DATABLOCK_ChainedPuzzle = DatablockIO.datablock(open(blockpath+"ChainedPuzzleDataBlock.json", 'r', encoding="utf8"))
     DATABLOCK_ComplexResourceSet = DatablockIO.datablock(open(blockpath+"ComplexResourceSetDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_LightSettings = DatablockIO.datablock(open(blockpath+"LightSettingsDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_FogSettings = DatablockIO.datablock(open(blockpath+"FogSettingsDataBlock.json", 'r', encoding="utf8"))
+    DATABLOCK_ConsumableDistribution = DatablockIO.datablock(open(blockpath+"ConsumableDistributionDataBlock.json", 'r', encoding="utf8"))
+    DATABLOCK_Enemy = DatablockIO.datablock(open(blockpath+"EnemyDataBlock.json", 'r', encoding="utf8"))
+    DATABLOCK_EnemyGroup = DatablockIO.datablock(open(blockpath+"EnemyGroupDataBlock.json", 'r', encoding="utf8"))
     DATABLOCK_EnemyPopulation = DatablockIO.datablock(open(blockpath+"EnemyPopulationDataBlock.json", 'r', encoding="utf8"))
     DATABLOCK_ExpeditionBalance = DatablockIO.datablock(open(blockpath+"ExpeditionBalanceDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_SurvivalWaveSettings = DatablockIO.datablock(open(blockpath+"SurvivalWaveSettingsDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_SurvivalWavePopulation = DatablockIO.datablock(open(blockpath+"SurvivalWavePopulationDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_ChainedPuzzle = DatablockIO.datablock(open(blockpath+"ChainedPuzzleDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_EnemyGroup = DatablockIO.datablock(open(blockpath+"EnemyGroupDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_ConsumableDistribution = DatablockIO.datablock(open(blockpath+"ConsumableDistributionDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_BigPickupDistribution = DatablockIO.datablock(open(blockpath+"BigPickupDistributionDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_StaticSpawn = DatablockIO.datablock(open(blockpath+"StaticSpawnDataBlock.json", 'r', encoding="utf8"))
+    DATABLOCK_FogSettings = DatablockIO.datablock(open(blockpath+"FogSettingsDataBlock.json", 'r', encoding="utf8"))
     DATABLOCK_Item = DatablockIO.datablock(open(blockpath+"ItemDataBlock.json", 'r', encoding="utf8"))
+    DATABLOCK_LightSettings = DatablockIO.datablock(open(blockpath+"LightSettingsDataBlock.json", 'r', encoding="utf8"))
+    DATABLOCK_StaticSpawn = DatablockIO.datablock(open(blockpath+"StaticSpawnDataBlock.json", 'r', encoding="utf8"))
+    DATABLOCK_SurvivalWavePopulation = DatablockIO.datablock(open(blockpath+"SurvivalWavePopulationDataBlock.json", 'r', encoding="utf8"))
+    DATABLOCK_SurvivalWaveSettings = DatablockIO.datablock(open(blockpath+"SurvivalWaveSettingsDataBlock.json", 'r', encoding="utf8"))
 
 # load all enum files
 if True:
-    ENUMFILE_eExpeditionAccessibility = open(blockpath+"TypeList/Enums/eExpeditionAccessibility.txt",'r')
-    ENUMFILE_eLocalZoneIndex = open(blockpath+"TypeList/Enums/eLocalZoneIndex.txt",'r')
-    ENUMFILE_eWardenObjectiveWinCondition = open(blockpath+"TypeList/Enums/eWardenObjectiveWinCondition.txt",'r')
     ENUMFILE_LG_LayerType = open(blockpath+"TypeList/Enums/LG_LayerType.txt",'r')
+    ENUMFILE_LG_StaticDistributionWeightType = open(blockpath+"TypeList/Enums/LG_StaticDistributionWeightType.txt",'r')
     ENUMFILE_SubComplex = open(blockpath+"TypeList/Enums/SubComplex.txt",'r')
-    ENUMFILE_eZoneBuildFromType = open(blockpath+"TypeList/Enums/eZoneBuildFromType.txt",'r')
-    ENUMFILE_eZoneBuildFromExpansionType = open(blockpath+"TypeList/Enums/eZoneBuildFromExpansionType.txt",'r')
-    ENUMFILE_eZoneExpansionType = open(blockpath+"TypeList/Enums/eZoneExpansionType.txt",'r')
-    ENUMFILE_eWantedZoneHeighs = open(blockpath+"TypeList/Enums/eWantedZoneHeighs.txt",'r')
-    ENUMFILE_eProgressionPuzzleType = open(blockpath+"TypeList/Enums/eProgressionPuzzleType.txt",'r')
-    ENUMFILE_eSecurityGateType = open(blockpath+"TypeList/Enums/eSecurityGateType.txt",'r')
+    ENUMFILE_TERM_State = open(blockpath+"TypeList/Enums/TERM_State.txt",'r')
     ENUMFILE_eEnemyGroupType = open(blockpath+"TypeList/Enums/eEnemyGroupType.txt",'r')
     ENUMFILE_eEnemyRoleDifficulty = open(blockpath+"TypeList/Enums/eEnemyRoleDifficulty.txt",'r')
     ENUMFILE_eEnemyZoneDistribution = open(blockpath+"TypeList/Enums/eEnemyZoneDistribution.txt",'r')
-    ENUMFILE_eZoneDistributionAmount = open(blockpath+"TypeList/Enums/eZoneDistributionAmount.txt",'r')
-    ENUMFILE_TERM_State = open(blockpath+"TypeList/Enums/TERM_State.txt",'r')
-    ENUMFILE_LG_StaticDistributionWeightType = open(blockpath+"TypeList/Enums/LG_StaticDistributionWeightType.txt",'r')
-    ENUMFILE_eWardenObjectiveType = open(blockpath+"TypeList/Enums/eWardenObjectiveType.txt",'r')
+    ENUMFILE_eExpeditionAccessibility = open(blockpath+"TypeList/Enums/eExpeditionAccessibility.txt",'r')
+    ENUMFILE_eLocalZoneIndex = open(blockpath+"TypeList/Enums/eLocalZoneIndex.txt",'r')
+    ENUMFILE_eProgressionPuzzleType = open(blockpath+"TypeList/Enums/eProgressionPuzzleType.txt",'r')
+    ENUMFILE_eReactorWaveSpawnType = open(blockpath+"TypeList/Enums/eReactorWaveSpawnType.txt",'r')
     ENUMFILE_eRetrieveExitWaveTrigger = open(blockpath+"TypeList/Enums/eRetrieveExitWaveTrigger.txt",'r')
+    ENUMFILE_eSecurityGateType = open(blockpath+"TypeList/Enums/eSecurityGateType.txt",'r')
+    ENUMFILE_eWantedZoneHeighs = open(blockpath+"TypeList/Enums/eWantedZoneHeighs.txt",'r')
     ENUMFILE_eWardenObjectiveEventTrigger = open(blockpath+"TypeList/Enums/eWardenObjectiveEventTrigger.txt",'r')
     ENUMFILE_eWardenObjectiveEventType = open(blockpath+"TypeList/Enums/eWardenObjectiveEventType.txt",'r')
-    ENUMFILE_eReactorWaveSpawnType = open(blockpath+"TypeList/Enums/eReactorWaveSpawnType.txt",'r')
+    ENUMFILE_eWardenObjectiveType = open(blockpath+"TypeList/Enums/eWardenObjectiveType.txt",'r')
+    ENUMFILE_eWardenObjectiveWinCondition = open(blockpath+"TypeList/Enums/eWardenObjectiveWinCondition.txt",'r')
+    ENUMFILE_eZoneBuildFromExpansionType = open(blockpath+"TypeList/Enums/eZoneBuildFromExpansionType.txt",'r')
+    ENUMFILE_eZoneBuildFromType = open(blockpath+"TypeList/Enums/eZoneBuildFromType.txt",'r')
+    ENUMFILE_eZoneDistributionAmount = open(blockpath+"TypeList/Enums/eZoneDistributionAmount.txt",'r')
+    ENUMFILE_eZoneExpansionType = open(blockpath+"TypeList/Enums/eZoneExpansionType.txt",'r')
 
 def ZonePlacementData(interface:XlsxInterfacer.interface, col:int, row:int, horizontal:bool=True):
     """
@@ -139,7 +141,7 @@ def ZonePlacementWeightsList(interface:XlsxInterfacer.interface, col:int, row:in
     """
     return a list of lists containing ZonePlacementWeights \n
     col and row define the upper left value (not header) \n
-    horizontal describes the direction to iterate to look for waves
+    horizontal describes the direction to iterate to look for weights
     """
     data = {}
     while not(interface.isEmpty(col, row)):
@@ -197,6 +199,20 @@ def GenericEnemyWaveDataList(interface:XlsxInterfacer.interface, col:int, row:in
         row+= not horizontal
     return datalist
 
+def ArtifactZoneDistribution(interface:XlsxInterfacer.interface, col:int, row:int, horizontal:bool=False):
+    """
+    return a ArtifactZoneDistribution dict \n
+    col and row define the upper left value (not header) \n
+    horizontal is true if the values are in the same row
+    """
+    data = {}
+    interface.readIntoDict(str, col, row, data, "Zone")
+    EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, data, "Zone")
+    interface.readIntoDict(float, col+horizontal, row+(not horizontal), data, "BasicArtifactWeight")
+    interface.readIntoDict(float, col+2*horizontal, row+2*(not horizontal), data, "AdvancedArtifactWeight")
+    interface.readIntoDict(float, col+3*horizontal, row+3*(not horizontal), data, "SpecializedArtifactWeight")
+    return data
+
 def WardenObjectiveEventData(interface:XlsxInterfacer.interface, col:int, row:int, horizontal:bool=False):
     """
     return a WardenObjectiveEventData dict \n
@@ -214,6 +230,8 @@ def WardenObjectiveEventData(interface:XlsxInterfacer.interface, col:int, row:in
     EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, data, "LocalIndex")
     interface.readIntoDict(float, col+4*horizontal, row+4*(not horizontal), data, "Delay")
     interface.readIntoDict(str, col+5*horizontal, row+5*(not horizontal), data, "WardenIntel")
+    interface.readIntoDict(int, col+6*horizontal, row+6*(not horizontal), data, "SoundID")
+    # TODO convert sound placeholders
     return data
 
 def GeneralFogDataStep(interface:XlsxInterfacer.interface, col:int, row:int, horizontal:bool=False):
@@ -228,6 +246,7 @@ def GeneralFogDataStep(interface:XlsxInterfacer.interface, col:int, row:int, hor
     interface.readIntoDict(float, col+horizontal, row+(not horizontal), data, "m_transitionToTime")
     return data
 
+
 def LayerData(interface:XlsxInterfacer.interface, col:int, row:int):
     """
     return a LayerData dict \n
@@ -239,7 +258,8 @@ def LayerData(interface:XlsxInterfacer.interface, col:int, row:int):
     data["ZonesWithBulkheadEntrance"] = []
     itercol,iterrow = col+5, row+1
     while not(interface.isEmpty(itercol, iterrow)):
-        data["ZonesWithBulkheadEntrance"].append(EnumConverter.enumToIndex(ENUMFILE_eLocalZoneIndex, interface.read(str, itercol, iterrow)))
+        # NOTE textmode may need a toggle in this file for whether the json should have text enums
+        data["ZonesWithBulkheadEntrance"].append(EnumConverter.enumToIndex(ENUMFILE_eLocalZoneIndex, interface.read(str, itercol, iterrow), textmode=True))
         itercol+= 1
     data["BulkheadDoorControllerPlacements"] = []
     itercol,iterrow = col+5, row+2
@@ -252,6 +272,15 @@ def LayerData(interface:XlsxInterfacer.interface, col:int, row:int):
     interface.readIntoDict(str, col+5, row+14, data["ObjectiveData"], "WinCondition")
     EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveWinCondition, data["ObjectiveData"], "WinCondition")
     data["ObjectiveData"]["ZonePlacementDatas"] = ZonePlacementWeightsList(interface, col+5, row+15, horizontal=True)
+    data["ArtifactData"] = {}
+    interface.readIntoDict(int, col+5, row+20, data["ArtifactData"], "ArtifactAmountMulti")
+    interface.readIntoDict(int, col+5, row+21, data["ArtifactData"], "ArtifactLayerDistributionDataID")
+    DatablockIO.nameInDict(DATABLOCK_ArtifactDistributionDataBlock, data["ArtifactData"], "ArtifactLayerDistributionDataID")
+    data["ArtifactData"]["ArtifactZoneDistributions"] = []
+    itercol,iterrow = col+5, row+22
+    while not(interface.isEmpty(itercol, iterrow)):
+        data["ArtifactData"]["ArtifactZoneDistributions"].append(ArtifactZoneDistribution(interface, itercol, iterrow, horizontal=False))
+        itercol+= 1
     return data
 
 def ExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface):
@@ -261,19 +290,19 @@ def ExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface):
     data["Accessibility"] = iExpeditionInTier.read(str, 1, 2)
     EnumConverter.enumInDict(ENUMFILE_eExpeditionAccessibility, data, "Accessibility")
     data["CustomProgressionLock"] = {}
-    iExpeditionInTier.readIntoDict(int, 12, 12, data["CustomProgressionLock"], "MainSectors")
-    iExpeditionInTier.readIntoDict(int, 12, 13, data["CustomProgressionLock"], "SecondarySectors")
-    iExpeditionInTier.readIntoDict(int, 12, 14, data["CustomProgressionLock"], "ThirdSectors")
-    iExpeditionInTier.readIntoDict(int, 12, 15, data["CustomProgressionLock"], "AllClearedSectors")
+    iExpeditionInTier.readIntoDict(int, 12, 2, data["CustomProgressionLock"], "MainSectors")
+    iExpeditionInTier.readIntoDict(int, 12, 3, data["CustomProgressionLock"], "SecondarySectors")
+    iExpeditionInTier.readIntoDict(int, 12, 4, data["CustomProgressionLock"], "ThirdSectors")
+    iExpeditionInTier.readIntoDict(int, 12, 5, data["CustomProgressionLock"], "AllClearedSectors")
     data["Descriptive"] = {}
-    data["Descriptive"]["Prefix"] = iExpeditionInTier.read(str, 12, 2)
-    data["Descriptive"]["PublicName"] = iExpeditionInTier.read(str, 12, 3)
-    iExpeditionInTier.readIntoDict(bool, 12, 4, data["Descriptive"], "IsExtraExpedition")
-    iExpeditionInTier.readIntoDict(int, 12, 5, data["Descriptive"], "ExpeditionDepth")
-    data["Descriptive"]["EstimatedDuration"] = iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 6)
-    data["Descriptive"]["ExpeditionDescription"] = re.sub(devnewlnregex,"\r\n", iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 7))
-    data["Descriptive"]["RoleplayedWardenIntel"] = re.sub(devnewlnregex,"\r\n", iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 8))
-    data["Descriptive"]["DevInfo"] = re.sub(devnewlnregex,"\n", iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 9))
+    data["Descriptive"]["Prefix"] = iExpeditionInTier.read(str, 12, 8)
+    data["Descriptive"]["PublicName"] = iExpeditionInTier.read(str, 12, 9)
+    iExpeditionInTier.readIntoDict(bool, 12, 10, data["Descriptive"], "IsExtraExpedition")
+    iExpeditionInTier.readIntoDict(int, 12, 11, data["Descriptive"], "ExpeditionDepth")
+    data["Descriptive"]["EstimatedDuration"] = iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 12)
+    data["Descriptive"]["ExpeditionDescription"] = re.sub(devnewlnregex,"\r\n", iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 13))
+    data["Descriptive"]["RoleplayedWardenIntel"] = re.sub(devnewlnregex,"\r\n", iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 14))
+    data["Descriptive"]["DevInfo"] = re.sub(devnewlnregex,"\n", iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 15))
     data["Seeds"] = {}
     iExpeditionInTier.readIntoDict(int, 0, 6, data["Seeds"], "BuildSeed")
     iExpeditionInTier.readIntoDict(int, 1, 6, data["Seeds"], "FunctionMarkerOffset")
@@ -303,7 +332,7 @@ def ExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface):
     EnumConverter.enumInDict(ENUMFILE_LG_LayerType, data["BuildSecondaryFrom"], "LayerType")
     iExpeditionInTier.readIntoDict(str, 4, 17, data["BuildSecondaryFrom"], "Zone")
     EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, data["BuildSecondaryFrom"], "Zone")
-    data["SecondaryLayerData"] = LayerData(iExpeditionInTier, 0, 42)
+    data["SecondaryLayerData"] = LayerData(iExpeditionInTier, 0, 48)
     iExpeditionInTier.readIntoDict(bool, 7, 13, data, "ThirdLayerEnabled")
     iExpeditionInTier.readIntoDict(int, 8, 13, data, "ThirdLayout")
     data["BuildThirdFrom"] = {}
@@ -311,7 +340,7 @@ def ExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface):
     EnumConverter.enumInDict(ENUMFILE_LG_LayerType, data["BuildThirdFrom"], "LayerType")
     iExpeditionInTier.readIntoDict(str, 8, 17, data["BuildThirdFrom"], "Zone")
     EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, data["BuildThirdFrom"], "Zone")
-    data["ThirdLayerData"] = LayerData(iExpeditionInTier, 0, 64)
+    data["ThirdLayerData"] = LayerData(iExpeditionInTier, 0, 76)
     data["SpecialOverrideData"] = {}
     iExpeditionInTier.readIntoDict(float, 5, 6, data["SpecialOverrideData"], "WeakResourceContainerWithPackChanceForLocked")
     return data
@@ -344,16 +373,18 @@ class ExpeditionZoneDataLists:
         startcolEventsOnEnter = XlsxInterfacer.ctn("A")
         startcolProgressionPuzzleToEnter = XlsxInterfacer.ctn("K")
         startcolEnemySpawningInZone = XlsxInterfacer.ctn("R")
-        startcolTerminalPlacements = XlsxInterfacer.ctn("Y")
-        startcolLocalLogFiles = XlsxInterfacer.ctn("AJ")
-        startcolParsedLog = XlsxInterfacer.ctn("AQ")
-        startcolPowerGeneratorPlacements = XlsxInterfacer.ctn("AT")
-        startcolDisinfectionStationPlacements = XlsxInterfacer.ctn("BA")
-        startcolStaticSpawnDataContainers = XlsxInterfacer.ctn("BH")
+        startcolEnemyRespawnExcludeList = XlsxInterfacer.ctn("Y")
+        startcolTerminalPlacements = XlsxInterfacer.ctn("AB")
+        startcolLocalLogFiles = XlsxInterfacer.ctn("AM")
+        startcolParsedLog = XlsxInterfacer.ctn("AU")
+        startcolPowerGeneratorPlacements = XlsxInterfacer.ctn("AX")
+        startcolDisinfectionStationPlacements = XlsxInterfacer.ctn("BE")
+        startcolStaticSpawnDataContainers = XlsxInterfacer.ctn("BL")
 
         self.stubEventsOnEnter = {}
         self.stubProgressionPuzzleToEnter = {}
         self.stubEnemySpawningInZone = {}
+        self.stubEnemyRespawnExcludeList = {}
         self.stubTerminalPlacements = {}
         self.stubLocalLogFiles = {}
         self.stubParsedLog = {}
@@ -405,6 +436,20 @@ class ExpeditionZoneDataLists:
             row+= 1
 
         row = startrow
+        # EnemyRespawnExcludeList
+        while not(iExpeditionZoneDataLists.isEmpty(startcolEnemyRespawnExcludeList,row)):
+            Snippet = {}
+            # using a key named snippet saves rewriting several try except statements here
+            iExpeditionZoneDataLists.readIntoDict(str, startcolEnemyRespawnExcludeList+1, row, Snippet, "snippet")
+            DatablockIO.nameInDict(DATABLOCK_Enemy, Snippet, "snippet")
+            try:
+                # if the key for snippet does not exist in the dictionary, then it was not present
+                self.stubEnemyRespawnExcludeList[iExpeditionZoneDataLists.read(str, startcolEnemyRespawnExcludeList, row)].append(Snippet["snippet"])
+            except KeyError:
+                pass
+            row+= 1
+
+        row = startrow
         # ParsedLog
         while not(iExpeditionZoneDataLists.isEmpty(startcolParsedLog,row)):
             Snippet = iExpeditionZoneDataLists.read(XlsxInterfacer.blankable, startcolParsedLog+1,row)
@@ -423,6 +468,8 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.readIntoDict(int, startcolLocalLogFiles+4, row, Snippet, "AttachedAudioFile")
             # TODO convert sound placeholders
             iExpeditionZoneDataLists.readIntoDict(int, startcolLocalLogFiles+5, row, Snippet, "AttachedAudioByteSize")
+            iExpeditionZoneDataLists.readIntoDict(int, startcolLocalLogFiles+6, row, Snippet, "PlayerDialogToTriggerAfterAudio")
+            # TODO convert sound placeholders
             EnsureKeyInDictArray(self.stubLocalLogFiles, iExpeditionZoneDataLists.read(str, startcolLocalLogFiles, row))
             self.stubLocalLogFiles[iExpeditionZoneDataLists.read(str, startcolLocalLogFiles, row)].append(Snippet)
             row+= 1
@@ -498,6 +545,12 @@ class ExpeditionZoneDataLists:
         except KeyError:pass
         return []
 
+    def EnemyRespawnExcludeList(self, identifier:str):
+        """returns the EnemyRespawnExcludeList array for a specific zone"""
+        try:return self.stubEnemyRespawnExcludeList[identifier]
+        except KeyError:pass
+        return []
+
     def TerminalPlacements(self, identifier:str):
         """returns the TerminalPlacements array for a specific zone"""
         try:return self.stubTerminalPlacements[identifier]
@@ -533,13 +586,14 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     # set up some checkpoints so if some of the data gets reformatted, not the entire function needs to be altered,
     # just the headings and contents of the section will need edited column values
     colPuzzleType = XlsxInterfacer.ctn("Q")
-    colHSUClustersInZone = XlsxInterfacer.ctn("AB")
-    colHealthMulti = XlsxInterfacer.ctn("AR")
+    colHSUClustersInZone = XlsxInterfacer.ctn("AH")
+    colHealthMulti = XlsxInterfacer.ctn("AY")
 
     data = {}
 
     zonestr = iExpeditionZoneData.read(str, 0, row)
-    data["LocalIndex"] =  EnumConverter.enumToIndex(ENUMFILE_eLocalZoneIndex, zonestr)
+    # NOTE textmode may need a toggle in this file for whether the json should have text enums
+    data["LocalIndex"] =  EnumConverter.enumToIndex(ENUMFILE_eLocalZoneIndex, zonestr, textmode=True)
 
     iExpeditionZoneData.readIntoDict(int, 1, row, data, "SubSeed")
     iExpeditionZoneData.readIntoDict(int, 2, row, data, "BulkheadDCScanSeed")
@@ -584,6 +638,12 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     DatablockIO.nameInDict(DATABLOCK_EnemyGroup, data["ActiveEnemyWave"], "EnemyGroupInArea")
     iExpeditionZoneData.readIntoDict(int, colPuzzleType+9, row, data["ActiveEnemyWave"], "EnemyGroupsInArea")
     data["EnemySpawningInZone"] = listdata.EnemySpawningInZone(zonestr)
+    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+11, row, data, "EnemyRespawning")
+    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+11, row, data, "EnemyRespawnRequireOtherZone")
+    iExpeditionZoneData.readIntoDict(int, colPuzzleType+11, row, data, "EnemyRespawnRoomDistance")
+    iExpeditionZoneData.readIntoDict(float, colPuzzleType+11, row, data, "EnemyRespawnTimeInterval")
+    iExpeditionZoneData.readIntoDict(float, colPuzzleType+11, row, data, "EnemyRespawnCountMultiplier")
+    data["EnemyRespawnExcludeList"] = listdata.EnemyRespawnExcludeList(zonestr)
 
     iExpeditionZoneData.readIntoDict(int, colHSUClustersInZone, row, data, "HSUClustersInZone")
     iExpeditionZoneData.readIntoDict(int, colHSUClustersInZone+1, row, data, "CorpseClustersInZone")
@@ -591,19 +651,21 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     iExpeditionZoneData.readIntoDict(int, colHSUClustersInZone+3, row, data, "GeneratorClustersInZone")
     iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+4, row, data, "CorpsesInZone")
     EnumConverter.enumInDict(ENUMFILE_eZoneDistributionAmount, data, "CorpsesInZone")
-    iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+5, row, data, "HSUsInZone")
+    iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+5, row, data, "GroundSpawnersInZone")
+    EnumConverter.enumInDict(ENUMFILE_eZoneDistributionAmount, data, "GroundSpawnersInZone")
+    iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+6, row, data, "HSUsInZone")
     EnumConverter.enumInDict(ENUMFILE_eZoneDistributionAmount, data, "HSUsInZone")
-    iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+6, row, data, "DeconUnitsInZone")
+    iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+7, row, data, "DeconUnitsInZone")
     EnumConverter.enumInDict(ENUMFILE_eZoneDistributionAmount, data, "DeconUnitsInZone")
-    iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+7, row, data, "AllowSmallPickupsAllocation")
-    iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+8, row, data, "AllowResourceContainerAllocation")
-    iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+9, row, data, "ForceBigPickupsAllocation")
-    iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+10, row, data, "ConsumableDistributionInZone")
+    iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+8, row, data, "AllowSmallPickupsAllocation")
+    iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+9, row, data, "AllowResourceContainerAllocation")
+    iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+10, row, data, "ForceBigPickupsAllocation")
+    iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+11, row, data, "ConsumableDistributionInZone")
     DatablockIO.nameInDict(DATABLOCK_ConsumableDistribution, data, "ConsumableDistributionInZone")
-    iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+11, row, data, "BigPickupDistributionInZone")
+    iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+12, row, data, "BigPickupDistributionInZone")
     DatablockIO.nameInDict(DATABLOCK_BigPickupDistribution, data, "BigPickupDistributionInZone")
     data["TerminalPlacements"] = listdata.TerminalPlacements(zonestr)
-    iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+12, row, data, "ForbidTerminalsInZone")
+    iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+13, row, data, "ForbidTerminalsInZone")
     data["PowerGeneratorPlacements"] = listdata.PowerGeneratorPlacements(zonestr)
     data["DisinfectionStationPlacements"] = listdata.DisinfectionStationPlacements(zonestr)
 
@@ -698,9 +760,9 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     # set up some checkpoints so if some of the data gets reformatted, not the entire function needs to be altered,
     # just the headings and contents of the section will need edited column values
     rowWavesOnElevatorLand = 22-1
-    rowChainedPuzzleToActive = 60-1
-    rowLightsOnFromBeginning = 74-1
-    rowActivateHSU_ItemFromStart = 93-1
+    rowChainedPuzzleToActive = 70-1
+    rowLightsOnFromBeginning = 84-1
+    rowActivateHSU_ItemFromStart = 103-1
 
     data = {}
 
@@ -731,17 +793,22 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     iWardenObjective.readIntoDict(float, 1, rowWavesOnElevatorLand+9, data, "FogTransitionDurationOnElevatorLand")
     data["WavesOnActivate"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+12, horizontal=True)
     iWardenObjective.readIntoDict(bool, 1, rowWavesOnElevatorLand+17, data, "StopAllWavesBeforeGotoWin")
-    data["WavesOnGotoWin"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+20, horizontal=True)
-    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+25, data, "WaveOnGotoWinTrigger")
+    data["EventsOnActivate"] = []
+    col,row = 2,rowWavesOnElevatorLand+20
+    while not(iWardenObjective.isEmpty(col, row)):
+        data["EventsOnActivate"].append(WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False))
+        col+= 1
+    data["WavesOnGotoWin"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+29, horizontal=True)
+    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+34, data, "WaveOnGotoWinTrigger")
     EnumConverter.enumInDict(ENUMFILE_eRetrieveExitWaveTrigger, data, "WaveOnGotoWinTrigger")
     data["EventsOnGotoWin"] = []
-    col,row = 2,rowWavesOnElevatorLand+28
+    col,row = 2,rowWavesOnElevatorLand+37
     while not(iWardenObjective.isEmpty(col, row)):
         data["EventsOnGotoWin"].append(WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False))
         col+= 1
-    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+35, data, "FogTransitionDataOnGotoWin")
+    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+45, data, "FogTransitionDataOnGotoWin")
     DatablockIO.nameInDict(DATABLOCK_FogSettings, data, "FogTransitionDataOnGotoWin")
-    iWardenObjective.readIntoDict(float, 1, rowWavesOnElevatorLand+36, data, "FogTransitionDurationOnGotoWin")
+    iWardenObjective.readIntoDict(float, 1, rowWavesOnElevatorLand+46, data, "FogTransitionDurationOnGotoWin")
 
     iWardenObjective.readIntoDict(str, 1, rowChainedPuzzleToActive, data, "ChainedPuzzleToActive")
     DatablockIO.nameInDict(DATABLOCK_ChainedPuzzle, data, "ChainedPuzzleToActive")
@@ -789,8 +856,9 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     DatablockIO.nameInDict(DATABLOCK_Item, data, "ActivateHSU_ItemAfterActivation")
     iWardenObjective.readIntoDict(bool, 1, rowActivateHSU_ItemFromStart+2, data, "ActivateHSU_StopEnemyWavesOnActivation")
     iWardenObjective.readIntoDict(bool, 1, rowActivateHSU_ItemFromStart+3, data, "ActivateHSU_ObjectiveCompleteAfterInsertion")
+    iWardenObjective.readIntoDict(bool, 1, rowActivateHSU_ItemFromStart+4, data, "ActivateHSU_RequireItemAfterActivationInExitScan")
     data["ActivateHSU_Events"] = []
-    col,row = 2,rowActivateHSU_ItemFromStart+6
+    col,row = 2,rowActivateHSU_ItemFromStart+7
     while not(iWardenObjective.isEmpty(col,row)):
         data["ActivateHSU_Events"] = WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False)
         col+= 1
@@ -798,7 +866,7 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     # Set default values
     data["name"] = "DPK Utility Objective"
     data["internalEnabled"] = False
-    data["persistentID"] = -1
+    data["persistentID"] = 0
     # Attempt to fill default values with those from the table
     iWardenObjective.readIntoDict(str,1, rowActivateHSU_ItemFromStart+13, data, "name")
     iWardenObjective.readIntoDict(bool,1, rowActivateHSU_ItemFromStart+14, data, "internalEnabled")
@@ -867,8 +935,8 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
 
     # get all interfaces
     iKey = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "Key", header=None))
-    if iKey.read(str, 0, 5)[:len(Version)] != Version:
-        raise Exception("Incompatible utility and sheet version.")
+    if iKey.read(str, 0, 5).split(".")[0:2] != Version.split(".")[0:2]:
+        raise Exception("Version mismatch between utility and sheet, incompatible.")
 
     # Load all sheets (and allow missing Zone and Objective data)
     iExpeditionInTier = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "ExpeditionInTier", header=None))
@@ -878,32 +946,44 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
         iL1ExpeditionZoneDataLists = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L1 ExpeditionZoneData Lists", header=None))
     except xlrd.biffh.XLRDError:
         if debug: print("No L1 ExpeditionZoneData")
+    except ValueError:
+        if debug: print("No L1 ExpeditionZoneData")
     try:
         iL2ExpeditionZoneData = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L2 ExpeditionZoneData", header=None))
         iL2ExpeditionZoneDataLists = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L2 ExpeditionZoneData Lists", header=None))
     except xlrd.biffh.XLRDError:
         if debug: print("No L2 ExpeditionZoneData")
+    except ValueError:
+        if debug: print("No L1 ExpeditionZoneData")
     try:
         iL3ExpeditionZoneData = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L3 ExpeditionZoneData", header=None))
         iL3ExpeditionZoneDataLists = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L3 ExpeditionZoneData Lists", header=None))
     except xlrd.biffh.XLRDError:
         if debug: print("No L3 ExpeditionZoneData")
+    except ValueError:
+        if debug: print("No L1 ExpeditionZoneData")
 
     try:
         iL1WardenObjective = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L1 WardenObjective", header=None))
         iL1WardenObjectiveReactorWaves = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L1 WardenObjective ReactorWaves", header=None))
     except xlrd.biffh.XLRDError:
         if debug: print("No L1 WardenObjective")
+    except ValueError:
+        if debug: print("No L1 ExpeditionZoneData")
     try:
         iL2WardenObjective = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L2 WardenObjective", header=None))
         iL2WardenObjectiveReactorWaves = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L2 WardenObjective ReactorWaves", header=None))
     except xlrd.biffh.XLRDError:
         if debug: print("No L2 WardenObjective")
+    except ValueError:
+        if debug: print("No L1 ExpeditionZoneData")
     try:
         iL3WardenObjective = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L3 WardenObjective", header=None))
         iL3WardenObjectiveReactorWaves = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L3 WardenObjective ReactorWaves", header=None))
     except xlrd.biffh.XLRDError:
         if debug: print("No L3 WardenObjective")
+    except ValueError:
+        if debug: print("No L1 ExpeditionZoneData")
 
     # Convert sheets into dictionaries
     try:dictExpeditionInTier = ExpeditionInTier(iExpeditionInTier)

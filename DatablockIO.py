@@ -21,18 +21,19 @@ class datablock:
         self.blockfile = blockfile
         self.data = json.load(blockfile)
 
+    # TODO fix this function so it does not return the index when a block is not present (should return negative 1)
     def find(self, find: typing.Union[int, str]):
         """
         Finds the index of a block in the blocks array using find
         'find' can be the persistantID (int) or name (str) of the datablock
-        Returns -1 if no block found
+        Returns None if no block found
         """
         search = ["name","persistentID"][isinstance(find,int)]
         i = 0
         for block in self.data["Blocks"]:
             if (block[search] == find): return i
             i+= 1
-        return -1
+        return None
 
     def writeblock(self, block:dict):
         """
@@ -56,21 +57,25 @@ def nameToId(block:datablock, name:str):
     """Convert a name into an id"""
     try:return block.data["Blocks"][block.find(name)]["persistentID"]
     except IndexError:raise IndexError("No such block exists with name \""+name+"\" within "+block.blockfile.name)
+    except TypeError:raise TypeError("No such block exists with name \""+name+"\" within "+block.blockfile.name)
 
-def idToName(block:datablock, persistantId:int):
+def idToName(block:datablock, persistentId:int):
     """Convert an id into a name"""
-    try:return block.data["Blocks"][block.find(persistantId)]["name"]
-    except IndexError:raise IndexError("No such block exists with id "+persistantId+" within "+block.blockfile.name)
+    try:return block.data["Blocks"][block.find(persistentId)]["name"]
+    except IndexError:raise IndexError("No such block exists with id "+persistentId+" within "+block.blockfile.name)
+    except TypeError:raise TypeError("No such block exists with id "+persistentId+" within "+block.blockfile.name)
 
 def nameInDict(block:datablock, dictionary:dict, key:str):
     """Convert a name into an id from inside of a dictionary"""
     try:dictionary[key] = nameToId(block, dictionary[key])
     except KeyError:pass
+    except TypeError:pass
 
 def idInDict(block:datablock, dictionary:dict, key:str):
     """Convert an id into a name from inside of a dictionary"""
     try:dictionary[key] = idToName(block, dictionary[key])
     except KeyError:pass
+    except TypeError:pass
 
 if __name__ == "__main__":
     d = datablock(open("../Datablocks/ChainedPuzzleDataBlock.json", "r+"))
