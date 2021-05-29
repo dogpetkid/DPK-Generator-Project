@@ -995,10 +995,12 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
     except Exception as e:raise Exception("Problem reading L1 LevelLayout: "+str(e))
     try:arrdictLevelLayoutBlock[1] = LevelLayoutBlock(iL2ExpeditionZoneData, iL2ExpeditionZoneDataLists)
     except NameError:pass
-    except Exception as e:raise Exception("Problem reading L2 LevelLayout: "+str(e))
+    except Exception as e:
+        if debug: print("Problem reading L2 LevelLayout (skipping): "+str(e))
     try:arrdictLevelLayoutBlock[2] = LevelLayoutBlock(iL3ExpeditionZoneData, iL3ExpeditionZoneDataLists)
     except NameError:pass
-    except Exception as e:raise Exception("Problem reading L3 LevelLayout: "+str(e))
+    except Exception as e:
+        if debug: print("Problem reading L3 LevelLayout (skipping): "+str(e))
 
     arrdictWardenObjectiveBlock = [None,None,None]
     try:arrdictWardenObjectiveBlock[0] = WardenObjectiveBlock(iL1WardenObjective, iL1WardenObjectiveReactorWaves)
@@ -1006,10 +1008,12 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
     except Exception as e:raise Exception("Problem reading L1 WardenOjbective: "+str(e))
     try:arrdictWardenObjectiveBlock[1] = WardenObjectiveBlock(iL2WardenObjective, iL2WardenObjectiveReactorWaves)
     except NameError:pass
-    except Exception as e:raise Exception("Problem reading L2 WardenOjbective: "+str(e))
+    except Exception as e:
+        if debug: print("Problem reading L2 WardenOjbective (skipping): "+str(e))
     try:arrdictWardenObjectiveBlock[2] = WardenObjectiveBlock(iL3WardenObjective, iL3WardenObjectiveReactorWaves)
     except NameError:pass
-    except Exception as e:raise Exception("Problem reading L3 WardenOjbective: "+str(e))
+    except Exception as e:
+        if debug: print("Problem reading L3 WardenOjbective (skipping): "+str(e))
 
     # copy descriptive from ExpeditionInTier into LevelLayout and WardenObjective blocks
     finalizeData(dictExpeditionInTier, arrdictLevelLayoutBlock, arrdictWardenObjectiveBlock)
@@ -1123,10 +1127,17 @@ def main():
         except XlsxInterfacer.EmptyCell:
             warnUser("Missing data on meta sheet: "+path)
             continue
-        
+
         try:
-            # TODO rewrite log output to let the entire program write logs
-            UtilityJob(fxlsx, RundownDataBlock.data["Blocks"][RundownDataBlock.find(rundownID)], LevelLayoutDataBlock, WardenObjectiveDataBlock, tierName, expeditionIndex, silent=True, debug=False) # Utilty job should stay silenced because it is currently unable to write to the log file
+            RundownBlock = RundownDataBlock.data["Blocks"][RundownDataBlock.find(rundownID)]
+        except TypeError as e:
+            if not(args.debug):warnUser("Current blocks lack rundown with id "+str(rundownID)+": \""+path+"\"\n\t"+str(e))
+            else:debug("Current blocks lack rundown with id "+str(rundownID)+": \""+path+"\"\n\t"+str(e))
+            continue
+
+        try:
+            # TODO rewrite log output to let the entire program write logs; try using the "logger" import
+            UtilityJob(fxlsx, RundownBlock, LevelLayoutDataBlock, WardenObjectiveDataBlock, tierName, expeditionIndex, silent=True, debug=False) # Utilty job should stay silenced because it is currently unable to write to the log file
         except Exception as e:
             # This if condition is to not write this twice in the debug log when something goes wrong
             if not(args.debug):warnUser("Something went wrong reading the sheet: \""+path+"\"\n\t"+str(e))

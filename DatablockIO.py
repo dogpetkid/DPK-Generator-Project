@@ -42,7 +42,7 @@ class datablock:
         (Note: this uses persistentID instead of name because no two blocks should have the same id)
         """
         blockindex = self.find(block["persistentID"])
-        if blockindex == -1:
+        if blockindex == None:
             self.data["Blocks"].append(block)
         else:
             self.data["Blocks"][blockindex] = block
@@ -69,13 +69,11 @@ def nameInDict(block:datablock, dictionary:dict, key:str):
     """Convert a name into an id from inside of a dictionary"""
     try:dictionary[key] = nameToId(block, dictionary[key])
     except KeyError:pass
-    except TypeError:pass
 
 def idInDict(block:datablock, dictionary:dict, key:str):
     """Convert an id into a name from inside of a dictionary"""
     try:dictionary[key] = idToName(block, dictionary[key])
     except KeyError:pass
-    except TypeError:pass
 
 if __name__ == "__main__":
     d = datablock(open("../Datablocks/ChainedPuzzleDataBlock.json", "r+"))
