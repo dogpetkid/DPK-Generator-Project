@@ -40,7 +40,7 @@ devnewlnregex = "(\\\\n|\\\\r){1,2}"
 # S: Sheet (minor changes to the sheet are insignificant to the utility)
 Version = "5.1"
 # relative path to location for datablocks, defaultly its folder should be on the same layer as this project's folder
-blockpath = "../Datablocks/"
+blockpath = "../Datablocks/" # TODO create an argument to change the blockpath
 # default paths to xlsx files when running the program
 defaultpaths = ["in.xlsx"]
 # persistantID of the default rundown to insert levels into
@@ -75,6 +75,7 @@ if True:
     DATABLOCK_SurvivalWaveSettings = DatablockIO.datablock(open(blockpath+"SurvivalWaveSettingsDataBlock.json", 'r', encoding="utf8"))
 
 # load all enum files
+# TODO use dummy files in place of enum files as the enum files aren't used in R5
 if True:
     ENUMFILE_LG_LayerType = open(blockpath+"TypeList/Enums/LG_LayerType.txt",'r')
     ENUMFILE_LG_StaticDistributionWeightType = open(blockpath+"TypeList/Enums/LG_StaticDistributionWeightType.txt",'r')
@@ -364,7 +365,7 @@ def LevelLayoutBlock(iExpeditionZoneData:XlsxInterfacer.interface, iExpeditionZo
     return data
 
 class ExpeditionZoneDataLists:
-    """a class that contains a dictionaries for the ExpeditionZoneData (since the sheet cannot contain 2d-3d data)"""
+    """a class that increases the dimentions of the dictionaries in ExpeditionZoneData (since the sheet cannot contain 2d-3d data)"""
 
     def __init__(self, iExpeditionZoneDataLists:XlsxInterfacer.interface):
         """Generates numerous stubs that can have zone specific data request from the object getters"""
@@ -439,12 +440,13 @@ class ExpeditionZoneDataLists:
         # EnemyRespawnExcludeList
         while not(iExpeditionZoneDataLists.isEmpty(startcolEnemyRespawnExcludeList,row)):
             Snippet = {}
-            # using a key named snippet saves rewriting several try except statements here
-            iExpeditionZoneDataLists.readIntoDict(str, startcolEnemyRespawnExcludeList+1, row, Snippet, "snippet")
-            DatablockIO.nameInDict(DATABLOCK_Enemy, Snippet, "snippet")
+            # using a key named value saves rewriting several try except statements here
+            iExpeditionZoneDataLists.readIntoDict(str, startcolEnemyRespawnExcludeList+1, row, Snippet, "value")
+            DatablockIO.nameInDict(DATABLOCK_Enemy, Snippet, "value") # using nameInDict saves writing more try statements here
+            EnsureKeyInDictArray(self.stubEnemyRespawnExcludeList, iExpeditionZoneDataLists.read(str, startcolEnemyRespawnExcludeList, row))
             try:
                 # if the key for snippet does not exist in the dictionary, then it was not present
-                self.stubEnemyRespawnExcludeList[iExpeditionZoneDataLists.read(str, startcolEnemyRespawnExcludeList, row)].append(Snippet["snippet"])
+                self.stubEnemyRespawnExcludeList[iExpeditionZoneDataLists.read(str, startcolEnemyRespawnExcludeList, row)].append(Snippet["value"])
             except KeyError:
                 pass
             row+= 1
@@ -482,10 +484,11 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+4, row, Snippet, "AreaSeedOffset")
             iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+5, row, Snippet, "MarkerSeedOffset")
             Snippet["LocalLogFiles"] = self.LocalLogFiles(iExpeditionZoneDataLists.read(XlsxInterfacer.blankable, startcolTerminalPlacements+6, row))
-            iExpeditionZoneDataLists.readIntoDict(str, startcolTerminalPlacements+7, row, Snippet, "StartingState")
-            EnumConverter.enumInDict(ENUMFILE_TERM_State, Snippet, "StartingState")
-            iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+8, row, Snippet, "AudioEventEnter")
-            iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+9, row, Snippet, "AudioEventExit")
+            Snippet["StartingStateData"] = {}
+            iExpeditionZoneDataLists.readIntoDict(str, startcolTerminalPlacements+7, row, Snippet["StartingStateData"], "StartingState")
+            EnumConverter.enumInDict(ENUMFILE_TERM_State, Snippet["StartingStateData"], "StartingState")
+            iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+8, row, Snippet["StartingStateData"], "AudioEventEnter")
+            iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+9, row, Snippet["StartingStateData"], "AudioEventExit")
             # TODO convert sound placeholders
             EnsureKeyInDictArray(self.stubTerminalPlacements, iExpeditionZoneDataLists.read(str, startcolTerminalPlacements, row))
             self.stubTerminalPlacements[iExpeditionZoneDataLists.read(str, startcolTerminalPlacements, row)].append(Snippet)
@@ -639,10 +642,10 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     iExpeditionZoneData.readIntoDict(int, colPuzzleType+9, row, data["ActiveEnemyWave"], "EnemyGroupsInArea")
     data["EnemySpawningInZone"] = listdata.EnemySpawningInZone(zonestr)
     iExpeditionZoneData.readIntoDict(bool, colPuzzleType+11, row, data, "EnemyRespawning")
-    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+11, row, data, "EnemyRespawnRequireOtherZone")
-    iExpeditionZoneData.readIntoDict(int, colPuzzleType+11, row, data, "EnemyRespawnRoomDistance")
-    iExpeditionZoneData.readIntoDict(float, colPuzzleType+11, row, data, "EnemyRespawnTimeInterval")
-    iExpeditionZoneData.readIntoDict(float, colPuzzleType+11, row, data, "EnemyRespawnCountMultiplier")
+    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+12, row, data, "EnemyRespawnRequireOtherZone")
+    iExpeditionZoneData.readIntoDict(int, colPuzzleType+13, row, data, "EnemyRespawnRoomDistance")
+    iExpeditionZoneData.readIntoDict(float, colPuzzleType+14, row, data, "EnemyRespawnTimeInterval")
+    iExpeditionZoneData.readIntoDict(float, colPuzzleType+15, row, data, "EnemyRespawnCountMultiplier")
     data["EnemyRespawnExcludeList"] = listdata.EnemyRespawnExcludeList(zonestr)
 
     iExpeditionZoneData.readIntoDict(int, colHSUClustersInZone, row, data, "HSUClustersInZone")
@@ -860,7 +863,7 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     data["ActivateHSU_Events"] = []
     col,row = 2,rowActivateHSU_ItemFromStart+7
     while not(iWardenObjective.isEmpty(col,row)):
-        data["ActivateHSU_Events"] = WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False)
+        data["ActivateHSU_Events"].append(WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False))
         col+= 1
     
     # Set default values
