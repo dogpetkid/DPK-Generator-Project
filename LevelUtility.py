@@ -746,6 +746,7 @@ class ReactorWaveData:
             self.waves.append(wave)
             row+= 1
 
+
     def EnemyWaves(self, identifier:str):
         """returns the EnemyWaves array for a specific zone"""
         try:return self.stubEnemyWaves[identifier]
@@ -850,7 +851,7 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     data["CentralPowerGenClustser_FogDataSteps"] = []
     col,row = 1,rowLightsOnFromBeginning+16
     while not(iWardenObjective.isEmpty(col,row)):
-        data["CentralPowerGenClustser_FogDataSteps"].append(GeneralFogDataStep(iWardenObjective, col, row, False))
+        data["CentralPowerGenClustser_FogDataSteps"].append(GeneralFogDataStep(iWardenObjective, col, row, horizontal=False))
         col+= 1
 
     iWardenObjective.readIntoDict(str, 1, rowActivateHSU_ItemFromStart, data, "ActivateHSU_ItemFromStart")
@@ -871,9 +872,9 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     data["internalEnabled"] = False
     data["persistentID"] = 0
     # Attempt to fill default values with those from the table
-    iWardenObjective.readIntoDict(str,1, rowActivateHSU_ItemFromStart+13, data, "name")
-    iWardenObjective.readIntoDict(bool,1, rowActivateHSU_ItemFromStart+14, data, "internalEnabled")
-    iWardenObjective.readIntoDict(int,1, rowActivateHSU_ItemFromStart+15, data, "persistentID")
+    iWardenObjective.readIntoDict(str,1, rowActivateHSU_ItemFromStart+15, data, "name")
+    iWardenObjective.readIntoDict(bool,1, rowActivateHSU_ItemFromStart+16, data, "internalEnabled")
+    iWardenObjective.readIntoDict(int,1, rowActivateHSU_ItemFromStart+17, data, "persistentID")
     return data
 
 def finalizeData(dictExpeditionInTier:dict, arrdictLevelLayoutBlock:typing.List[dict], arrdictWardenObjectiveBlock:typing.List[dict]):
