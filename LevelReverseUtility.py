@@ -10,6 +10,7 @@ import shutil
 import typing
 
 import numpy
+import openpyxl
 import pandas
 import xlrd
 
@@ -24,6 +25,7 @@ import XlsxInterfacer
 # shutil:   used to copy the template
 # typing:   used to give types to function parameters
 # numpy:    used to manipulate the inconsistant numpy data read by pandas
+# openpyxl: used to copy templated sheets
 # pandas:   used to read the excel data
 # xlrd:     used to catch and throw excel errors when initially reading the sheets
 
@@ -39,7 +41,7 @@ devnewlnregex = "(\\\\n|\\\\r){1,2}"
 # S: Sheet (minor changes to the sheet are insignificant to the utility)
 Version = "5.1"
 # relative path to location for datablocks, defaultly its folder should be on the same layer as this project's folder
-blockpath = "../Datablocks/"
+blockpath = "../Datablocks/" # TODO create an argument to change the blockpath
 # path to template file
 templatepath = "Template for Generator R5.xlsx"
 # default paths to xlsx files when running the program
@@ -94,6 +96,7 @@ if True:
     DATABLOCK_SurvivalWaveSettings = DatablockIO.datablock(open(blockpath+"SurvivalWaveSettingsDataBlock.json", 'r', encoding="utf8"))
 
 # load all enum files
+# TODO use dummy files in place of enum files as the enum files aren't used in R5
 if True:
     ENUMFILE_LG_LayerType = open(blockpath+"TypeList/Enums/LG_LayerType.txt",'r')
     ENUMFILE_LG_StaticDistributionWeightType = open(blockpath+"TypeList/Enums/LG_StaticDistributionWeightType.txt",'r')
@@ -236,6 +239,14 @@ def GeneralFogDataStep(interface:XlsxInterfacer.interface, data:dict, col:int, r
     interface.writeFromDict(col+horizontal, row+(not horizontal), data, "m_transitionToTime")
 
 
+def frameMeta(iMeta:XlsxInterfacer.interface, rundownID:int, tier:str, index:int):
+    """
+    edit the iMeta pandas dataFrame
+    """
+    iMeta.write(rundownID, 0, 2)
+    iMeta.write(tier, 1, 2)
+    iMeta.write(index, 2, 2)
+
 def LayerData(interface:XlsxInterfacer.interface, data:dict, col:int, row:int):
     """
     add LayerData to the specified interface \n
@@ -264,21 +275,12 @@ def LayerData(interface:XlsxInterfacer.interface, data:dict, col:int, row:int):
     except KeyError:pass
     try:
         interface.writeFromDict(col+5, row+20, data["ArtifactData"], "ArtifactAmountMulti")
-        # XXX huh??? why is this 0 but still the datablock and so like what??? huh???
         writePublicNameFromDict(DATABLOCK_ArtifactDistributionDataBlock, interface, col+5, row+21, data["ArtifactData"], "ArtifactLayerDistributionDataID")
         itercol,iterrow = col+5, row+22
         for distribution in data["ArtifactData"]["ArtifactZoneDistributions"]:
             ArtifactZoneDistribution(interface, distribution, itercol, iterrow, horizontal=False)
             itercol+= 1
     except KeyError:pass
-
-def frameMeta(iMeta:XlsxInterfacer.interface, rundownID:int, tier:str, index:int):
-    """
-    edit the iMeta pandas dataFrame
-    """
-    iMeta.write(rundownID, 0, 2)
-    iMeta.write(tier, 1, 2)
-    iMeta.write(index, 2, 2)
 
 def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, ExpeditionInTierData:dict):
     """
@@ -300,6 +302,7 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
         iExpeditionInTier.writeFromDict(12, 10, ExpeditionInTierData["Descriptive"], "IsExtraExpedition")
         iExpeditionInTier.writeFromDict(12, 11, ExpeditionInTierData["Descriptive"], "ExpeditionDepth")
         iExpeditionInTier.writeFromDict(12, 12, ExpeditionInTierData["Descriptive"], "EstimatedDuration")
+        # TODO regex replace new lines to be "\n"
         iExpeditionInTier.writeFromDict(12, 13, ExpeditionInTierData["Descriptive"], "ExpeditionDescription")
         iExpeditionInTier.writeFromDict(12, 14, ExpeditionInTierData["Descriptive"], "RoleplayedWardenIntel")
         iExpeditionInTier.writeFromDict(12, 15, ExpeditionInTierData["Descriptive"], "DevInfo")
@@ -351,7 +354,275 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
         iExpeditionInTier.writeFromDict(5, 6, ExpeditionInTierData["SpecialOverrideData"], "WeakResourceContainerWithPackChanceForLocked")
     except KeyError:pass
 
-def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, ExpeditionZoneData:list, row:int):
+class ExpeditionZoneDataLists:
+    """a class that decreases the dimentions of the dictionaries in ExpeditionZoneData (since the sheet cannot contain 2d-3d data)"""
+
+    def __init__(self, LevelLayoutBlock:dict):
+        """Generates numerous stubs to be iterated through and written to the interface"""
+
+        self.stubEventsOnEnter = []
+        self.stubProgressionPuzzleToEnter = []
+        self.stubEnemySpawningInZone = []
+        self.stubEnemyRespawnExcludeList = []
+        self.stubTerminalPlacements = []
+        self.stubLocalLogFiles = []
+        groupedLocalLogFiles = []
+        self.stubParsedLog = []
+        groupedParsedLog = []
+        self.stubPowerGeneratorPlacements = []
+        self.stubDisinfectionStationPlacements = []
+        self.stubStaticSpawnDataContainers = []
+
+        loggroupstart = 'A'
+        parsedgroupstart = 'A'
+
+        for ZoneData in LevelLayoutBlock["Zones"]:
+            try:
+                zone = EnumConverter.indexToEnum(ENUMFILE_eLocalZoneIndex, ZoneData["LocalIndex"], False)
+            except KeyError:
+                zone = None # TODO possibly put a warning that a zone is missing a local index
+
+            # EventsOnEnter
+            try:
+                for e in ZoneData["EventsOnEnter"]:
+                    self.stubEventsOnEnter.append(dict({"ZoneIndex":zone},**e))
+            except KeyError:pass
+
+            # ProgressionPuzzleToEnter
+            try:
+                for e in ZoneData["ProgressionPuzzleToEnter"]["ZonePlacementData"]:
+                    self.stubProgressionPuzzleToEnter.append({"ZoneIndex":zone, "ZonePlacementData":e})
+            except KeyError:pass
+
+            # EnemySpawningInZone
+            try:
+                for e in ZoneData["EnemySpawningInZone"]:
+                    self.stubEnemySpawningInZone.append(dict({"ZoneIndex":zone},**e))
+                    # TODO have the reverse utility write the Reminder as all possible groups of enemies that can spawn as a comma separated list
+            except KeyError:pass
+
+            # EnemyRespawnExcludeList
+            try:
+                for e in ZoneData["EnemyRespawnExcludeList"]: # e is an enum, so...
+                    self.stubEnemyRespawnExcludeList.append({"ZoneIndex":zone, "value":e}) # it should be added as a value instead of adding dicts together
+            except KeyError:pass
+
+            # PowerGeneratorPlacements
+            try:
+                for e in ZoneData["PowerGeneratorPlacements"]:
+                    self.stubPowerGeneratorPlacements.append(dict({"ZoneIndex":zone},**e))
+            except KeyError:pass
+
+            # DisinfectionStationPlacements
+            try:
+                for e in ZoneData["DisinfectionStationPlacements"]:
+                    self.stubDisinfectionStationPlacements.append(dict({"ZoneIndex":zone},**e))
+            except KeyError:pass
+
+            # StaticSpawnDataContainers
+            try:
+                for e in ZoneData["StaticSpawnDataContainers"]:
+                    self.stubStaticSpawnDataContainers.append(dict({"ZoneIndex":zone},**e))
+            except KeyError:pass
+
+            # Unlike the other lists, the terminal placement is several dimentions deep and must be handled piece by piece to find unique ParsedLogs and Log files
+            try:
+                # TerminalPlacements
+                for placement in ZoneData["TerminalPlacements"]:
+
+                    try: # if there are log files...
+                        logfiles = placement["LocalLogFiles"] # will jump to the except if no logs exist
+
+                        if logfiles == []:
+                            # if there are no logs, keep the group blank
+                            placement["LocalLogFiles"] = ""
+                            raise KeyError # jump to the no logs exist
+
+                        for logfile in logfiles:
+
+                            # ParsedLog
+                            try: # if there are pared logs...
+                                parseds = logfile["ParsedLog"] # will jump to the except if no parsed exist
+
+                                if parseds == []:
+                                    # if there are no parsed logs, keep the group blank
+                                    logfile["Parsed Group"] = ""
+                                    raise KeyError # jump to the no parsed exist
+
+                                try: # if parseds group has been handled, find it's group
+                                    parsedsindex = groupedParsedLog.index(parseds)
+                                except ValueError: # parseds has not already been handled
+                                    groupedParsedLog.append(parseds)
+                                    parsedsindex = len(groupedParsedLog) - 1
+                                    for parsed in parseds: # add each parsed log to the stub
+                                        self.stubParsedLog.append({"Parsed Group":chr(ord(parsedgroupstart)+parsedsindex),"value":parsed})
+                                finally: # finally, change the log file to reflect the parsed group
+                                    logfile["Parsed Group"] = chr(ord(parsedgroupstart)+parsedsindex)
+
+                            except KeyError:pass # no parsed exist, pass
+
+                        # XXX something is wrong with the logs
+                        # LocalLogFiles
+                        try: # if log goup has been handled, find it's group
+                            logfilesindex = groupedLocalLogFiles.index(logfiles)
+                        except ValueError: # log group has not already been handled
+                            groupedLocalLogFiles.append(logfiles)
+                            logfilesindex = len(groupedLocalLogFiles) - 1
+                            for logfile in logfiles:
+                                self.stubLocalLogFiles.append(dict({"Log Group":chr(ord(loggroupstart)+logfilesindex)},**logfile))
+                        finally: # finally, change the log file to reflect the parsed group
+                            placement["LocalLogFiles"] = chr(ord(loggroupstart)+logfilesindex)
+
+                    except KeyError:pass # no logs exist, pass
+
+                    self.stubTerminalPlacements.append(dict({"ZoneIndex":zone},**placement))
+
+            except KeyError:pass # no terminals exist, pass
+
+
+    def write(self, iExpeditionZoneDataLists:XlsxInterfacer.interface):
+        startrow = 2
+
+        startcolEventsOnEnter = XlsxInterfacer.ctn("A")
+        startcolProgressionPuzzleToEnter = XlsxInterfacer.ctn("K")
+        startcolEnemySpawningInZone = XlsxInterfacer.ctn("R")
+        startcolEnemyRespawnExcludeList = XlsxInterfacer.ctn("Y")
+        startcolTerminalPlacements = XlsxInterfacer.ctn("AB")
+        startcolLocalLogFiles = XlsxInterfacer.ctn("AM")
+        startcolParsedLog = XlsxInterfacer.ctn("AU")
+        startcolPowerGeneratorPlacements = XlsxInterfacer.ctn("AX")
+        startcolDisinfectionStationPlacements = XlsxInterfacer.ctn("BE")
+        startcolStaticSpawnDataContainers = XlsxInterfacer.ctn("BL")
+
+        row = startrow
+        # EventsOnEnter
+        for Snippet in self.stubEventsOnEnter:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEventsOnEnter, row, Snippet, "ZoneIndex")
+            iExpeditionZoneDataLists.writeFromDict(startcolEventsOnEnter+1, row, Snippet, "Delay")
+
+            try:
+                iExpeditionZoneDataLists.writeFromDict(startcolEventsOnEnter+2, row, Snippet["Noise"], "Enabled")
+                iExpeditionZoneDataLists.writeFromDict(startcolEventsOnEnter+3, row, Snippet["Noise"], "RadiusMin")
+                iExpeditionZoneDataLists.writeFromDict(startcolEventsOnEnter+4, row, Snippet["Noise"], "RadiusMax")
+            except KeyError:pass
+
+            try:
+                iExpeditionZoneDataLists.writeFromDict(startcolEventsOnEnter+5, row, Snippet["Intel"], "Enabled")
+                iExpeditionZoneDataLists.writeFromDict(startcolEventsOnEnter+6, row, Snippet["Intel"], "IntelMessage")
+            except KeyError:pass
+
+            try:
+                iExpeditionZoneDataLists.writeFromDict(startcolEventsOnEnter+7, row, Snippet["Sound"], "Enabled")
+                iExpeditionZoneDataLists.writeFromDict(startcolEventsOnEnter+8, row, Snippet["Sound"], "SoundEvent")
+                # TODO convert sound placeholders
+            except KeyError:pass
+
+            row+= 1
+
+        row = startrow
+        # ProgressionPuzzleToEnter
+        for Snippet in self.stubProgressionPuzzleToEnter:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolProgressionPuzzleToEnter, row, Snippet, "ZoneIndex")
+
+            try:
+                ZonePlacementData(iExpeditionZoneDataLists, Snippet["ZonePlacementData"], startcolProgressionPuzzleToEnter+2, row, horizontal=True)
+            except KeyError:pass
+
+            row+= 1
+
+        row = startrow
+        # EnemySpawningInZone
+        for Snippet in self.stubEnemySpawningInZone:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEnemySpawningInZone, row, Snippet, "ZoneIndex")
+            iExpeditionZoneDataLists.writeFromDict(startcolEnemySpawningInZone+1, row, Snippet, "Reminder")
+            writeEnumFromDict(ENUMFILE_eEnemyGroupType, iExpeditionZoneDataLists, startcolEnemySpawningInZone+2, row, Snippet, "GroupType")
+            writeEnumFromDict(ENUMFILE_eEnemyRoleDifficulty, iExpeditionZoneDataLists, startcolEnemySpawningInZone+3, row, Snippet, "Difficulty")
+            try: # for some reason the distribution of 7 is used when it doesn't exist so this bodge is used, thanks 10cc
+                writeEnumFromDict(ENUMFILE_eEnemyZoneDistribution, iExpeditionZoneDataLists, startcolEnemySpawningInZone+4, row, Snippet, "Distribution")
+            except TypeError:pass
+            iExpeditionZoneDataLists.writeFromDict(startcolEnemySpawningInZone+5, row, Snippet, "DistributionValue")
+
+            row+= 1
+
+        row = startrow
+        # EnemyRespawnExcludeList
+        for Snippet in self.stubEnemyRespawnExcludeList:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEnemyRespawnExcludeList, row, Snippet, "ZoneIndex")
+            writePublicNameFromDict(DATABLOCK_Enemy, iExpeditionZoneDataLists, startcolEnemyRespawnExcludeList+1, row, Snippet, "value")
+            row+= 1
+
+        row = startrow
+        # TerminalPlacements
+        for Snippet in self.stubTerminalPlacements:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolTerminalPlacements, row, Snippet, "ZoneIndex")
+
+            try:
+                ZonePlacementWeights(iExpeditionZoneDataLists, Snippet["PlacementWeights"], startcolTerminalPlacements+1, row, horizontal=True)
+            except KeyError:pass
+
+            iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+4, row, Snippet, "AreaSeedOffset")
+            iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+5, row, Snippet, "MarkerSeedOffset")
+
+            iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+6, row, Snippet, "LocalLogFiles")
+
+            writeEnumFromDict(ENUMFILE_TERM_State, iExpeditionZoneDataLists, startcolTerminalPlacements+7, row, Snippet, "StartingState")
+
+            iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+8, row, Snippet, "AudioEventEnter")
+            iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+9, row, Snippet, "AudioEventExit")
+            # TODO convert sound placeholders
+
+            row+= 1
+
+        row = startrow
+        # LocalLogFiles
+        for Snippet in self.stubLocalLogFiles:
+            iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles, row, Snippet, "Log Group")
+
+            iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+1, row, Snippet, "Parsed Group")
+            iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+2, row, Snippet, "FileName")
+            iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+3, row, Snippet, "FileContent")
+            iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+4, row, Snippet, "AttachedAudioFile")
+            iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+5, row, Snippet, "AttachedAudioByteSize")
+            iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+6, row, Snippet, "PlayerDialogToTriggerAfterAudio")
+            # TODO convert sound placeholders
+
+            row+= 1
+
+        row = startrow
+        # ParsedLog
+        for Snippet in self.stubParsedLog:
+            iExpeditionZoneDataLists.writeFromDict(startcolParsedLog, row, Snippet, "Parsed Group")
+            iExpeditionZoneDataLists.writeFromDict(startcolParsedLog+1, row, Snippet, "value")
+            row+= 1
+
+        row = startrow
+        # PowerGeneratorPlacements
+        for Snippet in self.stubPowerGeneratorPlacements:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolPowerGeneratorPlacements, row, Snippet, "ZoneIndex")
+            FunctionPlacementData(iExpeditionZoneDataLists, Snippet, startcolPowerGeneratorPlacements+1, row, horizontal=True)
+            row+= 1
+
+        row = startrow
+        # DisinfectionStationPlacements
+        for Snippet in self.stubDisinfectionStationPlacements:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolDisinfectionStationPlacements, row, Snippet, "ZoneIndex")
+            FunctionPlacementData(iExpeditionZoneDataLists, Snippet, startcolDisinfectionStationPlacements+1, row, horizontal=True)
+            row+= 1
+
+        row = startrow
+        # StaticSpawnDataContainers
+        for Snippet in self.stubStaticSpawnDataContainers:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolStaticSpawnDataContainers, row, Snippet, "ZoneIndex")
+            iExpeditionZoneDataLists.writeFromDict(startcolStaticSpawnDataContainers+1, row, Snippet, "Count")
+            writeEnumFromDict(ENUMFILE_LG_StaticDistributionWeightType, iExpeditionZoneDataLists, startcolStaticSpawnDataContainers+2, row ,Snippet, "DistributionWeightType")
+            iExpeditionZoneDataLists.writeFromDict(startcolStaticSpawnDataContainers+3, row, Snippet, "DistributionWeight")
+            iExpeditionZoneDataLists.writeFromDict(startcolStaticSpawnDataContainers+4, row, Snippet, "DistributionRandomBlend")
+            iExpeditionZoneDataLists.writeFromDict(startcolStaticSpawnDataContainers+5, row, Snippet, "DistributionResultPow")
+            writePublicNameFromDict(DATABLOCK_StaticSpawn, iExpeditionZoneDataLists, startcolStaticSpawnDataContainers+6, row, Snippet, "StaticSpawnDataId")
+            iExpeditionZoneDataLists.writeFromDict(startcolStaticSpawnDataContainers+7, row, Snippet, "FixedSeed")
+            row+= 1
+
+def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, ExpeditionZoneData:dict, row:int):
     """
     adds a zone to the iExpeditionZoneData (does not include any lists)
     (this would end up getting called once per layer)
@@ -378,8 +649,8 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, ExpeditionZ
     writeEnumFromDict(ENUMFILE_eZoneExpansionType, iExpeditionZoneData, 11, row, ExpeditionZoneData, "ZoneExpansion")
     writePublicNameFromDict(DATABLOCK_LightSettings, iExpeditionZoneData, 12, row, ExpeditionZoneData, "LightSettings")
     try:
-        writeEnumFromDict(ENUMFILE_eWantedZoneHeighs, iExpeditionZoneData, 13, row, ExpeditionZoneData, "AllowedZoneAltitude")
-        iExpeditionZoneData.writeFromDict(14, row, ExpeditionZoneData, "ChanceToChange")
+        writeEnumFromDict(ENUMFILE_eWantedZoneHeighs, iExpeditionZoneData, 13, row, ExpeditionZoneData["AltitudeData"], "AllowedZoneAltitude")
+        iExpeditionZoneData.writeFromDict(14, row, ExpeditionZoneData["AltitudeData"], "ChanceToChange")
     except KeyError:pass
     # EventsOnEnter in lists
 
@@ -398,11 +669,11 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, ExpeditionZ
         iExpeditionZoneData.writeFromDict(colPuzzleType+9, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupsInArea")
     except KeyError:pass
     # EnemySpawningInZone in lists
-    iExpeditionZoneData.writeFromDict(colPuzzleType+10, row, ExpeditionZoneData, "EnemyRespawning")
-    iExpeditionZoneData.writeFromDict(colPuzzleType+11, row, ExpeditionZoneData, "EnemyRespawnRequireOtherZone")
-    iExpeditionZoneData.writeFromDict(colPuzzleType+12, row, ExpeditionZoneData, "EnemyRespawnRoomDistance")
-    iExpeditionZoneData.writeFromDict(colPuzzleType+13, row, ExpeditionZoneData, "EnemyRespawnTimeInterval")
-    iExpeditionZoneData.writeFromDict(colPuzzleType+14, row, ExpeditionZoneData, "EnemyRespawnCountMultiplier")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+11, row, ExpeditionZoneData, "EnemyRespawning")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+12, row, ExpeditionZoneData, "EnemyRespawnRequireOtherZone")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+13, row, ExpeditionZoneData, "EnemyRespawnRoomDistance")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+14, row, ExpeditionZoneData, "EnemyRespawnTimeInterval")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+15, row, ExpeditionZoneData, "EnemyRespawnCountMultiplier")
     # EnemyRespawnExcludeList in lists
 
     iExpeditionZoneData.writeFromDict(colHSUClustersInZone, row, ExpeditionZoneData, "HSUClustersInZone")
@@ -416,21 +687,43 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, ExpeditionZ
     iExpeditionZoneData.writeFromDict(colHSUClustersInZone+8, row, ExpeditionZoneData, "AllowSmallPickupsAllocation")
     iExpeditionZoneData.writeFromDict(colHSUClustersInZone+9, row, ExpeditionZoneData, "AllowResourceContainerAllocation")
     iExpeditionZoneData.writeFromDict(colHSUClustersInZone+10, row, ExpeditionZoneData, "ForceBigPickupsAllocation")
-    writePublicNameFromDict(DATABLOCK_EnemyGroup, iExpeditionZoneData, colPuzzleType+7, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")
-    writePublicNameFromDict(DATABLOCK_EnemyGroup, iExpeditionZoneData, colPuzzleType+7, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")
-    # XXX finish me
+    writePublicNameFromDict(DATABLOCK_ConsumableDistribution, iExpeditionZoneData, colHSUClustersInZone+11, row, ExpeditionZoneData, "ConsumableDistributionInZone")
+    writePublicNameFromDict(DATABLOCK_BigPickupDistribution, iExpeditionZoneData, colHSUClustersInZone+12, row, ExpeditionZoneData, "BigPickupDistributionInZone")
+    # TerminalPlacements in lists
+    iExpeditionZoneData.writeFromDict(colHSUClustersInZone+14, row, ExpeditionZoneData, "ForbidTerminalsInZone")
+    # PowerGeneratorPlacements in lists
+    # DisinfectionStationPlacements in lists
 
-def ExpeditionZoneDataLists(iExpeditionZoneDataLists:XlsxInterfacer.interface, LevelLayoutDataBlock:dict):
-    """
-    adds all zones to the iExpeditionZoneDataLists (only includes any lists)
-    """
-    pass
+    iExpeditionZoneData.writeFromDict(colHealthMulti, row, ExpeditionZoneData, "HealthMulti")
+    try:
+        ZonePlacementWeights(iExpeditionZoneData, ExpeditionZoneData["HealthPlacement"], colHealthMulti+1, row, True)
+    except KeyError:pass
+    iExpeditionZoneData.writeFromDict(colHealthMulti+4, row, ExpeditionZoneData, "WeaponAmmoMulti")
+    try:
+        ZonePlacementWeights(iExpeditionZoneData, ExpeditionZoneData["WeaponAmmoPlacement"], colHealthMulti+5, row, True)
+    except KeyError:pass
+    iExpeditionZoneData.writeFromDict(colHealthMulti+8, row, ExpeditionZoneData, "ToolAmmoMulti")
+    try:
+        ZonePlacementWeights(iExpeditionZoneData, ExpeditionZoneData["ToolAmmoPlacement"], colHealthMulti+9, row, True)
+    except KeyError:pass
+    iExpeditionZoneData.writeFromDict(colHealthMulti+12, row, ExpeditionZoneData, "DisinfectionMulti")
+    try:
+        ZonePlacementWeights(iExpeditionZoneData, ExpeditionZoneData["DisinfectionPlacement"], colHealthMulti+13, row, True)
+    except KeyError:pass
+    # StaticSpawnDataContainers in lists
 
-def LevelLayoutBlock(iExpeditionZoneData:XlsxInterfacer.interface, iExpeditionZoneDataLists:XlsxInterfacer.interface, LevelLayoutDataBlock:dict):
+def LevelLayoutBlockframes(iExpeditionZoneData:XlsxInterfacer.interface, iExpeditionZoneDataLists:XlsxInterfacer.interface, LevelLayoutBlock:dict):
     """
     edit the iExpeditionZoneData and iExpeditionZoneDataLists pandas dataFrame
     """
-    pass
+
+    ExpeditionZoneDataLists(LevelLayoutBlock).write(iExpeditionZoneDataLists)
+
+    row = 2
+
+    for ZoneData in LevelLayoutBlock["Zones"]:
+        ExpeditionZoneData(iExpeditionZoneData, ZoneData, row)
+        row+= 1
 
 def getExpeditionInTierData(levelIdentifier:str, RundownDataBlock:DatablockIO.datablock):
     """
@@ -562,7 +855,7 @@ def getExpeditionInTierData(levelIdentifier:str, RundownDataBlock:DatablockIO.da
     except IndexError:
         return [[],None,"",None]
 
-def UtilityJob(desiredReverse:str, RundownDataBlock, LevelLayoutBlock, WardenObjectiveDataBlock, silent:bool=True, debug:bool=False):
+def UtilityJob(desiredReverse:str, RundownDataBlock:DatablockIO.datablock, LevelLayoutBlock:DatablockIO.datablock, WardenObjectiveDataBlock:DatablockIO.datablock, silent:bool=True, debug:bool=False):
     """
     Have the utility start a job \n
     Take an identifier of which level to reverse (see below) \n
@@ -595,18 +888,27 @@ def UtilityJob(desiredReverse:str, RundownDataBlock, LevelLayoutBlock, WardenObj
     try:
         # get the name of the level if it exists (so the file name can be the name of the level)
         levelName = RundownDataBlock.data["Blocks"][RundownDataBlock.find(rundown)][levelTier][levelIndex]["Descriptive"]["PublicName"]
-        if not(silent):print("The search for \""+desiredReverse+"\" found:",rundown,levelTier,levelIndex,levelName)
+        if debug:print("The search for \""+desiredReverse+"\" found:",rundown,levelTier,levelIndex,levelName)
     except KeyError:
         levelName = desiredReverse
-        if not(silent):print("The search for \""+desiredReverse+"\" found a nameless level:",rundown,levelTier,levelIndex)
+        if debug:print("The search for \""+desiredReverse+"\" found a nameless level:",rundown,levelTier,levelIndex)
 
     # XXX remove all xml formatting from level names (causes crashes)
     strippedLevelName = levelName
-    shutil.copy(templatepath,strippedLevelName+".xlsx")
-    fxlsx = open(strippedLevelName+".xlsx", 'rb+')
+    try:
+        shutil.copy(templatepath,strippedLevelName+".xlsx")
+        fxlsx = open(strippedLevelName+".xlsx", 'rb+')
+    except PermissionError:
+        if not(silent):print("PermissionError opening \""+strippedLevelName+".xlsx"+"\", is it open? Cannot run utility.")
+        return False
 
     iMeta = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "Meta", header=None))
     iExpeditionInTier = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "ExpeditionInTier", header=None))
+
+    # XXX bodge for testing
+    LayerDataL1 = LevelLayoutBlock.data["Blocks"][LevelLayoutBlock.find(ExpeditionInTierData["LevelLayoutData"])]
+    iExpeditionZoneDataL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData", header=None))
+    iExpeditionZoneDataListsL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData Lists", header=None))
 
     fxlsx.close()
 
@@ -620,12 +922,30 @@ def UtilityJob(desiredReverse:str, RundownDataBlock, LevelLayoutBlock, WardenObj
     # LX WardenObjective
     # LX WardenObjective ReactorWaves
 
+    # XXX bodge for testing
+    LevelLayoutBlockframes(iExpeditionZoneDataL1, iExpeditionZoneDataListsL1, LayerDataL1)
+
     # writer = pandas.ExcelWriter(levelName+".xlsx", engine='xlsxwriter')
     # writer = pandas.ExcelWriter(fxlsx, engine="openpyxl", mode="a")
     # iMeta.frame.to_excel(writer, sheet_name="Meta")
 
     iMeta.save(strippedLevelName+".xlsx", "Meta")
     iExpeditionInTier.save(strippedLevelName+".xlsx", "ExpeditionInTier")
+
+    # XXX bodge for testing
+    workbook = openpyxl.load_workbook(filename = strippedLevelName+".xlsx")
+    workbook.copy_worksheet(workbook["LX ExpeditionZoneData"]).title = "L1 ExpeditionZoneData"
+    # TODO because the lists can be longer than 20 items long in total, the formatted portion should be copied down to cover all cells with values
+    workbook["LX ExpeditionZoneData Lists"].title = "a" # this weird renaming is used to avoid UserWarnings by openpyxl because "LX ExpeditionZoneData Lists Copy" is too long
+    workbook.copy_worksheet(workbook["a"]).title = "L1 ExpeditionZoneData Lists"
+    workbook["a"].title = "LX ExpeditionZoneData Lists"
+    workbook.save(filename = strippedLevelName+".xlsx")
+
+    # XXX bodge for testing
+    iExpeditionZoneDataL1.save(strippedLevelName+".xlsx", "L1 ExpeditionZoneData")
+    iExpeditionZoneDataListsL1.save(strippedLevelName+".xlsx", "L1 ExpeditionZoneData Lists")
+
+    return True
 
 def SearchJob(desiredReverse:str, RundownDataBlock, LevelLayoutBlock, WardenObjectiveDataBlock, silent:bool=True, debug:bool=False):
     """
