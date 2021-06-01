@@ -14,7 +14,7 @@ import typing
 
 class datablock:
     """
-    A class to interface with the "blocks" part of the datablocks
+    A class to interface with the "blocks" part of the datablocks \n
     Use datablock.data["Blocks"] to interact with the data within the datablock
     """
     def __init__(self, blockfile:io.FileIO):
@@ -24,8 +24,8 @@ class datablock:
     # TODO fix this function so it does not return the index when a block is not present (should return negative 1)
     def find(self, find: typing.Union[int, str]):
         """
-        Finds the index of a block in the blocks array using find
-        'find' can be the persistantID (int) or name (str) of the datablock
+        Finds the index of a block in the blocks array using find \n
+        'find' can be the persistantID (int) or name (str) of the datablock \n
         Returns None if no block found
         """
         search = ["name","persistentID"][isinstance(find,int)]
@@ -37,9 +37,9 @@ class datablock:
 
     def writeblock(self, block:dict):
         """
-        Write a block (type dict)
-        It will add the block if the persistentID does not already exist and override the existing block
-        (Note: this uses persistentID instead of name because no two blocks should have the same id)
+        Writes a block \n
+        It will add the block if the persistentID does not already exist and override the existing block \n
+        (Note: this uses persistentID instead of name because no two blocks should have the same id) \n
         """
         blockindex = self.find(block["persistentID"])
         if blockindex == None:

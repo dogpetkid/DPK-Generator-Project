@@ -10,8 +10,8 @@ import io
 
 def indexToEnum(enum:io.FileIO, index:int, force:bool=True):
     """
-    Takes an enum file and index
-    It will return the name of the enum value with said index
+    Takes an enum file and index \n
+    It will return the name of the enum value with said index \n
     When force is true, the function will not check if the value is not actually a number
     """
     enum.seek(0)
@@ -27,8 +27,8 @@ def indexToEnum(enum:io.FileIO, index:int, force:bool=True):
 
 def enumToIndex(enum:io.FileIO, name:str, textmode:bool=False):
     """
-    Takes an enum file and enum name
-    It will return the index of the enum value with said name
+    Takes an enum file and enum name \n
+    It will return the index of the enum value with said name \n
     When textmode is true, the enum is to be represented as text (and therefore the function should return)
     """
     if(textmode):return name
@@ -43,7 +43,7 @@ def enumToIndex(enum:io.FileIO, name:str, textmode:bool=False):
 
 def enumInDict(enum:io.FileIO, dictionary:dict, key:str, textmode:bool=True):
     """
-    Convert an enum into an index from inside of a dictionary
+    Convert an enum into an index from inside of a dictionary \n
     When textmode is true, the enum is to be represented as text (and therefore the function should return)
     """
     try:dictionary[key] = enumToIndex(enum, dictionary[key], textmode=textmode)
@@ -51,7 +51,7 @@ def enumInDict(enum:io.FileIO, dictionary:dict, key:str, textmode:bool=True):
 
 def indexInDict(enum:io.FileIO, dictionary:dict, key:str, force:bool=False):
     """
-    Convert an index into an enum from inside of a dictionary
+    Convert an index into an enum from inside of a dictionary \n
     When force is true, the function will not check if the value is not actually a number
     """
     try:dictionary[key] = indexToEnum(enum, dictionary[key], force=force)

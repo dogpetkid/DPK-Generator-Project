@@ -31,7 +31,7 @@ def ctn(col:str):
 
 class blankable(str):
     """
-    A signalling class for a possible blank string
+    A signalling class for a possible blank string \n
     This is because pandas will fail to read a cell if it is blank but some blank cells still need to be read
     """
     pass
@@ -42,7 +42,7 @@ class EmptyCell(Exception):
 
 class interface:
     """
-    A tool to read and write to xlsx files to garuntee datatypes, contains a pandas DataFrame
+    A tool to read and write to xlsx files to garuntee datatypes, contains a pandas DataFrame \n
     Use interface.frame to interact with the pandas DataFrame contained within the interface
     """
 
@@ -105,8 +105,8 @@ class interface:
 
     def readIntoDict(self, readtype:object, x:int, y:int, dictionary:dict, key:str):
         """
-        ReadIntoDict will attempt to read a value at x,y
-        If such a value exists, it will set dict[key] to the value
+        ReadIntoDict will attempt to read a value at x,y \n
+        If such a value exists, it will set dict[key] to the value \n
         If no such value exists, it will return None
         """
 
@@ -119,8 +119,8 @@ class interface:
 
     def writeFromDict(self, x:int, y:int, dictionary:dict, key:str):
         """
-        ReadIntoDict will attempt to write a value at x,y
-        The value to be written is from dict[key], if no such value for the key exists, the function does nothing
+        ReadIntoDict will attempt to write a value at x,y \n
+        The value to be written is from dict[key], if no such value for the key exists, the function does nothing \n
         returns True when a value is written, returns False when nothing is written
         """
 
