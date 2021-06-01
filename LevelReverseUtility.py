@@ -222,11 +222,11 @@ def WardenObjectiveEventData(interface:XlsxInterfacer.interface, data:dict, col:
     """
     writeEnumFromDict(ENUMFILE_eWardenObjectiveEventTrigger, interface, col, row, data, "Trigger")
     writeEnumFromDict(ENUMFILE_eWardenObjectiveEventType, interface, col+horizontal, row+(not horizontal), data, "Type")
-    writeEnumFromDict(ENUMFILE_LG_LayerType, interface, col+2*horizontal, row+2*(not horizontal), data, "Type")
+    writeEnumFromDict(ENUMFILE_LG_LayerType, interface, col+2*horizontal, row+2*(not horizontal), data, "Layer")
     writeEnumFromDict(ENUMFILE_eLocalZoneIndex, interface, col+3*horizontal, row+3*(not horizontal), data, "LocalIndex")
-    interface.writeFromDict(col+4*horizontal, row+4*(not horizontal), dict, "Delay")
-    interface.writeFromDict(col+5*horizontal, row+5*(not horizontal), dict, "WardenIntel")
-    interface.writeFromDict(col+6*horizontal, row+6*(not horizontal), dict, "SoundID")
+    interface.writeFromDict(col+4*horizontal, row+4*(not horizontal), data, "Delay")
+    interface.writeFromDict(col+5*horizontal, row+5*(not horizontal), data, "WardenIntel")
+    interface.writeFromDict(col+6*horizontal, row+6*(not horizontal), data, "SoundID")
     # TODO convert sound id to name of sound
 
 def GeneralFogDataStep(interface:XlsxInterfacer.interface, data:dict, col:int, row:int, horizontal:bool=False):
@@ -357,7 +357,7 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
 class ExpeditionZoneDataLists:
     """a class that decreases the dimentions of the dictionaries in ExpeditionZoneData (since the sheet cannot contain 2d-3d data)"""
 
-    def __init__(self, LevelLayoutBlock:dict):
+    def __init__(self, LevelLayout:dict):
         """Generates numerous stubs to be iterated through and written to the interface"""
 
         self.stubEventsOnEnter = []
@@ -376,7 +376,7 @@ class ExpeditionZoneDataLists:
         loggroupstart = 'A'
         parsedgroupstart = 'A'
 
-        for ZoneData in LevelLayoutBlock["Zones"]:
+        for ZoneData in LevelLayout["Zones"]:
             try:
                 zone = EnumConverter.indexToEnum(ENUMFILE_eLocalZoneIndex, ZoneData["LocalIndex"], False)
             except KeyError:
@@ -461,7 +461,6 @@ class ExpeditionZoneDataLists:
 
                             except KeyError:pass # no parsed exist, pass
 
-                        # XXX something is wrong with the logs
                         # LocalLogFiles
                         try: # if log goup has been handled, find it's group
                             logfilesindex = groupedLocalLogFiles.index(logfiles)
@@ -481,6 +480,7 @@ class ExpeditionZoneDataLists:
 
 
     def write(self, iExpeditionZoneDataLists:XlsxInterfacer.interface):
+        """Iterates through the numerous stubs and writes them to the specified interface"""
         startrow = 2
 
         startcolEventsOnEnter = XlsxInterfacer.ctn("A")
@@ -712,18 +712,205 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, ExpeditionZ
     except KeyError:pass
     # StaticSpawnDataContainers in lists
 
-def LevelLayoutBlockframes(iExpeditionZoneData:XlsxInterfacer.interface, iExpeditionZoneDataLists:XlsxInterfacer.interface, LevelLayoutBlock:dict):
+def framesLevelLayoutBlock(iExpeditionZoneData:XlsxInterfacer.interface, iExpeditionZoneDataLists:XlsxInterfacer.interface, LevelLayout:dict):
     """
-    edit the iExpeditionZoneData and iExpeditionZoneDataLists pandas dataFrame
+    edit the iExpeditionZoneData and iExpeditionZoneDataLists pandas dataFrames for a single level layout
     """
 
-    ExpeditionZoneDataLists(LevelLayoutBlock).write(iExpeditionZoneDataLists)
+    ExpeditionZoneDataLists(LevelLayout).write(iExpeditionZoneDataLists)
 
     row = 2
 
-    for ZoneData in LevelLayoutBlock["Zones"]:
+    for ZoneData in LevelLayout["Zones"]:
         ExpeditionZoneData(iExpeditionZoneData, ZoneData, row)
         row+= 1
+
+class ReactorWaveData:
+    """a class that decreases the dimentions of the ReactorWaveData (since the sheet cannot contain 2d-3d data)"""
+
+    def __init__(self, WardenObjective:dict):
+        """Generates numerous stubs to be iterated through and written to the interface"""
+
+        self.waves = []
+        self.stubEnemyWaves = []
+        self.stubEvents = []
+
+        try:
+            ReactorWaves = WardenObjective["ReactorWaves"]
+        except KeyError:
+            return # if there are no reactor waves for the objective, the process of filling them can be skipped
+
+        waveNo = 1
+        for wave in ReactorWaves:
+
+            self.waves.append(dict({"WaveNo":waveNo},**wave))
+
+            try:
+                enemyWaves = wave["EnemyWaves"]
+                for enemyWave in enemyWaves:
+                    self.stubEnemyWaves.append(dict({"WaveNo":waveNo},**enemyWave))
+            except KeyError:pass # no enemy waves exist, pass
+
+            try:
+                events = wave["Events"]
+                for event in events:
+                    self.stubEvents.append(dict({"WaveNo":waveNo},**event))
+            except KeyError:pass # no events exist, pass
+
+            waveNo+= 1
+
+
+    def write(self, iWardenObjectiveReactorWaves:XlsxInterfacer.interface):
+        """Iterates through the numerous stubs and writes them to the specified interface"""
+        startrow = 2
+
+        startcolReactorWaves = XlsxInterfacer.ctn("B")
+        startcolEnemyWaves = XlsxInterfacer.ctn("K")
+        startcolEvents = XlsxInterfacer.ctn("Q")
+
+        # ReactorWaves
+        row = startrow
+        for Snippet in self.waves:
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves-1, row, Snippet, "WaveNo")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves, row, Snippet, "Warmup")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+1, row, Snippet, "WarmupFail")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+2, row, Snippet, "Wave")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+3, row, Snippet, "Verify")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+4, row, Snippet, "VerifyFail")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+5, row, Snippet, "VerifyInOtherZone")
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iWardenObjectiveReactorWaves, startcolReactorWaves+6, row, Snippet, "ZoneForVerification")
+            row+= 1
+
+        # EnemyWaves
+        row = startrow
+        for Snippet in self.stubEnemyWaves:
+            iWardenObjectiveReactorWaves.writeFromDict(startcolEnemyWaves-1, row, Snippet, "WaveNo")
+            writePublicNameFromDict(DATABLOCK_SurvivalWaveSettings, iWardenObjectiveReactorWaves, startcolEnemyWaves, row, Snippet, "WaveSettings")
+            writePublicNameFromDict(DATABLOCK_SurvivalWavePopulation, iWardenObjectiveReactorWaves, startcolEnemyWaves+1, row, Snippet, "WavePopulation")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolEnemyWaves+2, row, Snippet, "SpawnTimeRel")
+            writeEnumFromDict(ENUMFILE_eReactorWaveSpawnType, iWardenObjectiveReactorWaves, startcolEnemyWaves+3, row, Snippet, "SpawnType")
+            row+= 1
+
+        # Events
+        row = startrow
+        for Snippet in self.stubEvents:
+            iWardenObjectiveReactorWaves.writeFromDict(startcolEvents-1, row, Snippet, "WaveNo")
+            WardenObjectiveEventData(iWardenObjectiveReactorWaves, Snippet, startcolEvents, row, horizontal=True)
+            row+= 1
+
+def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjectiveReactorWaves:XlsxInterfacer.interface, WardenObjective:dict):
+    """
+    edits the iWardenObjective and iWardenObjectiveReactorWaves pandas dataFrames for a single warden objective
+    """
+
+    rowWavesOnElevatorLand = 22-1
+    rowChainedPuzzleToActive = 70-1
+    rowLightsOnFromBeginning = 84-1
+    rowActivateHSU_ItemFromStart = 103-1
+
+    writeEnumFromDict(ENUMFILE_eWardenObjectiveType, iWardenObjective, 1, 1, WardenObjective, "Type")
+    iWardenObjective.writeFromDict(1, 3, WardenObjective, "Header")
+    iWardenObjective.writeFromDict(1, 4, WardenObjective, "MainObjective")
+    iWardenObjective.writeFromDict(1, 5, WardenObjective, "FindLocationInfo")
+    iWardenObjective.writeFromDict(1, 6, WardenObjective, "FindLocationInfoHelp")
+    iWardenObjective.writeFromDict(1, 7, WardenObjective, "GoToZone")
+    iWardenObjective.writeFromDict(1, 8, WardenObjective, "GoToZoneHelp")
+    iWardenObjective.writeFromDict(1, 9, WardenObjective, "InZoneFindItem")
+    iWardenObjective.writeFromDict(1, 10, WardenObjective, "InZoneFindItemHelp")
+    iWardenObjective.writeFromDict(1, 11, WardenObjective, "SolveItem")
+    iWardenObjective.writeFromDict(1, 12, WardenObjective, "SolveItemHelp")
+    iWardenObjective.writeFromDict(1, 13, WardenObjective, "GoToWinCondition_Elevator")
+    iWardenObjective.writeFromDict(1, 14, WardenObjective, "GoToWinConditionHelp_Elevator")
+    iWardenObjective.writeFromDict(1, 15, WardenObjective, "GoToWinCondition_CustomGeo")
+    iWardenObjective.writeFromDict(1, 16, WardenObjective, "GoToWinConditionHelp_CustomGeo")
+    iWardenObjective.writeFromDict(1, 17, WardenObjective, "GoToWinCondition_ToMainLayer")
+    iWardenObjective.writeFromDict(1, 18, WardenObjective, "GoToWinConditionHelp_ToMainLayer")
+    iWardenObjective.writeFromDict(1, 19, WardenObjective, "ShowHelpDelay")
+
+    try:
+        GenericEnemyWaveDataList(iWardenObjective, WardenObjective["WavesOnElevatorLand"], 2, rowWavesOnElevatorLand+1, horizontal=True)
+    except KeyError:pass
+    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+6, WardenObjective, "WaveOnElevatorWardenIntel")
+    writePublicNameFromDict(DATABLOCK_FogSettings, iWardenObjective, 1, rowWavesOnElevatorLand+8, WardenObjective, "FogTransitionDataOnElevatorLand")
+    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+6, WardenObjective, "WaveOnElevatorWardenIntel")
+    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+9, WardenObjective, "FogTransitionDurationOnElevatorLand")
+    try:
+        GenericEnemyWaveDataList(iWardenObjective, WardenObjective["WavesOnActivate"], 2, rowWavesOnElevatorLand+12, horizontal=True)
+    except KeyError:pass
+    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+17, WardenObjective, "StopAllWavesBeforeGotoWin")
+    try:
+        itercol,iterrow = 2, rowWavesOnElevatorLand+20
+        for event in WardenObjective["EventsOnActivate"]:
+            WardenObjectiveEventData(iWardenObjective, event, itercol, iterrow, horizontal=False)
+            itercol+= 1
+    except KeyError:pass
+    try:
+        GenericEnemyWaveDataList(iWardenObjective, WardenObjective["WavesOnGotoWin"], 2, rowWavesOnElevatorLand+29, horizontal=True)
+    except KeyError:pass
+    writeEnumFromDict(ENUMFILE_eRetrieveExitWaveTrigger, iWardenObjective, 1, rowWavesOnElevatorLand+34, WardenObjective, "WaveOnGotoWinTrigger")
+    try:
+        itercol,iterrow = 2, rowWavesOnElevatorLand+37
+        for event in WardenObjective["EventsOnGotoWin"]:
+            WardenObjectiveEventData(iWardenObjective, event, itercol, iterrow, horizontal=False)
+            itercol+= 1
+    except KeyError:pass
+    writePublicNameFromDict(DATABLOCK_FogSettings, iWardenObjective, 1, rowWavesOnElevatorLand+45, WardenObjective, "FogTransitionDataOnGotoWin")
+    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+46, WardenObjective, "FogTransitionDurationOnGotoWin")
+
+    writePublicNameFromDict(DATABLOCK_ChainedPuzzle, iWardenObjective, 1, rowChainedPuzzleToActive, WardenObjective, "ChainedPuzzleToActive")
+    writePublicNameFromDict(DATABLOCK_ChainedPuzzle, iWardenObjective, 1, rowChainedPuzzleToActive+1, WardenObjective, "ChainedPuzzleMidObjective")
+    writePublicNameFromDict(DATABLOCK_ChainedPuzzle, iWardenObjective, 1, rowChainedPuzzleToActive+2, WardenObjective, "ChainedPuzzleAtExit")
+    iWardenObjective.writeFromDict(1, rowChainedPuzzleToActive+3, WardenObjective, "ChainedPuzzleAtExitScanSpeedMultiplier")
+    iWardenObjective.writeFromDict(1, rowChainedPuzzleToActive+5, WardenObjective, "Gather_RequiredCount")
+    writePublicNameFromDict(DATABLOCK_Item, iWardenObjective, 1, rowChainedPuzzleToActive+6, WardenObjective, "Gather_ItemId")
+    iWardenObjective.writeFromDict(1, rowChainedPuzzleToActive+7, WardenObjective, "Gather_SpawnCount")
+    iWardenObjective.writeFromDict(1, rowChainedPuzzleToActive+8, WardenObjective, "Gather_MaxPerZone")
+    try:
+        itercol,iterrow = 1, rowChainedPuzzleToActive+10
+        for item in WardenObjective["Retrieve_Items"]:
+            iWardenObjective.write(DatablockIO.idToName(DATABLOCK_Item, item), itercol, iterrow)
+            itercol+= 1
+    except KeyError:pass
+    ReactorWaveData(WardenObjective).write(iWardenObjectiveReactorWaves)
+
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning, WardenObjective, "LightsOnFromBeginning")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+1, WardenObjective, "LightsOnDuringIntro")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+2, WardenObjective, "LightsOnWhenStartupComplete")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+4, WardenObjective, "SpecialTerminalCommand")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+5, WardenObjective, "SpecialTerminalCommandDesc")
+    try:
+        itercol,iterrow = 1, rowLightsOnFromBeginning+6
+        for output in WardenObjective["PostCommandOutput"]:
+            iWardenObjective.write(output, itercol, iterrow)
+            itercol+= 1
+    except KeyError:pass
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+8, WardenObjective, "PowerCellsToDistribute")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+10, WardenObjective, "Uplink_NumberOfVerificationRounds")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+11, WardenObjective, "Uplink_NumberOfTerminals")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+13, WardenObjective, "CentralPowerGenClustser_NumberOfGenerators")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+14, WardenObjective, "CentralPowerGenClustser_NumberOfPowerCells")
+    try:
+        itercol,iterrow = 1,rowLightsOnFromBeginning+16
+        for step in WardenObjective["CentralPowerGenClustser_FogDataSteps"]:
+            GeneralFogDataStep(iWardenObjective, step, itercol, iterrow, horizontal=False)
+            itercol+= 1
+    except KeyError:pass
+
+    writePublicNameFromDict(DATABLOCK_Item, iWardenObjective, 1, rowActivateHSU_ItemFromStart, WardenObjective, "ActivateHSU_ItemFromStart")
+    writePublicNameFromDict(DATABLOCK_Item, iWardenObjective, 1, rowActivateHSU_ItemFromStart+1, WardenObjective, "ActivateHSU_ItemAfterActivation")
+    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+2, WardenObjective, "ActivateHSU_StopEnemyWavesOnActivation")
+    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+3, WardenObjective, "ActivateHSU_ObjectiveCompleteAfterInsertion")
+    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+4, WardenObjective, "ActivateHSU_RequireItemAfterActivationInExitScan")
+    try:
+        itercol,iterrow = 2, rowActivateHSU_ItemFromStart+7
+        for event in WardenObjective["ActivateHSU_Events"]:
+            WardenObjectiveEventData(iWardenObjective, event, itercol, iterrow, horizontal=False)
+    except KeyError:pass
+
+    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+15, WardenObjective, "name")
+    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+16, WardenObjective, "internalEnabled")
+    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+17, WardenObjective, "persistentID")
+
 
 def getExpeditionInTierData(levelIdentifier:str, RundownDataBlock:DatablockIO.datablock):
     """
@@ -855,7 +1042,7 @@ def getExpeditionInTierData(levelIdentifier:str, RundownDataBlock:DatablockIO.da
     except IndexError:
         return [[],None,"",None]
 
-def UtilityJob(desiredReverse:str, RundownDataBlock:DatablockIO.datablock, LevelLayoutBlock:DatablockIO.datablock, WardenObjectiveDataBlock:DatablockIO.datablock, silent:bool=True, debug:bool=False):
+def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, LevelLayoutDataBlock:DatablockIO.datablock, WardenObjectiveDataBlock:DatablockIO.datablock, silent:bool=True, debug:bool=False):
     """
     Have the utility start a job \n
     Take an identifier of which level to reverse (see below) \n
@@ -875,10 +1062,7 @@ def UtilityJob(desiredReverse:str, RundownDataBlock:DatablockIO.datablock, Level
     if iKey.read(str, 0, 5).split(".")[0:2] != Version.split(".")[0:2]:
         raise Exception("Version mismatch between utility and sheet, incompatible.")
 
-    ExpeditionInTierData, rundown, levelTier, levelIndex = getExpeditionInTierData(desiredReverse, RundownDataBlock)
-
-    # print(ExpeditionInTierData)
-    # print(rundown,levelTier,levelIndex)
+    ExpeditionInTierData, rundown, levelTier, levelIndex = getExpeditionInTierData(desiredReverse, RundownDataDataBlock)
 
     if (rundown == None or levelTier == "" or levelIndex == None or ExpeditionInTierData==[]):
         # if no such level exists
@@ -887,7 +1071,7 @@ def UtilityJob(desiredReverse:str, RundownDataBlock:DatablockIO.datablock, Level
 
     try:
         # get the name of the level if it exists (so the file name can be the name of the level)
-        levelName = RundownDataBlock.data["Blocks"][RundownDataBlock.find(rundown)][levelTier][levelIndex]["Descriptive"]["PublicName"]
+        levelName = RundownDataDataBlock.data["Blocks"][RundownDataDataBlock.find(rundown)][levelTier][levelIndex]["Descriptive"]["PublicName"]
         if debug:print("The search for \""+desiredReverse+"\" found:",rundown,levelTier,levelIndex,levelName)
     except KeyError:
         levelName = desiredReverse
@@ -906,48 +1090,55 @@ def UtilityJob(desiredReverse:str, RundownDataBlock:DatablockIO.datablock, Level
     iExpeditionInTier = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "ExpeditionInTier", header=None))
 
     # XXX bodge for testing
-    LayerDataL1 = LevelLayoutBlock.data["Blocks"][LevelLayoutBlock.find(ExpeditionInTierData["LevelLayoutData"])]
+    LayerDataL1 = LevelLayoutDataBlock.data["Blocks"][LevelLayoutDataBlock.find(ExpeditionInTierData["LevelLayoutData"])]
     iExpeditionZoneDataL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData", header=None))
     iExpeditionZoneDataListsL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData Lists", header=None))
+    WardenObjectiveL1 = WardenObjectiveDataBlock.data["Blocks"][WardenObjectiveDataBlock.find(ExpeditionInTierData["MainLayerData"]["ObjectiveData"]["DataBlockId"])]
+    iWardenObjectiveL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective", header=None))
+    iWardenObjectiveReactorWavesL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective ReactorWaves", header=None))
 
     fxlsx.close()
 
-    # XXX other json to dataFrame functions
-
     frameMeta(iMeta, rundown, levelTier, levelIndex)
     frameExpeditionInTier(iExpeditionInTier, ExpeditionInTierData)
-    # sheets that need to be written
-    # LX ExpeditionZoneData
-    # LX ExpeditionZoneData Lists
-    # LX WardenObjective
-    # LX WardenObjective ReactorWaves
 
     # XXX bodge for testing
-    LevelLayoutBlockframes(iExpeditionZoneDataL1, iExpeditionZoneDataListsL1, LayerDataL1)
+    framesLevelLayoutBlock(iExpeditionZoneDataL1, iExpeditionZoneDataListsL1, LayerDataL1)
+    framesWardenObjectiveBlock(iWardenObjectiveL1, iWardenObjectiveReactorWavesL1, WardenObjectiveL1)
 
-    # writer = pandas.ExcelWriter(levelName+".xlsx", engine='xlsxwriter')
-    # writer = pandas.ExcelWriter(fxlsx, engine="openpyxl", mode="a")
-    # iMeta.frame.to_excel(writer, sheet_name="Meta")
-
-    iMeta.save(strippedLevelName+".xlsx", "Meta")
-    iExpeditionInTier.save(strippedLevelName+".xlsx", "ExpeditionInTier")
 
     # XXX bodge for testing
     workbook = openpyxl.load_workbook(filename = strippedLevelName+".xlsx")
+
     workbook.copy_worksheet(workbook["LX ExpeditionZoneData"]).title = "L1 ExpeditionZoneData"
-    # TODO because the lists can be longer than 20 items long in total, the formatted portion should be copied down to cover all cells with values
     workbook["LX ExpeditionZoneData Lists"].title = "a" # this weird renaming is used to avoid UserWarnings by openpyxl because "LX ExpeditionZoneData Lists Copy" is too long
     workbook.copy_worksheet(workbook["a"]).title = "L1 ExpeditionZoneData Lists"
     workbook["a"].title = "LX ExpeditionZoneData Lists"
+
+    workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L1 WardenObjective"
+    workbook["LX WardenObjective ReactorWaves"].title = "a" # this weird renaming is used to avoid UserWarnings by openpyxl because "LX ExpeditionZoneData Lists Copy" is too long
+    workbook.copy_worksheet(workbook["a"]).title = "L1 WardenObjective ReactorWaves"
+    workbook["a"].title = "LX WardenObjective ReactorWaves"
+
+    workbook.remove(workbook["LX ExpeditionZoneData"])
+    workbook.remove(workbook["LX ExpeditionZoneData Lists"])# TODO because the lists can be longer than 20 items long in total, the formatted portion should be copied down to cover all cells with values
+    workbook.remove(workbook["LX WardenObjective"]) # TODO because the horizontal lists can be longer than the formatting, the farthest list could be remembered and the formatting copied that far out
+    workbook.remove(workbook["LX WardenObjective ReactorWaves"]) # TODO because the lists can be longer than 20 items long in total, the formatted portion should be copied down to cover all cells with values
+
     workbook.save(filename = strippedLevelName+".xlsx")
 
+
+    iMeta.save(strippedLevelName+".xlsx", "Meta")
+    iExpeditionInTier.save(strippedLevelName+".xlsx", "ExpeditionInTier") # TODO because the horizontal lists can be longer than the formatting, the farthest list could be remembered and the formatting copied that far out
     # XXX bodge for testing
     iExpeditionZoneDataL1.save(strippedLevelName+".xlsx", "L1 ExpeditionZoneData")
     iExpeditionZoneDataListsL1.save(strippedLevelName+".xlsx", "L1 ExpeditionZoneData Lists")
+    iWardenObjectiveL1.save(strippedLevelName+".xlsx", "L1 WardenObjective")
+    iWardenObjectiveReactorWavesL1.save(strippedLevelName+".xlsx", "L1 WardenObjective ReactorWaves")
 
     return True
 
-def SearchJob(desiredReverse:str, RundownDataBlock, LevelLayoutBlock, WardenObjectiveDataBlock, silent:bool=True, debug:bool=False):
+def SearchJob(desiredReverse:str, RundownDataBlock, LevelLayoutDataBlock, WardenObjectiveDataBlock, silent:bool=True, debug:bool=False):
     """
     Secondary job meant specifically to search for and display the search result for a level
     """
