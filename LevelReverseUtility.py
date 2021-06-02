@@ -1015,7 +1015,7 @@ def getExpeditionInTierData(levelIdentifier:str, RundownDataBlock:DatablockIO.da
     # print(rundown,levelTier,levelIndex)
 
     if (-1 in [rundown, levelTier, levelIndex] or None in [rundown, levelTier, levelIndex]):
-        return [[],None,"",None]
+        return [],None,"",None
 
     # convert numerical tier to A-E
     try: levelTier = chr(65+int(levelTier))
@@ -1027,12 +1027,12 @@ def getExpeditionInTierData(levelIdentifier:str, RundownDataBlock:DatablockIO.da
     try:
         levelIndex = int(levelIndex)
     except ValueError:
-        return [[],None,"",None]
+        return [],None,"",None
 
     rundownIndex = rundownValueToIndex(RundownDataBlock,rundown)
     # if no such rundown exists, return a blank array
     if rundownIndex in [-1, None]:
-        return [[],None,"",None]
+        return [],None,"",None
 
     # get the persistentID of the rundown
     rundown = RundownDataBlock.data["Blocks"][rundownIndex]["persistentID"]
@@ -1040,9 +1040,9 @@ def getExpeditionInTierData(levelIdentifier:str, RundownDataBlock:DatablockIO.da
     try:
         return RundownDataBlock.data["Blocks"][rundownIndex]["Tier"+levelTier][levelIndex],rundown,"Tier"+levelTier,levelIndex
     except KeyError:
-        return [[],None,"",None]
+        return [],None,"",None
     except IndexError:
-        return [[],None,"",None]
+        return [],None,"",None
 
 def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, LevelLayoutDataBlock:DatablockIO.datablock, WardenObjectiveDataBlock:DatablockIO.datablock, silent:bool=True, debug:bool=False):
     """
