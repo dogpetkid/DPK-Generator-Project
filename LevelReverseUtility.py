@@ -1089,36 +1089,115 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
 
     iMeta = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "Meta", header=None))
     iExpeditionInTier = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "ExpeditionInTier", header=None))
-
-    # XXX bodge for testing
-    LayerDataL1 = LevelLayoutDataBlock.data["Blocks"][LevelLayoutDataBlock.find(ExpeditionInTierData["LevelLayoutData"])]
-    iExpeditionZoneDataL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData", header=None))
-    iExpeditionZoneDataListsL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData Lists", header=None))
-    WardenObjectiveL1 = WardenObjectiveDataBlock.data["Blocks"][WardenObjectiveDataBlock.find(ExpeditionInTierData["MainLayerData"]["ObjectiveData"]["DataBlockId"])]
-    iWardenObjectiveL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective", header=None))
-    iWardenObjectiveReactorWavesL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective ReactorWaves", header=None))
-
+    try:
+        id_ = ExpeditionInTierData["LevelLayoutData"]
+        if id_ == 0:raise KeyError
+        LayerDataL1 = LevelLayoutDataBlock.data["Blocks"][LevelLayoutDataBlock.find(id_)]
+        iExpeditionZoneDataL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData", header=None))
+        iExpeditionZoneDataListsL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData Lists", header=None))
+    except KeyError:pass
+    try:
+        id_ = ExpeditionInTierData["SecondaryLayout"]
+        if id_ == 0:raise KeyError
+        LayerDataL2 = LevelLayoutDataBlock.data["Blocks"][LevelLayoutDataBlock.find(id_)]
+        iExpeditionZoneDataL2 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData", header=None))
+        iExpeditionZoneDataListsL2 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData Lists", header=None))
+    except KeyError:pass
+    try:
+        id_ = ExpeditionInTierData["ThirdLayout"]
+        if id_ == 0:raise KeyError
+        LayerDataL3 = LevelLayoutDataBlock.data["Blocks"][LevelLayoutDataBlock.find(id_)]
+        iExpeditionZoneDataL3 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData", header=None))
+        iExpeditionZoneDataListsL3 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData Lists", header=None))
+    except KeyError:pass
+    try:
+        id_ = ExpeditionInTierData["MainLayerData"]["ObjectiveData"]["DataBlockId"]
+        if id_ == 0:raise KeyError
+        WardenObjectiveL1 = WardenObjectiveDataBlock.data["Blocks"][WardenObjectiveDataBlock.find(id_)]
+        iWardenObjectiveL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective", header=None))
+        iWardenObjectiveReactorWavesL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective ReactorWaves", header=None))
+    except KeyError:pass
+    try:
+        id_ = ExpeditionInTierData["SecondaryLayerData"]["ObjectiveData"]["DataBlockId"]
+        if id_ == 0:raise KeyError
+        WardenObjectiveL2 = WardenObjectiveDataBlock.data["Blocks"][WardenObjectiveDataBlock.find(id_)]
+        iWardenObjectiveL2 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective", header=None))
+        iWardenObjectiveReactorWavesL2 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective ReactorWaves", header=None))
+    except KeyError:pass
+    try:
+        id_ = ExpeditionInTierData["ThirdLayerData"]["ObjectiveData"]["DataBlockId"]
+        if id_ == 0:raise KeyError
+        WardenObjectiveL3 = WardenObjectiveDataBlock.data["Blocks"][WardenObjectiveDataBlock.find(id_)]
+        iWardenObjectiveL3 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective", header=None))
+        iWardenObjectiveReactorWavesL3 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective ReactorWaves", header=None))
+    except KeyError:pass
     fxlsx.close()
 
     frameMeta(iMeta, rundown, levelTier, levelIndex)
     frameExpeditionInTier(iExpeditionInTier, ExpeditionInTierData)
+    try:
+        framesLevelLayoutBlock(iExpeditionZoneDataL1, iExpeditionZoneDataListsL1, LayerDataL1)
+    except NameError:pass
+    except Exception as e:raise Exception("Problem reading L1 LevelLayout (skipping): "+str(e))
+    try:
+        framesLevelLayoutBlock(iExpeditionZoneDataL2, iExpeditionZoneDataListsL2, LayerDataL2)
+    except NameError:pass
+    except Exception as e:raise Exception("Problem reading L2 LevelLayout (skipping): "+str(e))
+    try:
+        framesLevelLayoutBlock(iExpeditionZoneDataL3, iExpeditionZoneDataListsL3, LayerDataL3)
+    except NameError:pass
+    except Exception as e:raise Exception("Problem reading L3 LevelLayout (skipping): "+str(e))
+    try:
+        framesWardenObjectiveBlock(iWardenObjectiveL1, iWardenObjectiveReactorWavesL1, WardenObjectiveL1)
+    except NameError:pass
+    except Exception as e:raise Exception("Problem reading L1 WardenObjective (skipping): "+str(e))
+    try:
+        framesWardenObjectiveBlock(iWardenObjectiveL2, iWardenObjectiveReactorWavesL2, WardenObjectiveL2)
+    except NameError:pass
+    except Exception as e:raise Exception("Problem reading L2 WardenObjective (skipping): "+str(e))
+    try:
+        framesWardenObjectiveBlock(iWardenObjectiveL3, iWardenObjectiveReactorWavesL3, WardenObjectiveL3)
+    except NameError:pass
+    except Exception as e:raise Exception("Problem reading L3 WardenObjective (skipping): "+str(e))
 
-    # XXX bodge for testing
-    framesLevelLayoutBlock(iExpeditionZoneDataL1, iExpeditionZoneDataListsL1, LayerDataL1)
-    framesWardenObjectiveBlock(iWardenObjectiveL1, iWardenObjectiveReactorWavesL1, WardenObjectiveL1)
 
-
-    # XXX bodge for testing
     workbook = openpyxl.load_workbook(filename = strippedLevelName+".xlsx")
 
-    workbook.copy_worksheet(workbook["LX ExpeditionZoneData"]).title = "L1 ExpeditionZoneData"
+    # XXX all of the sheets that were copied lose their data validation
     workbook["LX ExpeditionZoneData Lists"].title = "a" # this weird renaming is used to avoid UserWarnings by openpyxl because "LX ExpeditionZoneData Lists Copy" is too long
-    workbook.copy_worksheet(workbook["a"]).title = "L1 ExpeditionZoneData Lists"
+    try:
+        _ = LayerDataL1
+        workbook.copy_worksheet(workbook["LX ExpeditionZoneData"]).title = "L1 ExpeditionZoneData"
+        workbook.copy_worksheet(workbook["a"]).title = "L1 ExpeditionZoneData Lists"
+    except NameError:pass
+    try:
+        _ = LayerDataL2
+        workbook.copy_worksheet(workbook["LX ExpeditionZoneData"]).title = "L2 ExpeditionZoneData"
+        workbook.copy_worksheet(workbook["a"]).title = "L2 ExpeditionZoneData Lists"
+    except NameError:pass
+    try:
+        _ = LayerDataL3
+        workbook.copy_worksheet(workbook["LX ExpeditionZoneData"]).title = "L3 ExpeditionZoneData"
+        workbook.copy_worksheet(workbook["a"]).title = "L3 ExpeditionZoneData Lists"
+    except NameError:pass
     workbook["a"].title = "LX ExpeditionZoneData Lists"
 
-    workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L1 WardenObjective"
     workbook["LX WardenObjective ReactorWaves"].title = "a" # this weird renaming is used to avoid UserWarnings by openpyxl because "LX ExpeditionZoneData Lists Copy" is too long
-    workbook.copy_worksheet(workbook["a"]).title = "L1 WardenObjective ReactorWaves"
+    try:
+        _ = WardenObjectiveL1
+        workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L1 WardenObjective"
+        workbook.copy_worksheet(workbook["a"]).title = "L1 WardenObjective ReactorWaves"
+    except NameError:pass
+    try:
+        _ = WardenObjectiveL2
+        workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L2 WardenObjective"
+        workbook.copy_worksheet(workbook["a"]).title = "L2 WardenObjective ReactorWaves"
+    except NameError:pass
+    try:
+        _ = WardenObjectiveL3
+        workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L3 WardenObjective"
+        workbook.copy_worksheet(workbook["a"]).title = "L3 WardenObjective ReactorWaves"
+    except NameError:pass
     workbook["a"].title = "LX WardenObjective ReactorWaves"
 
     workbook.remove(workbook["LX ExpeditionZoneData"])
@@ -1131,11 +1210,36 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
 
     iMeta.save(strippedLevelName+".xlsx", "Meta")
     iExpeditionInTier.save(strippedLevelName+".xlsx", "ExpeditionInTier") # TODO because the horizontal lists can be longer than the formatting, the farthest list could be remembered and the formatting copied that far out
-    # XXX bodge for testing
-    iExpeditionZoneDataL1.save(strippedLevelName+".xlsx", "L1 ExpeditionZoneData")
-    iExpeditionZoneDataListsL1.save(strippedLevelName+".xlsx", "L1 ExpeditionZoneData Lists")
-    iWardenObjectiveL1.save(strippedLevelName+".xlsx", "L1 WardenObjective")
-    iWardenObjectiveReactorWavesL1.save(strippedLevelName+".xlsx", "L1 WardenObjective ReactorWaves")
+    try:
+        _ = LayerDataL1
+        iExpeditionZoneDataL1.save(strippedLevelName+".xlsx", "L1 ExpeditionZoneData")
+        iExpeditionZoneDataListsL1.save(strippedLevelName+".xlsx", "L1 ExpeditionZoneData Lists")
+    except NameError:pass
+    try:
+        _ = LayerDataL2
+        iExpeditionZoneDataL2.save(strippedLevelName+".xlsx", "L2 ExpeditionZoneData")
+        iExpeditionZoneDataListsL2.save(strippedLevelName+".xlsx", "L2 ExpeditionZoneData Lists")
+    except NameError:pass
+    try:
+        _ = LayerDataL3
+        iExpeditionZoneDataL3.save(strippedLevelName+".xlsx", "L3 ExpeditionZoneData")
+        iExpeditionZoneDataListsL3.save(strippedLevelName+".xlsx", "L3 ExpeditionZoneData Lists")
+    except NameError:pass
+    try:
+        _ = WardenObjectiveL1
+        iWardenObjectiveL1.save(strippedLevelName+".xlsx", "L1 WardenObjective")
+        iWardenObjectiveReactorWavesL1.save(strippedLevelName+".xlsx", "L1 WardenObjective ReactorWaves")
+    except NameError:pass
+    try:
+        _ = WardenObjectiveL2
+        iWardenObjectiveL2.save(strippedLevelName+".xlsx", "L2 WardenObjective")
+        iWardenObjectiveReactorWavesL2.save(strippedLevelName+".xlsx", "L2 WardenObjective ReactorWaves")
+    except NameError:pass
+    try:
+        _ = WardenObjectiveL3
+        iWardenObjectiveL3.save(strippedLevelName+".xlsx", "L3 WardenObjective")
+        iWardenObjectiveReactorWavesL3.save(strippedLevelName+".xlsx", "L3 WardenObjective ReactorWaves")
+    except NameError:pass
 
     return True
 
