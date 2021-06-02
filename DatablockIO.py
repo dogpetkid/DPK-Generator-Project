@@ -62,8 +62,8 @@ def nameToId(block:datablock, name:str):
 def idToName(block:datablock, persistentId:int):
     """Convert an id into a name"""
     try:return block.data["Blocks"][block.find(persistentId)]["name"]
-    except IndexError:raise IndexError("No such block exists with id "+persistentId+" within "+block.blockfile.name)
-    except TypeError:raise TypeError("No such block exists with id "+persistentId+" within "+block.blockfile.name)
+    except IndexError:raise IndexError("No such block exists with id "+str(persistentId)+" within "+block.blockfile.name)
+    except TypeError:raise TypeError("No such block exists with id "+str(persistentId)+" within "+block.blockfile.name)
 
 def nameInDict(block:datablock, dictionary:dict, key:str):
     """Convert a name into an id from inside of a dictionary"""
