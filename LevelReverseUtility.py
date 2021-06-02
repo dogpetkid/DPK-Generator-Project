@@ -31,6 +31,8 @@ import XlsxInterfacer
 
 # a regex to capture the newlines the devs put into their json
 devnewlnregex = "(\\\\n|\\\\r){1,2}"
+# a regex to capture the Windows Reserved characters; see https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
+winreserveregex = "[<>:\"/\\\\|?*]"
 
 # Settings
 #####
@@ -1077,8 +1079,7 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
         levelName = desiredReverse
         if debug:print("The search for \""+desiredReverse+"\" found a nameless level:",rundown,levelTier,levelIndex)
 
-    # XXX remove all xml formatting from level names (causes crashes)
-    strippedLevelName = levelName
+    strippedLevelName = re.sub(winreserveregex, "", levelName)
     try:
         shutil.copy(templatepath,strippedLevelName+".xlsx")
         fxlsx = open(strippedLevelName+".xlsx", 'rb+')
