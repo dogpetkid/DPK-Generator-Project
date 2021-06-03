@@ -1195,47 +1195,48 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
 
     workbook = openpyxl.load_workbook(filename = writepath)
 
-    # XXX all of the sheets that were copied lose their data validation
-    workbook["LX ExpeditionZoneData Lists"].title = "a" # this weird renaming is used to avoid UserWarnings by openpyxl because "LX ExpeditionZoneData Lists Copy" is too long
-    try:
-        _ = LayerDataL1
-        workbook.copy_worksheet(workbook["LX ExpeditionZoneData"]).title = "L1 ExpeditionZoneData"
-        workbook.copy_worksheet(workbook["a"]).title = "L1 ExpeditionZoneData Lists"
-    except NameError:pass
-    try:
-        _ = LayerDataL2
-        workbook.copy_worksheet(workbook["LX ExpeditionZoneData"]).title = "L2 ExpeditionZoneData"
-        workbook.copy_worksheet(workbook["a"]).title = "L2 ExpeditionZoneData Lists"
-    except NameError:pass
-    try:
-        _ = LayerDataL3
-        workbook.copy_worksheet(workbook["LX ExpeditionZoneData"]).title = "L3 ExpeditionZoneData"
-        workbook.copy_worksheet(workbook["a"]).title = "L3 ExpeditionZoneData Lists"
-    except NameError:pass
-    workbook["a"].title = "LX ExpeditionZoneData Lists"
+    # NOTE openpyxl does not copy data validation so all of the sheets that were copied lose their data validation, the bodge for this is just to have the template already have the layer sheets copied despite not being elegant
+    # workbook["LX ExpeditionZoneData Lists"].title = "a" # this weird renaming is used to avoid UserWarnings by openpyxl because "LX ExpeditionZoneData Lists Copy" is too long
+    # try:
+    #     _ = LayerDataL1
+    #     workbook.copy_worksheet(workbook["LX ExpeditionZoneData"]).title = "L1 ExpeditionZoneData"
+    #     workbook.copy_worksheet(workbook["a"]).title = "L1 ExpeditionZoneData Lists"
+    # except NameError:pass
+    # try:
+    #     _ = LayerDataL2
+    #     workbook.copy_worksheet(workbook["LX ExpeditionZoneData"]).title = "L2 ExpeditionZoneData"
+    #     workbook.copy_worksheet(workbook["a"]).title = "L2 ExpeditionZoneData Lists"
+    # except NameError:pass
+    # try:
+    #     _ = LayerDataL3
+    #     workbook.copy_worksheet(workbook["LX ExpeditionZoneData"]).title = "L3 ExpeditionZoneData"
+    #     workbook.copy_worksheet(workbook["a"]).title = "L3 ExpeditionZoneData Lists"
+    # except NameError:pass
+    # workbook["a"].title = "LX ExpeditionZoneData Lists"
+    # workbook["LX WardenObjective ReactorWaves"].title = "a" # this weird renaming is used to avoid UserWarnings by openpyxl because "LX ExpeditionZoneData Lists Copy" is too long
+    # try:
+    #     _ = WardenObjectiveL1
+    #     workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L1 WardenObjective"
+    #     workbook.copy_worksheet(workbook["a"]).title = "L1 WardenObjective ReactorWaves"
+    # except NameError:pass
+    # try:
+    #     _ = WardenObjectiveL2
+    #     workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L2 WardenObjective"
+    #     workbook.copy_worksheet(workbook["a"]).title = "L2 WardenObjective ReactorWaves"
+    # except NameError:pass
+    # try:
+    #     _ = WardenObjectiveL3
+    #     workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L3 WardenObjective"
+    #     workbook.copy_worksheet(workbook["a"]).title = "L3 WardenObjective ReactorWaves"
+    # except NameError:pass
+    # workbook["a"].title = "LX WardenObjective ReactorWaves"
 
-    workbook["LX WardenObjective ReactorWaves"].title = "a" # this weird renaming is used to avoid UserWarnings by openpyxl because "LX ExpeditionZoneData Lists Copy" is too long
-    try:
-        _ = WardenObjectiveL1
-        workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L1 WardenObjective"
-        workbook.copy_worksheet(workbook["a"]).title = "L1 WardenObjective ReactorWaves"
-    except NameError:pass
-    try:
-        _ = WardenObjectiveL2
-        workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L2 WardenObjective"
-        workbook.copy_worksheet(workbook["a"]).title = "L2 WardenObjective ReactorWaves"
-    except NameError:pass
-    try:
-        _ = WardenObjectiveL3
-        workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L3 WardenObjective"
-        workbook.copy_worksheet(workbook["a"]).title = "L3 WardenObjective ReactorWaves"
-    except NameError:pass
-    workbook["a"].title = "LX WardenObjective ReactorWaves"
-
+    # NOTE openpyxl does not copy data validation, so lists that are longer than 20 cells could have the color formatting copied but would not copy the validation
+    # as such, it is better the user see the cell has no formatting than think the cell does
     workbook.remove(workbook["LX ExpeditionZoneData"])
-    workbook.remove(workbook["LX ExpeditionZoneData Lists"])# TODO because the lists can be longer than 20 items long in total, the formatted portion should be copied down to cover all cells with values
-    workbook.remove(workbook["LX WardenObjective"]) # TODO because the horizontal lists can be longer than the formatting, the farthest list could be remembered and the formatting copied that far out
-    workbook.remove(workbook["LX WardenObjective ReactorWaves"]) # TODO because the lists can be longer than 20 items long in total, the formatted portion should be copied down to cover all cells with values
+    workbook.remove(workbook["LX ExpeditionZoneData Lists"])
+    workbook.remove(workbook["LX WardenObjective"])
+    workbook.remove(workbook["LX WardenObjective ReactorWaves"])
 
     workbook.save(filename = writepath)
 
@@ -1244,7 +1245,7 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
 
     # NOTE using interface.save() can take a while (comparatively to other portions of the utility)
     iMeta.save(writepath, "Meta")
-    iExpeditionInTier.save(writepath, "ExpeditionInTier") # TODO because the horizontal lists can be longer than the formatting, the farthest list could be remembered and the formatting copied that far out
+    iExpeditionInTier.save(writepath, "ExpeditionInTier")
     try:
         _ = LayerDataL1
         iExpeditionZoneDataL1.save(writepath, "L1 ExpeditionZoneData")
