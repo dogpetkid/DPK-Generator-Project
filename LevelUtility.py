@@ -48,7 +48,7 @@ devnewlnregex = "(\\\\n|\\\\r){1,2}"
 # S: Sheet (minor changes to the sheet are insignificant to the utility)
 Version = "5.1"
 # relative path to location for datablocks, defaultly its folder should be on the same layer as this project's folder
-blockpath = "../Datablocks/" # TODO create an argument to change the blockpath
+blockpath = os.path.join(os.path.dirname(__file__),"..\\Datablocks\\") # TODO create an argument to change the blockpath
 # default paths to xlsx files when running the program
 defaultpaths = ["in.xlsx"]
 # persistantID of the default rundown to insert levels into
@@ -1076,7 +1076,8 @@ def main():
     args = parser.parse_args()
 
     # create a logs folder if it does not exist already
-    if not os.path.exists("logs"):os.makedirs("logs")
+    logdir = os.path.join(os.path.dirname(__file__),"./logs/")
+    if not os.path.exists(logdir):os.makedirs(logdir)
 
     logformatter = logging.Formatter(fmt="%(asctime)s\t: %(name)s\t: %(levelname)s\t: %(message)s")
     logformatter.converter = time.gmtime
@@ -1086,7 +1087,7 @@ def main():
     logger = logging.getLogger("LevelUtilty")
     logger.setLevel(logging.DEBUG)
 
-    logfilehandler = logging.FileHandler("./logs/"+time.strftime("%Y.%m.%d.%H.%M.%S",time.gmtime())+".LevelUtility.log")
+    logfilehandler = logging.FileHandler(os.path.join(logdir,time.strftime("%Y.%m.%d.%H.%M.%S",time.gmtime())+".LevelUtility.log"))
     logfilehandler.setFormatter(logformatter)
     logger.addHandler(logfilehandler)
 
@@ -1147,7 +1148,7 @@ def main():
             continue
 
         try:
-            UtilityJob(fxlsx, RundownBlock, LevelLayoutDataBlock, WardenObjectiveDataBlock, tierName, expeditionIndex, joblogger) # Utilty job should stay silenced because it is currently unable to write to the log file
+            UtilityJob(fxlsx, RundownBlock, LevelLayoutDataBlock, WardenObjectiveDataBlock, tierName, expeditionIndex, logger=joblogger) # Utilty job should stay silenced because it is currently unable to write to the log file
         except Exception as e:
             # This if condition is to not write this twice in the debug log when something goes wrong
             logger.error("Something went wrong reading the sheet: \""+path+"\"\n\t"+str(e))

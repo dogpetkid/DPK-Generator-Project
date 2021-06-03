@@ -49,9 +49,9 @@ winreserveregex = "[<>:\"/\\\\|?*]"
 # S: Sheet (minor changes to the sheet are insignificant to the utility)
 Version = "5.1"
 # relative path to location for datablocks, defaultly its folder should be on the same layer as this project's folder
-blockpath = "../Datablocks/" # TODO create an argument to change the blockpath
+blockpath = os.path.join(os.path.dirname(__file__),"..\\Datablocks\\") # TODO create an argument to change the blockpath
 # path to template file
-templatepath = "Template for Generator R5.xlsx"
+templatepath = os.path.join(os.path.dirname(__file__),"Template for Generator R5.xlsx")
 # persistentID of the default rundown to insert levels into
 rundowndefault = 26 # R5
 #####
@@ -1045,7 +1045,7 @@ def getExpeditionInTierData(levelIdentifier:str, RundownDataBlock:DatablockIO.da
     except IndexError:
         return [],None,"",None
 
-def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, LevelLayoutDataBlock:DatablockIO.datablock, WardenObjectiveDataBlock:DatablockIO.datablock, logger:logging.Logger=None):
+def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, LevelLayoutDataBlock:DatablockIO.datablock, WardenObjectiveDataBlock:DatablockIO.datablock, targetdir:os.PathLike, logger:logging.Logger=None):
     """
     Have the utility start a job \n
     Take an identifier of which level to reverse (see below) \n
@@ -1088,11 +1088,12 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
         logger.info("The search for \""+desiredReverse+"\" found a nameless level:\t"+str(rundown)+" "+levelTier+" "+str(levelIndex))
 
     strippedLevelName = re.sub(winreserveregex, "", levelName)
+    writepath = os.path.join(targetdir, strippedLevelName+".xlsx")
     try:
-        shutil.copy(templatepath,strippedLevelName+".xlsx")
-        fxlsx = open(strippedLevelName+".xlsx", 'rb+')
+        shutil.copy(templatepath,writepath)
+        fxlsx = open(writepath, 'rb+')
     except PermissionError:
-        raise PermissionError("PermissionError opening \""+strippedLevelName+".xlsx"+"\", is it open?")
+        raise PermissionError("PermissionError opening \""+writepath+"\", is it open?")
 
     iMeta = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "Meta", header=None))
     iExpeditionInTier = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "ExpeditionInTier", header=None))
@@ -1192,7 +1193,7 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
         logger.debug("Problem writing L3 WardenObjective (skipping): "+str(e))
 
 
-    workbook = openpyxl.load_workbook(filename = strippedLevelName+".xlsx")
+    workbook = openpyxl.load_workbook(filename = writepath)
 
     # XXX all of the sheets that were copied lose their data validation
     workbook["LX ExpeditionZoneData Lists"].title = "a" # this weird renaming is used to avoid UserWarnings by openpyxl because "LX ExpeditionZoneData Lists Copy" is too long
@@ -1236,43 +1237,43 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
     workbook.remove(workbook["LX WardenObjective"]) # TODO because the horizontal lists can be longer than the formatting, the farthest list could be remembered and the formatting copied that far out
     workbook.remove(workbook["LX WardenObjective ReactorWaves"]) # TODO because the lists can be longer than 20 items long in total, the formatted portion should be copied down to cover all cells with values
 
-    workbook.save(filename = strippedLevelName+".xlsx")
+    workbook.save(filename = writepath)
 
     logger.debug("Formatted template sheets copied")
 
 
     # NOTE using interface.save() can take a while (comparatively to other portions of the utility)
-    iMeta.save(strippedLevelName+".xlsx", "Meta")
-    iExpeditionInTier.save(strippedLevelName+".xlsx", "ExpeditionInTier") # TODO because the horizontal lists can be longer than the formatting, the farthest list could be remembered and the formatting copied that far out
+    iMeta.save(writepath, "Meta")
+    iExpeditionInTier.save(writepath, "ExpeditionInTier") # TODO because the horizontal lists can be longer than the formatting, the farthest list could be remembered and the formatting copied that far out
     try:
         _ = LayerDataL1
-        iExpeditionZoneDataL1.save(strippedLevelName+".xlsx", "L1 ExpeditionZoneData")
-        iExpeditionZoneDataListsL1.save(strippedLevelName+".xlsx", "L1 ExpeditionZoneData Lists")
+        iExpeditionZoneDataL1.save(writepath, "L1 ExpeditionZoneData")
+        iExpeditionZoneDataListsL1.save(writepath, "L1 ExpeditionZoneData Lists")
     except NameError:pass
     try:
         _ = LayerDataL2
-        iExpeditionZoneDataL2.save(strippedLevelName+".xlsx", "L2 ExpeditionZoneData")
-        iExpeditionZoneDataListsL2.save(strippedLevelName+".xlsx", "L2 ExpeditionZoneData Lists")
+        iExpeditionZoneDataL2.save(writepath, "L2 ExpeditionZoneData")
+        iExpeditionZoneDataListsL2.save(writepath, "L2 ExpeditionZoneData Lists")
     except NameError:pass
     try:
         _ = LayerDataL3
-        iExpeditionZoneDataL3.save(strippedLevelName+".xlsx", "L3 ExpeditionZoneData")
-        iExpeditionZoneDataListsL3.save(strippedLevelName+".xlsx", "L3 ExpeditionZoneData Lists")
+        iExpeditionZoneDataL3.save(writepath, "L3 ExpeditionZoneData")
+        iExpeditionZoneDataListsL3.save(writepath, "L3 ExpeditionZoneData Lists")
     except NameError:pass
     try:
         _ = WardenObjectiveL1
-        iWardenObjectiveL1.save(strippedLevelName+".xlsx", "L1 WardenObjective")
-        iWardenObjectiveReactorWavesL1.save(strippedLevelName+".xlsx", "L1 WardenObjective ReactorWaves")
+        iWardenObjectiveL1.save(writepath, "L1 WardenObjective")
+        iWardenObjectiveReactorWavesL1.save(writepath, "L1 WardenObjective ReactorWaves")
     except NameError:pass
     try:
         _ = WardenObjectiveL2
-        iWardenObjectiveL2.save(strippedLevelName+".xlsx", "L2 WardenObjective")
-        iWardenObjectiveReactorWavesL2.save(strippedLevelName+".xlsx", "L2 WardenObjective ReactorWaves")
+        iWardenObjectiveL2.save(writepath, "L2 WardenObjective")
+        iWardenObjectiveReactorWavesL2.save(writepath, "L2 WardenObjective ReactorWaves")
     except NameError:pass
     try:
         _ = WardenObjectiveL3
-        iWardenObjectiveL3.save(strippedLevelName+".xlsx", "L3 WardenObjective")
-        iWardenObjectiveReactorWavesL3.save(strippedLevelName+".xlsx", "L3 WardenObjective ReactorWaves")
+        iWardenObjectiveL3.save(writepath, "L3 WardenObjective")
+        iWardenObjectiveReactorWavesL3.save(writepath, "L3 WardenObjective ReactorWaves")
     except NameError:pass
 
     logger.debug("Data written to sheets")
@@ -1311,13 +1312,15 @@ def main():
     parser.add_argument('terms', type=str, nargs='*', help='Search term(s) for which levels to convert.')
     parser.add_argument('-n', "--noinput", action='store_true', help='[N]o inputs (which could be annoying in CLI and scripts)')
     parser.add_argument('-v', "--verbosity", type=str.upper, help='Changes console [v]erbosity', choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'], default='INFO')
+    parser.add_argument('-d', "--directory", type=str, help='Directory to write to')
 
     # allow the arguments to be used anywhere needed
     global args
     args = parser.parse_args()
 
     # create a logs folder if it does not exist already
-    if not os.path.exists("logs"):os.makedirs("logs")
+    logdir = os.path.join(os.path.dirname(__file__),"./logs/")
+    if not os.path.exists(logdir):os.makedirs(logdir)
 
     logformatter = logging.Formatter(fmt="%(asctime)s\t: %(name)s\t: %(levelname)s\t: %(message)s")
     logformatter.converter = time.gmtime
@@ -1327,7 +1330,7 @@ def main():
     logger = logging.getLogger("LevelReverseUtilty")
     logger.setLevel(logging.DEBUG)
 
-    logfilehandler = logging.FileHandler("./logs/"+time.strftime("%Y.%m.%d.%H.%M.%S",time.gmtime())+".LevelReverseUtility.log")
+    logfilehandler = logging.FileHandler(os.path.join(logdir,time.strftime("%Y.%m.%d.%H.%M.%S",time.gmtime())+".LevelReverseUtility.log"))
     logfilehandler.setFormatter(logformatter)
     logger.addHandler(logfilehandler)
 
@@ -1350,6 +1353,9 @@ def main():
     LevelLayoutDataBlock = DatablockIO.datablock(open(blockpath+"LevelLayoutDataBlock.json", 'r', encoding="utf8"))
     WardenObjectiveDataBlock = DatablockIO.datablock(open(blockpath+"WardenObjectiveDataBlock.json", 'r', encoding="utf8"))
 
+    if not(args.directory):
+        args.directory = os.path.dirname(__file__)
+
     anythingDone = False
 
     if args.terms == [] and not(args.noinput):
@@ -1366,7 +1372,7 @@ def main():
     for desiredReverse in args.terms:
         logger.info("Working with: \""+desiredReverse+"\"")
         try:
-            if UtilityJob(desiredReverse, RundownDataBlock, LevelLayoutDataBlock, WardenObjectiveDataBlock, joblogger):
+            if UtilityJob(desiredReverse, RundownDataBlock, LevelLayoutDataBlock, WardenObjectiveDataBlock, args.directory, logger=joblogger):
                 logger.info("Finished with: \""+desiredReverse+"\"")
                 anythingDone = True
             else:
