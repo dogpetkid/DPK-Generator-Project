@@ -8,7 +8,11 @@ Template: https://docs.google.com/spreadsheets/d/1ENa6McJnomHa5ugB-VBFjMF62nslj4
 import argparse
 import io
 import json
+import logging
+import os
 import re
+import textwrap
+import time
 import typing
 
 import numpy
@@ -22,7 +26,11 @@ import XlsxInterfacer
 # argparse: used to get arguments in CLI (to decide which files to turn into levels encoding/decoding and which file)
 # io:       used to read from and write to files
 # json:     used to export the data to a json
+# logging:  used to create log files for the tool
+# os:       used to create log directory
 # re:       used to preform regex searches
+# textwrap: used to help format argparse description
+# time:     used to give the log file's name a timestamp and set time to gmttime
 # typing:   used to give types to function parameters
 # numpy:    used to manipulate the inconsistant numpy data read by pandas
 # pandas:   used to read the excel data
@@ -917,14 +925,19 @@ def finalizeData(dictExpeditionInTier:dict, arrdictLevelLayoutBlock:typing.List[
         arrdictWardenObjectiveBlock[2]["internalEnabled"] = levelEnabled and dictExpeditionInTier["ThirdLayerEnabled"]
         arrdictWardenObjectiveBlock[2]["persistentID"] = dictExpeditionInTier["ThirdLayerData"]["ObjectiveData"]["DataBlockId"]
 
-def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, LevelLayoutDataBlock:DatablockIO.datablock, WardenObjectiveDataBlock:DatablockIO.datablock, tier:typing.Union[int,str], index:int, silent:bool=False, debug:bool=False):
+def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, LevelLayoutDataBlock:DatablockIO.datablock, WardenObjectiveDataBlock:DatablockIO.datablock, tier:typing.Union[int,str], index:int, logger:logging.Logger=None):
     """
     Have the utility start a job
     This will take an xlsx file as input (use open(file, 'rb'))
     In addition it will take the Rundown Block, level tier (0-4), and index of the level in the tier
     It will automatically insert the items 
     """
-    if not(silent):print("Starting level utilty job:\t\""+LevelXlsxFile.name+"\"")
+    if logger == None:
+        logger = logging.getLevelName("none")
+        logger.addHandler(logging.NullHandler())
+        logger.propagate = False
+
+    logger.info("Starting level utilty job: \""+LevelXlsxFile.name+"\"")
 
     if (isinstance(tier, int)):
         try:
@@ -948,46 +961,40 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
     try:
         iL1ExpeditionZoneData = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L1 ExpeditionZoneData", header=None))
         iL1ExpeditionZoneDataLists = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L1 ExpeditionZoneData Lists", header=None))
-    except xlrd.biffh.XLRDError:
-        if debug: print("No L1 ExpeditionZoneData")
-    except ValueError:
-        if debug: print("No L1 ExpeditionZoneData")
+        logger.debug("Found L1 ExpeditionZoneData")
+    except (xlrd.biffh.XLRDError, ValueError):
+        logger.debug("No L1 ExpeditionZoneData")
     try:
         iL2ExpeditionZoneData = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L2 ExpeditionZoneData", header=None))
         iL2ExpeditionZoneDataLists = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L2 ExpeditionZoneData Lists", header=None))
-    except xlrd.biffh.XLRDError:
-        if debug: print("No L2 ExpeditionZoneData")
-    except ValueError:
-        if debug: print("No L1 ExpeditionZoneData")
+        logger.debug("Found L2 ExpeditionZoneData")
+    except (xlrd.biffh.XLRDError, ValueError):
+        logger.debug("No L2 ExpeditionZoneData")
     try:
         iL3ExpeditionZoneData = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L3 ExpeditionZoneData", header=None))
         iL3ExpeditionZoneDataLists = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L3 ExpeditionZoneData Lists", header=None))
-    except xlrd.biffh.XLRDError:
-        if debug: print("No L3 ExpeditionZoneData")
-    except ValueError:
-        if debug: print("No L1 ExpeditionZoneData")
+        logger.debug("Found L3 ExpeditionZoneData")
+    except (xlrd.biffh.XLRDError, ValueError):
+        logger.debug("No L3 ExpeditionZoneData")
 
     try:
         iL1WardenObjective = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L1 WardenObjective", header=None))
         iL1WardenObjectiveReactorWaves = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L1 WardenObjective ReactorWaves", header=None))
-    except xlrd.biffh.XLRDError:
-        if debug: print("No L1 WardenObjective")
-    except ValueError:
-        if debug: print("No L1 ExpeditionZoneData")
+        logger.debug("Found L1 WardenObjective")
+    except (xlrd.biffh.XLRDError, ValueError):
+        logger.debug("No L1 WardenObjective")
     try:
         iL2WardenObjective = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L2 WardenObjective", header=None))
         iL2WardenObjectiveReactorWaves = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L2 WardenObjective ReactorWaves", header=None))
-    except xlrd.biffh.XLRDError:
-        if debug: print("No L2 WardenObjective")
-    except ValueError:
-        if debug: print("No L1 ExpeditionZoneData")
+        logger.debug("Found L2 WardenObjective")
+    except (xlrd.biffh.XLRDError, ValueError):
+        logger.debug("No L2 WardenObjective")
     try:
         iL3WardenObjective = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L3 WardenObjective", header=None))
         iL3WardenObjectiveReactorWaves = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L3 WardenObjective ReactorWaves", header=None))
-    except xlrd.biffh.XLRDError:
-        if debug: print("No L3 WardenObjective")
-    except ValueError:
-        if debug: print("No L1 ExpeditionZoneData")
+        logger.debug("Found L3 WardenObjective")
+    except (xlrd.biffh.XLRDError, ValueError):
+        logger.debug("No L3 WardenObjective")
 
     # Convert sheets into dictionaries
     try:dictExpeditionInTier = ExpeditionInTier(iExpeditionInTier)
@@ -1000,11 +1007,11 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
     try:arrdictLevelLayoutBlock[1] = LevelLayoutBlock(iL2ExpeditionZoneData, iL2ExpeditionZoneDataLists)
     except NameError:pass
     except Exception as e:
-        if debug: print("Problem reading L2 LevelLayout (skipping): "+str(e))
+        logger.error("Problem reading L2 LevelLayout (skipping): "+str(e))
     try:arrdictLevelLayoutBlock[2] = LevelLayoutBlock(iL3ExpeditionZoneData, iL3ExpeditionZoneDataLists)
     except NameError:pass
     except Exception as e:
-        if debug: print("Problem reading L3 LevelLayout (skipping): "+str(e))
+        logger.error("Problem reading L3 LevelLayout (skipping): "+str(e))
 
     arrdictWardenObjectiveBlock = [None,None,None]
     try:arrdictWardenObjectiveBlock[0] = WardenObjectiveBlock(iL1WardenObjective, iL1WardenObjectiveReactorWaves)
@@ -1013,14 +1020,16 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
     try:arrdictWardenObjectiveBlock[1] = WardenObjectiveBlock(iL2WardenObjective, iL2WardenObjectiveReactorWaves)
     except NameError:pass
     except Exception as e:
-        if debug: print("Problem reading L2 WardenOjbective (skipping): "+str(e))
+        logger.error("Problem reading L2 WardenOjbective (skipping): "+str(e))
     try:arrdictWardenObjectiveBlock[2] = WardenObjectiveBlock(iL3WardenObjective, iL3WardenObjectiveReactorWaves)
     except NameError:pass
     except Exception as e:
-        if debug: print("Problem reading L3 WardenOjbective (skipping): "+str(e))
+        logger.error("Problem reading L3 WardenOjbective (skipping): "+str(e))
 
     # copy descriptive from ExpeditionInTier into LevelLayout and WardenObjective blocks
     finalizeData(dictExpeditionInTier, arrdictLevelLayoutBlock, arrdictWardenObjectiveBlock)
+
+    logger.debug("Block data finalized")
 
     # Add ExpeditionInTier to RundownBlock
     try:
@@ -1043,58 +1052,57 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
     if arrdictWardenObjectiveBlock[2] != None:
         WardenObjectiveDataBlock.writeblock(arrdictWardenObjectiveBlock[2])
 
-    if not(silent):print("Finished level utilty job:\t\""+LevelXlsxFile.name+"\"")
+    logger.debug("Blocks written to dictionaries")
+
+    logger.info("Finished level utilty job: \""+LevelXlsxFile.name+"\"")
     return True
 
 def main():
     parser = argparse.ArgumentParser(
-        description="""This is a tool created by DPK.
-        This tool can convert xlsx to a bunch of GTFO Datablock pieces and also convert levels from the Datablocks back into the templated form."""
+        prog="DPK LevelUtility",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent("""\
+        This is a tool created by DPK.
+        This tool can convert xlsx to a bunch of GTFO Datablock pieces.
+        """)
     )
-    verbosity = parser.add_mutually_exclusive_group()
 
     parser.add_argument('path', type=str, nargs='*', help='Specific xlsx file(s) to add to datablocks.')
     parser.add_argument('-n', "--noinput", action='store_true', help='[N]o inputs (which could be annoying in CLI and scripts)')
-    verbosity.add_argument('-s', "--silent", action='store_true', help='[S]ilent')
-    verbosity.add_argument('-D', "--debug", action='store_true', help='Enable [D]ebug')
+    parser.add_argument('-v', "--verbosity", type=str.upper, help='Changes console [v]erbosity', choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'], default='INFO')
 
     # allow the arguments to be used anywhere needed
     global args
     args = parser.parse_args()
 
-    if args.silent: args.noinput = args.silent
+    # create a logs folder if it does not exist already
+    if not os.path.exists("logs"):os.makedirs("logs")
 
-    log = open("debug.log","w")
+    logformatter = logging.Formatter(fmt="%(asctime)s\t: %(name)s\t: %(levelname)s\t: %(message)s")
+    logformatter.converter = time.gmtime
+    consoleformatter = logging.Formatter(fmt="%(levelname)s : %(message)s")
+    logformatter.converter = time.gmtime
 
-    def output(s:str, logonly=False):
-        if (not logonly and not args.silent): print(s)
-        log.write(s+"\n")
-        return
+    logger = logging.getLogger("LevelUtilty")
+    logger.setLevel(logging.DEBUG)
 
-    def debug(info:str):
-        output("Debug: "+info, not args.debug)
-        return
+    logfilehandler = logging.FileHandler("./logs/"+time.strftime("%Y.%m.%d.%H.%M.%S",time.gmtime())+".LevelUtility.log")
+    logfilehandler.setFormatter(logformatter)
+    logger.addHandler(logfilehandler)
+
+    consoleloghandler = logging.StreamHandler()
+    consoleloghandler.setLevel(getattr(logging, args.verbosity))
+    consoleloghandler.setFormatter(consoleformatter)
+    logger.addHandler(consoleloghandler)
+
+    joblogger = logger.getChild("job")
 
     # Wait for hit return to continue
     def waitUser():
         input("HIT ENTER TO CONTINUE. ") # waiting on the user won't be written to the log
         return
 
-    # warn user of a warning but don't stop
-    def warnUser(warning:str):
-        output("WARNING: "+warning)
-        return
-
-
-    # warn user of an issue and stop the program due to the issue
-    def issueUser(issue:str):
-        output("ISSUE: "+issue)
-        if(not args.noinput): waitUser()
-        exit()
-        return
-
-
-    debug("Running DPK's Levelutilty with the given arguments:\n\t"+str(args))
+    logger.debug("Running DPK's LevelUtilty with the given arguments:\n\t"+str(args))
 
     paths = args.path
 
@@ -1104,7 +1112,7 @@ def main():
     if paths==[]:
         pathsDefault = True
         paths = defaultpaths
-        if not(args.silent): warnUser("No files given, using default paths.")
+        logger.warning("No files given, using default paths.")
 
     # Open Datablocks to be manipulated
     RundownDataBlock =  DatablockIO.datablock(open(blockpath+"RundownDataBlock.json", 'r+', encoding="utf-8"))
@@ -1112,60 +1120,57 @@ def main():
     WardenObjectiveDataBlock = DatablockIO.datablock(open(blockpath+"WardenObjectiveDataBlock.json", 'r+', encoding="utf8"))
 
     for path in paths:
-        output("Working on: "+path)
+        logger.info("Working on: \""+path+"\"")
         try:
             fxlsx = open(path, 'rb')
         except FileNotFoundError:
-            if (pathsDefault): debug("No default file, skipping: "+path)
-            else: warnUser("Path does not have a file: "+path)
+            if (pathsDefault): logger.debug("No default file, skipping: \""+path+"\"")
+            else: logger.error("Path does not have a file: \""+path+"\"")
             continue
         try:
             iMeta = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "Meta", header=None))
         except xlrd.biffh.XLRDError:
-            warnUser("Missing meta sheet for level: "+path)
+            logger.error("Missing meta sheet for level: \""+path+"\"")
             continue
         try:
             rundownID = iMeta.read(int, 0, 2)
             tierName = iMeta.read(str, 1, 2)
             expeditionIndex = iMeta.read(int, 2, 2)
         except XlsxInterfacer.EmptyCell:
-            warnUser("Missing data on meta sheet: "+path)
+            logger.error("Missing data on meta sheet: \""+path+"\"")
             continue
 
         try:
             RundownBlock = RundownDataBlock.data["Blocks"][RundownDataBlock.find(rundownID)]
         except TypeError as e:
-            if not(args.debug):warnUser("Current blocks lack rundown with id "+str(rundownID)+": \""+path+"\"\n\t"+str(e))
-            else:debug("Current blocks lack rundown with id "+str(rundownID)+": \""+path+"\"\n\t"+str(e))
+            logger.error("Current blocks lack rundown with id "+str(rundownID)+": \""+path+"\"\n\t"+str(e))
             continue
 
         try:
-            # TODO rewrite log output to let the entire program write logs; try using the "logger" import
-            UtilityJob(fxlsx, RundownBlock, LevelLayoutDataBlock, WardenObjectiveDataBlock, tierName, expeditionIndex, silent=True, debug=False) # Utilty job should stay silenced because it is currently unable to write to the log file
+            UtilityJob(fxlsx, RundownBlock, LevelLayoutDataBlock, WardenObjectiveDataBlock, tierName, expeditionIndex, joblogger) # Utilty job should stay silenced because it is currently unable to write to the log file
         except Exception as e:
             # This if condition is to not write this twice in the debug log when something goes wrong
-            if not(args.debug):warnUser("Something went wrong reading the sheet: \""+path+"\"\n\t"+str(e))
-            else:debug("Something went wrong reading the sheet: \""+path+"\"\n\t"+str(e))
+            logger.error("Something went wrong reading the sheet: \""+path+"\"\n\t"+str(e))
             continue
-        output("Finished with: "+path)
+        logger.info("Finished with: \""+path+"\"")
         anythingDone = True
 
 
     # Save manipulated datablocks
     if anythingDone:
-        output("Writing blocks...")
+        logger.info("Writing blocks...")
         RundownDataBlock.writedatablock()
         LevelLayoutDataBlock.writedatablock()
         WardenObjectiveDataBlock.writedatablock()
-        output("Blocks written.")
+        logger.info("Blocks written.")
     else:
-        output("Nothing to write.")
+        logger.info("Nothing to write.")
 
     # handle end of program commands
     if (not anythingDone):
-        warnUser("Nothing happened... are you sure you didn't do anything wrong?")
-    output("Done.")
-    if not(args.noinput):  waitUser()
+        logger.warning("Nothing happened... are you sure you didn't do anything wrong?")
+    logger.info("Done.")
+    if not(args.noinput):waitUser()
 
 if __name__ == "__main__":
     main()

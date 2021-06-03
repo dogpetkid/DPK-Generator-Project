@@ -4,9 +4,12 @@ This is a tool created by DPK
 
 import argparse
 import io
-import json
+import logging
+import os
 import re
 import shutil
+import textwrap
+import time
 import typing
 
 import numpy
@@ -20,10 +23,13 @@ import XlsxInterfacer
 
 # argparse: used to get arguments in CLI (to decide which files to turn into levels encoding/decoding and which file)
 # io:       used to read from and write to files
-# json:     used to export the data to a json
-# re:       used to preform regex searches and replaces
+# logging:  used to create log files for the tool
+# os:       used to create log directory
+# re:       used to sanitize text of newlines and Windows reserved characters
 # shutil:   used to copy the template
-# typing:   used to give types to function parameters
+# textwrap: used to help format argparse description
+# time:     used to give the log file's name a timestamp and set time to gmttime
+# typing:   used to annotate function parameters
 # numpy:    used to manipulate the inconsistant numpy data read by pandas
 # openpyxl: used to copy templated sheets
 # pandas:   used to read the excel data
@@ -46,8 +52,6 @@ Version = "5.1"
 blockpath = "../Datablocks/" # TODO create an argument to change the blockpath
 # path to template file
 templatepath = "Template for Generator R5.xlsx"
-# default paths to xlsx files when running the program
-defaultpaths = ["in.xlsx"]
 # persistentID of the default rundown to insert levels into
 rundowndefault = 26 # R5
 #####
@@ -379,10 +383,7 @@ class ExpeditionZoneDataLists:
         parsedgroupstart = 'A'
 
         for ZoneData in LevelLayout["Zones"]:
-            try:
-                zone = EnumConverter.indexToEnum(ENUMFILE_eLocalZoneIndex, ZoneData["LocalIndex"], False)
-            except KeyError:
-                zone = None # TODO possibly put a warning that a zone is missing a local index
+            zone = EnumConverter.indexToEnum(ENUMFILE_eLocalZoneIndex, ZoneData["LocalIndex"], False)
 
             # EventsOnEnter
             try:
@@ -1044,7 +1045,7 @@ def getExpeditionInTierData(levelIdentifier:str, RundownDataBlock:DatablockIO.da
     except IndexError:
         return [],None,"",None
 
-def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, LevelLayoutDataBlock:DatablockIO.datablock, WardenObjectiveDataBlock:DatablockIO.datablock, silent:bool=True, debug:bool=False):
+def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, LevelLayoutDataBlock:DatablockIO.datablock, WardenObjectiveDataBlock:DatablockIO.datablock, logger:logging.Logger=None):
     """
     Have the utility start a job \n
     Take an identifier of which level to reverse (see below) \n
@@ -1059,33 +1060,39 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
     (DO NOT CONFLATE DATA/TYPES BETWEEN EXAMPLES, IT MAY NOT WORK)
     """
 
+    if logger == None:
+        logger = logging.getLevelName("none")
+        logger.addHandler(logging.NullHandler())
+        logger.propagate = False
+
+    logger.info("Starting reverse utilty job: \""+desiredReverse+"\"")
+
     # check the template version before doing any searching
     iKey = XlsxInterfacer.interface(pandas.read_excel(templatepath, "Key", header=None))
     if iKey.read(str, 0, 5).split(".")[0:2] != Version.split(".")[0:2]:
-        raise Exception("Version mismatch between utility and sheet, incompatible.")
+        logger.critical("Version mismatch between utility and tempalte sheet, incompatible.")
+        return False
 
     ExpeditionInTierData, rundown, levelTier, levelIndex = getExpeditionInTierData(desiredReverse, RundownDataDataBlock)
 
     if (rundown == None or levelTier == "" or levelIndex == None or ExpeditionInTierData==[]):
         # if no such level exists
-        if not(silent):print("The search for \""+desiredReverse+"\" matched no level.")
-        return False
+        raise Exception("The search for \""+desiredReverse+"\" matched no level.")
 
     try:
         # get the name of the level if it exists (so the file name can be the name of the level)
         levelName = RundownDataDataBlock.data["Blocks"][RundownDataDataBlock.find(rundown)][levelTier][levelIndex]["Descriptive"]["PublicName"]
-        if debug:print("The search for \""+desiredReverse+"\" found:",rundown,levelTier,levelIndex,levelName)
+        logger.info("The search for \""+desiredReverse+"\" found:\t"+str(rundown)+" "+levelTier+" "+str(levelIndex)+" "+levelName)
     except KeyError:
         levelName = desiredReverse
-        if debug:print("The search for \""+desiredReverse+"\" found a nameless level:",rundown,levelTier,levelIndex)
+        logger.info("The search for \""+desiredReverse+"\" found a nameless level:\t"+str(rundown)+" "+levelTier+" "+str(levelIndex))
 
     strippedLevelName = re.sub(winreserveregex, "", levelName)
     try:
         shutil.copy(templatepath,strippedLevelName+".xlsx")
         fxlsx = open(strippedLevelName+".xlsx", 'rb+')
     except PermissionError:
-        if not(silent):print("PermissionError opening \""+strippedLevelName+".xlsx"+"\", is it open? Cannot run utility.")
-        return False
+        raise PermissionError("PermissionError opening \""+strippedLevelName+".xlsx"+"\", is it open?")
 
     iMeta = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "Meta", header=None))
     iExpeditionInTier = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "ExpeditionInTier", header=None))
@@ -1095,70 +1102,94 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
         LayerDataL1 = LevelLayoutDataBlock.data["Blocks"][LevelLayoutDataBlock.find(id_)]
         iExpeditionZoneDataL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData", header=None))
         iExpeditionZoneDataListsL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData Lists", header=None))
-    except KeyError:pass
+        logger.debug("Found L1 LevelLayout")
+    except KeyError:
+        logger.debug("No L1 LevelLayout")
     try:
         id_ = ExpeditionInTierData["SecondaryLayout"]
         if id_ == 0:raise KeyError
         LayerDataL2 = LevelLayoutDataBlock.data["Blocks"][LevelLayoutDataBlock.find(id_)]
         iExpeditionZoneDataL2 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData", header=None))
         iExpeditionZoneDataListsL2 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData Lists", header=None))
-    except KeyError:pass
+        logger.debug("Found L2 LevelLayout")
+    except KeyError:
+        logger.debug("No L2 LevelLayout")
     try:
         id_ = ExpeditionInTierData["ThirdLayout"]
         if id_ == 0:raise KeyError
         LayerDataL3 = LevelLayoutDataBlock.data["Blocks"][LevelLayoutDataBlock.find(id_)]
         iExpeditionZoneDataL3 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData", header=None))
         iExpeditionZoneDataListsL3 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX ExpeditionZoneData Lists", header=None))
-    except KeyError:pass
+        logger.debug("Found L3 LevelLayout")
+    except KeyError:
+        logger.debug("No L3 LevelLayout")
     try:
         id_ = ExpeditionInTierData["MainLayerData"]["ObjectiveData"]["DataBlockId"]
         if id_ == 0:raise KeyError
         WardenObjectiveL1 = WardenObjectiveDataBlock.data["Blocks"][WardenObjectiveDataBlock.find(id_)]
         iWardenObjectiveL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective", header=None))
         iWardenObjectiveReactorWavesL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective ReactorWaves", header=None))
-    except KeyError:pass
+        logger.debug("Found L1 WardenObjective")
+    except KeyError:
+        logger.debug("No L1 WardenObjective")
     try:
         id_ = ExpeditionInTierData["SecondaryLayerData"]["ObjectiveData"]["DataBlockId"]
         if id_ == 0:raise KeyError
         WardenObjectiveL2 = WardenObjectiveDataBlock.data["Blocks"][WardenObjectiveDataBlock.find(id_)]
         iWardenObjectiveL2 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective", header=None))
         iWardenObjectiveReactorWavesL2 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective ReactorWaves", header=None))
-    except KeyError:pass
+        logger.debug("Found L2 WardenObjective")
+    except KeyError:
+        logger.debug("No L2 WardenObjective")
     try:
         id_ = ExpeditionInTierData["ThirdLayerData"]["ObjectiveData"]["DataBlockId"]
         if id_ == 0:raise KeyError
         WardenObjectiveL3 = WardenObjectiveDataBlock.data["Blocks"][WardenObjectiveDataBlock.find(id_)]
         iWardenObjectiveL3 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective", header=None))
         iWardenObjectiveReactorWavesL3 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective ReactorWaves", header=None))
-    except KeyError:pass
+        logger.debug("Found L3 WardenObjective")
+    except KeyError:
+        logger.debug("No L3 WardenObjective")
     fxlsx.close()
 
     frameMeta(iMeta, rundown, levelTier, levelIndex)
     frameExpeditionInTier(iExpeditionInTier, ExpeditionInTierData)
     try:
         framesLevelLayoutBlock(iExpeditionZoneDataL1, iExpeditionZoneDataListsL1, LayerDataL1)
+        logger.debug("Finished L1 LevelLayout")
     except NameError:pass
-    except Exception as e:raise Exception("Problem reading L1 LevelLayout (skipping): "+str(e))
+    except Exception as e:
+        logger.debug("Problem writing L1 LevelLayout (skipping): "+str(e))
     try:
         framesLevelLayoutBlock(iExpeditionZoneDataL2, iExpeditionZoneDataListsL2, LayerDataL2)
+        logger.debug("Finished L2 LevelLayout")
     except NameError:pass
-    except Exception as e:raise Exception("Problem reading L2 LevelLayout (skipping): "+str(e))
+    except Exception as e:
+        logger.debug("Problem writing L2 LevelLayout (skipping): "+str(e))
     try:
         framesLevelLayoutBlock(iExpeditionZoneDataL3, iExpeditionZoneDataListsL3, LayerDataL3)
+        logger.debug("Finished L2 LevelLayout")
     except NameError:pass
-    except Exception as e:raise Exception("Problem reading L3 LevelLayout (skipping): "+str(e))
+    except Exception as e:
+        logger.debug("Problem writing L3 LevelLayout (skipping): "+str(e))
     try:
         framesWardenObjectiveBlock(iWardenObjectiveL1, iWardenObjectiveReactorWavesL1, WardenObjectiveL1)
+        logger.debug("Finished L1 WardenObjective")
     except NameError:pass
-    except Exception as e:raise Exception("Problem reading L1 WardenObjective (skipping): "+str(e))
+    except Exception as e:
+        logger.debug("Problem writing L1 WardenObjective (skipping): "+str(e))
     try:
         framesWardenObjectiveBlock(iWardenObjectiveL2, iWardenObjectiveReactorWavesL2, WardenObjectiveL2)
+        logger.debug("Finished L2 WardenObjective")
     except NameError:pass
-    except Exception as e:raise Exception("Problem reading L2 WardenObjective (skipping): "+str(e))
+    except Exception as e:
+        logger.debug("Problem writing L2 WardenObjective (skipping): "+str(e))
     try:
         framesWardenObjectiveBlock(iWardenObjectiveL3, iWardenObjectiveReactorWavesL3, WardenObjectiveL3)
+        logger.debug("Finished L3 WardenObjective")
     except NameError:pass
-    except Exception as e:raise Exception("Problem reading L3 WardenObjective (skipping): "+str(e))
+    except Exception as e:
+        logger.debug("Problem writing L3 WardenObjective (skipping): "+str(e))
 
 
     workbook = openpyxl.load_workbook(filename = strippedLevelName+".xlsx")
@@ -1207,7 +1238,10 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
 
     workbook.save(filename = strippedLevelName+".xlsx")
 
+    logger.debug("Formatted template sheets copied")
 
+
+    # NOTE using interface.save() can take a while (comparatively to other portions of the utility)
     iMeta.save(strippedLevelName+".xlsx", "Meta")
     iExpeditionInTier.save(strippedLevelName+".xlsx", "ExpeditionInTier") # TODO because the horizontal lists can be longer than the formatting, the farthest list could be remembered and the formatting copied that far out
     try:
@@ -1241,29 +1275,110 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
         iWardenObjectiveReactorWavesL3.save(strippedLevelName+".xlsx", "L3 WardenObjective ReactorWaves")
     except NameError:pass
 
+    logger.debug("Data written to sheets")
+
+    logger.info("Finished reverse utilty job: \""+desiredReverse+"\"")
     return True
 
-def SearchJob(desiredReverse:str, RundownDataBlock, LevelLayoutDataBlock, WardenObjectiveDataBlock, silent:bool=True, debug:bool=False):
+def SearchJob(desiredReverse:str, RundownDataBlock, LevelLayoutDataBlock, WardenObjectiveDataBlock, logger:logging.Logger=None):
     """
     Secondary job meant specifically to search for and display the search result for a level
     """
+    if logger == None:
+        logger = logging.getLevelName("none")
+        logger.addHandler(logging.NullHandler())
+        logger.propagate = False
     # TODO finish the SearchJob
-    pass
+    logger.critical("SearchJob is not written")
 
 def main():
-    # TODO get level via input or args
-    # level to reverse
-    desiredReverse = "Rundown 005,A,0"
+    parser = argparse.ArgumentParser(
+        prog="DPK LevelReverseUtility",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent("""\
+        This is a tool created by DPK.
+        This tool can convert a level from the GTFO Datablocks into excel templated files.
+        This tool searches the blocks for the levels you want to convert, search terms are formatted like below (including quotes for names with spaces):
+            "Cuernos"
+            "Contact,Cuernos"
+            "Contact,C,2"
+            "Rundown 004 - EA,C,2"
+            "Rundown 004 - EA,2,2"
+            "25,2,2"
+        """)
+    )
+
+    parser.add_argument('terms', type=str, nargs='*', help='Search term(s) for which levels to convert.')
+    parser.add_argument('-n', "--noinput", action='store_true', help='[N]o inputs (which could be annoying in CLI and scripts)')
+    parser.add_argument('-v', "--verbosity", type=str.upper, help='Changes console [v]erbosity', choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'], default='INFO')
+
+    # allow the arguments to be used anywhere needed
+    global args
+    args = parser.parse_args()
+
+    # create a logs folder if it does not exist already
+    if not os.path.exists("logs"):os.makedirs("logs")
+
+    logformatter = logging.Formatter(fmt="%(asctime)s\t: %(name)s\t: %(levelname)s\t: %(message)s")
+    logformatter.converter = time.gmtime
+    consoleformatter = logging.Formatter(fmt="%(levelname)s : %(message)s")
+    logformatter.converter = time.gmtime
+
+    logger = logging.getLogger("LevelReverseUtilty")
+    logger.setLevel(logging.DEBUG)
+
+    logfilehandler = logging.FileHandler("./logs/"+time.strftime("%Y.%m.%d.%H.%M.%S",time.gmtime())+".LevelReverseUtility.log")
+    logfilehandler.setFormatter(logformatter)
+    logger.addHandler(logfilehandler)
+
+    consoleloghandler = logging.StreamHandler()
+    consoleloghandler.setLevel(getattr(logging, args.verbosity))
+    consoleloghandler.setFormatter(consoleformatter)
+    logger.addHandler(consoleloghandler)
+
+    joblogger = logger.getChild("job")
+
+    # Wait for hit return to continue
+    def waitUser():
+        input("HIT ENTER TO CONTINUE. ") # waiting on the user won't be written to the log
+        return
+
+    logger.debug("Running DPK's LevelReverseUtilty with the given arguments:\n\t"+str(args))
 
     # Open Datablocks to get level from
     RundownDataBlock =  DatablockIO.datablock(open(blockpath+"RundownDataBlock.json", 'r', encoding="utf-8"))
     LevelLayoutDataBlock = DatablockIO.datablock(open(blockpath+"LevelLayoutDataBlock.json", 'r', encoding="utf8"))
     WardenObjectiveDataBlock = DatablockIO.datablock(open(blockpath+"WardenObjectiveDataBlock.json", 'r', encoding="utf8"))
 
-    # TODO allow for program to take a list of levels to run utility on
-    UtilityJob(desiredReverse, RundownDataBlock, LevelLayoutDataBlock, WardenObjectiveDataBlock, silent=False, debug=True)
+    anythingDone = False
+
+    if args.terms == [] and not(args.noinput):
+        print(parser.description)
+        logger.info("No term arguments given, entering interactive mode.")
+        print("Input search terms below and leave line blank to continue.")
+        inputterm = input()
+        while inputterm != "":
+            # regex substitute to remove quotes on the outside of input terms in interactive mode
+            args.terms.append(re.sub("\"(.*)\"","\\1",inputterm))
+            inputterm = input()
+        logger.debug("New arguments after interactive mode.:\n\t"+str(args))
+
+    for desiredReverse in args.terms:
+        logger.info("Working with: \""+desiredReverse+"\"")
+        try:
+            if UtilityJob(desiredReverse, RundownDataBlock, LevelLayoutDataBlock, WardenObjectiveDataBlock, joblogger):
+                logger.info("Finished with: \""+desiredReverse+"\"")
+                anythingDone = True
+            else:
+                logger.info("Failed with: \""+desiredReverse+"\"")
+        except Exception as e:
+            logger.error("Exception with: \""+desiredReverse+"\"\n\t"+str(e))
 
     # TODO allow for a secondary job just to search for a level but not run the reverse tool on it
+
+    if not anythingDone:logger.warning("Nothing happened... are you sure you didn't do anything wrong?")
+    logger.info("Done.")
+    if not(args.noinput):waitUser()
 
 if __name__ == "__main__":
     main()
