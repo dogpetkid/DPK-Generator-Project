@@ -36,8 +36,13 @@ import XlsxInterfacer
 # pandas:   used to read the excel data
 # xlrd:     used to catch and throw excel errors when initially reading the sheets
 
-# a regex to capture the newlines the devs put into their json
-devnewlnregex = "(\\\\n|\\\\r){1,2}"
+# a regex to capture the newlines used in the sheets
+sheetnewlnregex = "(\\\\r|\\\\n){1,2}"
+devlf = "\n"
+devcrlf = "\r\n"
+# a regex to capture the tabs used in the sheets
+sheettabregex = "\\\\t"
+devtb = "\t"
 
 # Settings
 #####
@@ -309,9 +314,9 @@ def ExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface):
     iExpeditionInTier.readIntoDict(bool, 12, 10, data["Descriptive"], "IsExtraExpedition")
     iExpeditionInTier.readIntoDict(int, 12, 11, data["Descriptive"], "ExpeditionDepth")
     data["Descriptive"]["EstimatedDuration"] = iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 12)
-    data["Descriptive"]["ExpeditionDescription"] = re.sub(devnewlnregex,"\r\n", iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 13))
-    data["Descriptive"]["RoleplayedWardenIntel"] = re.sub(devnewlnregex,"\r\n", iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 14))
-    data["Descriptive"]["DevInfo"] = re.sub(devnewlnregex,"\n", iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 15))
+    data["Descriptive"]["ExpeditionDescription"] = re.sub(sheetnewlnregex, devcrlf, iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 13))
+    data["Descriptive"]["RoleplayedWardenIntel"] = re.sub(sheetnewlnregex, devcrlf, iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 14))
+    data["Descriptive"]["DevInfo"] = re.sub(sheetnewlnregex, devlf, iExpeditionInTier.read(XlsxInterfacer.blankable, 12, 15))
     data["Seeds"] = {}
     iExpeditionInTier.readIntoDict(int, 0, 6, data["Seeds"], "BuildSeed")
     iExpeditionInTier.readIntoDict(int, 1, 6, data["Seeds"], "FunctionMarkerOffset")
@@ -473,7 +478,9 @@ class ExpeditionZoneDataLists:
             Snippet = {}
             iExpeditionZoneDataLists.readIntoDict(str, startcolLocalLogFiles+2, row, Snippet, "FileName")
             iExpeditionZoneDataLists.readIntoDict(str, startcolLocalLogFiles+3, row, Snippet, "FileContent")
-            try:Snippet["FileContent"] = re.sub(devnewlnregex,"\r\n", Snippet["FileContent"])
+            try:
+                Snippet["FileContent"] = re.sub(sheetnewlnregex, devcrlf, Snippet["FileContent"])
+                Snippet["FileContent"] = re.sub(sheettabregex, devtb, Snippet["FileContent"])
             except KeyError:pass
             iExpeditionZoneDataLists.readIntoDict(int, startcolLocalLogFiles+4, row, Snippet, "AttachedAudioFile")
             # TODO convert sound placeholders

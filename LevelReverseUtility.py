@@ -35,8 +35,13 @@ import XlsxInterfacer
 # pandas:   used to read the excel data
 # xlrd:     used to catch and throw excel errors when initially reading the sheets
 
-# a regex to capture the newlines the devs put into their json
-devnewlnregex = "(\\\\n|\\\\r){1,2}"
+# a regex to capture the newlines the devs put into the json
+devnewlnregex = "(\r|\n){1,2}"
+sheetlf = "\\\\n"
+sheetcrlf = "\\\\r\\\\n"
+# a regex to capture the tabs the debs put into the json
+devtabregex = "\t"
+sheettb = "\\\\t"
 # a regex to capture the Windows Reserved characters; see https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
 winreserveregex = "[<>:\"/\\\\|?*]"
 
@@ -309,9 +314,18 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
         iExpeditionInTier.writeFromDict(12, 11, ExpeditionInTierData["Descriptive"], "ExpeditionDepth")
         iExpeditionInTier.writeFromDict(12, 12, ExpeditionInTierData["Descriptive"], "EstimatedDuration")
         # TODO regex replace new lines to be "\n"
-        iExpeditionInTier.writeFromDict(12, 13, ExpeditionInTierData["Descriptive"], "ExpeditionDescription")
-        iExpeditionInTier.writeFromDict(12, 14, ExpeditionInTierData["Descriptive"], "RoleplayedWardenIntel")
-        iExpeditionInTier.writeFromDict(12, 15, ExpeditionInTierData["Descriptive"], "DevInfo")
+        try:
+            desc = re.sub(devnewlnregex, sheetcrlf, ExpeditionInTierData["Descriptive"]["ExpeditionDescription"])
+            iExpeditionInTier.write(desc, 12, 13)
+        except KeyError:pass
+        try:
+            desc = re.sub(devnewlnregex, sheetcrlf, ExpeditionInTierData["Descriptive"]["RoleplayedWardenIntel"])
+            iExpeditionInTier.write(desc, 12, 14)
+        except KeyError:pass
+        try:
+            desc = re.sub(devnewlnregex, sheetlf, ExpeditionInTierData["Descriptive"]["DevInfo"])
+            iExpeditionInTier.write(desc, 12, 15)
+        except KeyError:pass
     except KeyError:pass
 
     try:
@@ -583,7 +597,11 @@ class ExpeditionZoneDataLists:
 
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+1, row, Snippet, "Parsed Group")
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+2, row, Snippet, "FileName")
-            iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+3, row, Snippet, "FileContent")
+            try:
+                content = re.sub(devnewlnregex, sheetcrlf, Snippet["FileContent"])
+                content = re.sub(devtabregex, sheettb, content)
+                iExpeditionZoneDataLists.write(content, startcolLocalLogFiles+3, row)
+            except KeyError:pass
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+4, row, Snippet, "AttachedAudioFile")
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+5, row, Snippet, "AttachedAudioByteSize")
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+6, row, Snippet, "PlayerDialogToTriggerAfterAudio")
@@ -1365,8 +1383,8 @@ def main():
         print("Input search terms below and leave line blank to continue.")
         inputterm = input()
         while inputterm != "":
-            # regex substitute to remove quotes on the outside of input terms in interactive mode
-            args.terms.append(re.sub("\"(.*)\"","\\1",inputterm))
+            # regex substitute to remove (double or single) quotes on the outside of input terms in interactive mode
+            args.terms.append(re.sub("^(\"|\')(.*)\\1$","\\2",inputterm))
             inputterm = input()
         logger.debug("New arguments after interactive mode.:\n\t"+str(args))
 
