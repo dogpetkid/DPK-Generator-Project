@@ -36,7 +36,7 @@ import XlsxInterfacer
 # xlrd:     used to catch and throw excel errors when initially reading the sheets
 
 # a regex to capture the newlines the devs put into the json
-devnewlnregex = "(\r|\n){1,2}"
+devnewlnregex = "\r?\n" # TODO figure out if this regex hurts the integrity of audio logs' text
 sheetlf = "\\\\n"
 sheetcrlf = "\\\\r\\\\n"
 # a regex to capture the tabs the debs put into the json
@@ -184,7 +184,7 @@ def FunctionPlacementData(interface:XlsxInterfacer.interface, data:dict, col:int
     col and row define the upper left value (not header) \n
     horizontal is true if the values are in the same row
     """
-    try:ZonePlacementData(interface, data["PlacementWeights"], col, row, horizontal)
+    try:ZonePlacementWeights(interface, data["PlacementWeights"], col, row, horizontal)
     except KeyError:pass
     interface.writeFromDict(col+3*horizontal, row+3*(not horizontal), data, "AreaSeedOffset")
     interface.writeFromDict(col+4*horizontal, row+4*(not horizontal), data, "MarkerSeedOffset")
@@ -606,11 +606,13 @@ class ExpeditionZoneDataLists:
 
             iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+6, row, Snippet, "LocalLogFiles")
 
-            writeEnumFromDict(ENUMFILE_TERM_State, iExpeditionZoneDataLists, startcolTerminalPlacements+7, row, Snippet, "StartingState")
+            try:
+                writeEnumFromDict(ENUMFILE_TERM_State, iExpeditionZoneDataLists, startcolTerminalPlacements+7, row, Snippet["StartingStateData"], "StartingState")
 
-            iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+8, row, Snippet, "AudioEventEnter")
-            iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+9, row, Snippet, "AudioEventExit")
-            # TODO convert sound placeholders
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+8, row, Snippet["StartingStateData"], "AudioEventEnter")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+9, row, Snippet["StartingStateData"], "AudioEventExit")
+                # TODO convert sound placeholders
+            except KeyError:pass
 
             row+= 1
 
@@ -924,6 +926,7 @@ def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWarde
     iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+4, WardenObjective, "SpecialTerminalCommand")
     iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+5, WardenObjective, "SpecialTerminalCommandDesc")
     try:
+        # TODO if an output string is blank, it will not be placed on the list which may leave a hole in the list
         itercol,iterrow = 1, rowLightsOnFromBeginning+6
         for output in WardenObjective["PostCommandOutput"]:
             iWardenObjective.write(output, itercol, iterrow)
@@ -1202,37 +1205,37 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
         logger.debug("Finished L1 LevelLayout")
     except NameError:pass
     except Exception as e:
-        logger.debug("Problem writing L1 LevelLayout (skipping): "+str(e))
+        logger.error("Problem writing L1 LevelLayout (skipping layout): "+str(e))
     try:
         framesLevelLayoutBlock(iExpeditionZoneDataL2, iExpeditionZoneDataListsL2, LayerDataL2)
         logger.debug("Finished L2 LevelLayout")
     except NameError:pass
     except Exception as e:
-        logger.debug("Problem writing L2 LevelLayout (skipping): "+str(e))
+        logger.error("Problem writing L2 LevelLayout (skipping layout): "+str(e))
     try:
         framesLevelLayoutBlock(iExpeditionZoneDataL3, iExpeditionZoneDataListsL3, LayerDataL3)
         logger.debug("Finished L2 LevelLayout")
     except NameError:pass
     except Exception as e:
-        logger.debug("Problem writing L3 LevelLayout (skipping): "+str(e))
+        logger.error("Problem writing L3 LevelLayout (skipping layout): "+str(e))
     try:
         framesWardenObjectiveBlock(iWardenObjectiveL1, iWardenObjectiveReactorWavesL1, WardenObjectiveL1)
         logger.debug("Finished L1 WardenObjective")
     except NameError:pass
     except Exception as e:
-        logger.debug("Problem writing L1 WardenObjective (skipping): "+str(e))
+        logger.error("Problem writing L1 WardenObjective (skipping objective): "+str(e))
     try:
         framesWardenObjectiveBlock(iWardenObjectiveL2, iWardenObjectiveReactorWavesL2, WardenObjectiveL2)
         logger.debug("Finished L2 WardenObjective")
     except NameError:pass
     except Exception as e:
-        logger.debug("Problem writing L2 WardenObjective (skipping): "+str(e))
+        logger.error("Problem writing L2 WardenObjective (skipping objective): "+str(e))
     try:
         framesWardenObjectiveBlock(iWardenObjectiveL3, iWardenObjectiveReactorWavesL3, WardenObjectiveL3)
         logger.debug("Finished L3 WardenObjective")
     except NameError:pass
     except Exception as e:
-        logger.debug("Problem writing L3 WardenObjective (skipping): "+str(e))
+        logger.error("Problem writing L3 WardenObjective (skipping objective): "+str(e))
 
 
     workbook = openpyxl.load_workbook(filename = writepath)

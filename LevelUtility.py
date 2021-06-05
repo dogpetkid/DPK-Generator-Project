@@ -37,7 +37,7 @@ import XlsxInterfacer
 # xlrd:     used to catch and throw excel errors when initially reading the sheets
 
 # a regex to capture the newlines used in the sheets
-sheetnewlnregex = "(\\\\r|\\\\n){1,2}"
+sheetnewlnregex = "(\\\\r)?\\\\n"
 devlf = "\n"
 devcrlf = "\r\n"
 # a regex to capture the tabs used in the sheets
@@ -311,8 +311,8 @@ def LayerData(interface:XlsxInterfacer.interface, col:int, row:int):
     EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveWinCondition, data["ObjectiveData"], "WinCondition")
     data["ObjectiveData"]["ZonePlacementDatas"] = ZonePlacementWeightsList(interface, col+5, row+15, horizontal=True)
     data["ArtifactData"] = {}
-    interface.readIntoDict(int, col+5, row+20, data["ArtifactData"], "ArtifactAmountMulti")
-    interface.readIntoDict(int, col+5, row+21, data["ArtifactData"], "ArtifactLayerDistributionDataID")
+    interface.readIntoDict(float, col+5, row+20, data["ArtifactData"], "ArtifactAmountMulti")
+    interface.readIntoDict(str, col+5, row+21, data["ArtifactData"], "ArtifactLayerDistributionDataID")
     DatablockIO.nameInDict(DATABLOCK_ArtifactDistributionDataBlock, data["ArtifactData"], "ArtifactLayerDistributionDataID")
     data["ArtifactData"]["ArtifactZoneDistributions"] = []
     itercol,iterrow = col+5, row+22
@@ -643,8 +643,8 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     EnumConverter.enumInDict(ENUMFILE_SubComplex, data, "SubComplex")
     iExpeditionZoneData.readIntoDict(str, 4, row, data, "CustomGeomorph")
     data["CoverageMinMax"] = {}
-    data["CoverageMinMax"]["x"] = iExpeditionZoneData.read(int, 5, row)
-    data["CoverageMinMax"]["y"] = iExpeditionZoneData.read(int, 6, row)
+    data["CoverageMinMax"]["x"] = iExpeditionZoneData.read(float, 5, row)
+    data["CoverageMinMax"]["y"] = iExpeditionZoneData.read(float, 6, row)
     iExpeditionZoneData.readIntoDict(str, 7, row, data, "BuildFromLocalIndex")
     EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, data, "BuildFromLocalIndex")
     iExpeditionZoneData.readIntoDict(str, 8, row, data, "StartPosition")
@@ -707,7 +707,7 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+12, row, data, "BigPickupDistributionInZone")
     DatablockIO.nameInDict(DATABLOCK_BigPickupDistribution, data, "BigPickupDistributionInZone")
     data["TerminalPlacements"] = listdata.TerminalPlacements(zonestr)
-    iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+13, row, data, "ForbidTerminalsInZone")
+    iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+14, row, data, "ForbidTerminalsInZone")
     data["PowerGeneratorPlacements"] = listdata.PowerGeneratorPlacements(zonestr)
     data["DisinfectionStationPlacements"] = listdata.DisinfectionStationPlacements(zonestr)
 
@@ -827,7 +827,7 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     data["GoToWinConditionHelp_CustomGeo"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 16)
     data["GoToWinCondition_ToMainLayer"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 17)
     data["GoToWinConditionHelp_ToMainLayer"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 18)
-    iWardenObjective.readIntoDict(int, 1, 19, data, "ShowHelpDelay")
+    iWardenObjective.readIntoDict(float, 1, 19, data, "ShowHelpDelay")
 
     data["WavesOnElevatorLand"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+1, horizontal=True)
     iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+6, data, "WaveOnElevatorWardenIntel")
@@ -1038,11 +1038,11 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
     try:arrdictLevelLayoutBlock[1] = LevelLayoutBlock(iL2ExpeditionZoneData, iL2ExpeditionZoneDataLists)
     except NameError:pass
     except Exception as e:
-        logger.error("Problem reading L2 LevelLayout (skipping): "+str(e))
+        logger.error("Problem reading L2 LevelLayout (skipping layout): "+str(e))
     try:arrdictLevelLayoutBlock[2] = LevelLayoutBlock(iL3ExpeditionZoneData, iL3ExpeditionZoneDataLists)
     except NameError:pass
     except Exception as e:
-        logger.error("Problem reading L3 LevelLayout (skipping): "+str(e))
+        logger.error("Problem reading L3 LevelLayout (skipping layout): "+str(e))
 
     arrdictWardenObjectiveBlock = [None,None,None]
     try:arrdictWardenObjectiveBlock[0] = WardenObjectiveBlock(iL1WardenObjective, iL1WardenObjectiveReactorWaves)
@@ -1051,11 +1051,11 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
     try:arrdictWardenObjectiveBlock[1] = WardenObjectiveBlock(iL2WardenObjective, iL2WardenObjectiveReactorWaves)
     except NameError:pass
     except Exception as e:
-        logger.error("Problem reading L2 WardenOjbective (skipping): "+str(e))
+        logger.error("Problem reading L2 WardenOjbective (skipping objective): "+str(e))
     try:arrdictWardenObjectiveBlock[2] = WardenObjectiveBlock(iL3WardenObjective, iL3WardenObjectiveReactorWaves)
     except NameError:pass
     except Exception as e:
-        logger.error("Problem reading L3 WardenOjbective (skipping): "+str(e))
+        logger.error("Problem reading L3 WardenOjbective (skipping objective): "+str(e))
 
     # copy descriptive from ExpeditionInTier into LevelLayout and WardenObjective blocks
     finalizeData(dictExpeditionInTier, arrdictLevelLayoutBlock, arrdictWardenObjectiveBlock)
