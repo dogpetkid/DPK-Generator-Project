@@ -14,8 +14,12 @@ def indexToEnum(enum:io.FileIO, index:int, force:bool=True):
     It will return the name of the enum value with said index \n
     When force is true, the function will not check if the value is not actually a number
     """
-    enum.seek(0)
-    lines = enum.readlines()
+    try:
+        enum.seek(0)
+        lines = enum.readlines()
+    except AttributeError:
+        if(force):raise AttributeError("Missing Enum File to convert \""+str(index)+"\"")
+        else:return index
     try:
         # remove the \n value from the line since the name should not contain the newline
         return lines[index].replace("\n","")
@@ -32,8 +36,11 @@ def enumToIndex(enum:io.FileIO, name:str, textmode:bool=False):
     When textmode is true, the enum is to be represented as text (and therefore the function should return)
     """
     if(textmode):return name
-    enum.seek(0)
-    index = 0
+    try:
+        enum.seek(0)
+        index = 0
+    except AttributeError:
+        raise AttributeError("Missing Enum File to convert \""+str(name)+"\"")
     # iterate through all enum names without the \n (since the file will read \n)
     for line in [l.replace("\n","") for l in enum.readlines()]:
         if name==line:
