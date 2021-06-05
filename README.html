@@ -1,641 +1,556 @@
-<h1 id="dpk-generator-project">DPK Generator Project</h1>
-<!-- Author: Dogpetkid -->
-<!-- Date: 2020-11-06 -->
-<!-- Revised: 2020-11-22 -->
-<style>
-  body {
-    background-color: #1e1e1e
-  }
-  *:not(a) {
-    color: #d4d4d4
-  }
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>README</title><link href='https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css' /><style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color:#ffffff; --text-color:#333333; --select-text-bg-color:#B5D6FC; --select-text-font-color:auto; --monospace:"Lucida Console",Consolas,"Courier",monospace; --title-bar-height:20px; }
+.mac-os-11 { --title-bar-height:28px; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; bottom: 0px; top: 0px; left: 0px; right: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; tab-size: 4; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; overflow-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 36px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+.typora-export .task-list-item input { pointer-events: none; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+  .CodeMirror-sizer { margin-left: 0px !important; }
+  .CodeMirror-gutters { display: none !important; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; image-orientation: from-image; }
+button, input, select, textarea { color: inherit; font: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 4; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px; }
+tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-diagram-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li blockquote { margin: 1rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; font-variant-ligatures: no-common-ligatures; }
+  #write { margin-top: 0px; padding-top: 0px; border-color: transparent !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  .typora-export #write { break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+  .is-mac table { break-inside: avoid; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+#write.first-line-indent p > .md-image:only-child:not(.md-img-error) img { left: -2em; position: relative; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+.MathJax_ref { fill: currentcolor; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus, [contenteditable="false"]:active, [contenteditable="false"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.8; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.md-inline-math .MathJax_SVG .noError { display: none !important; }
+.html-for-mac .inline-math-svg .MathJax_SVG { vertical-align: 0.2px; }
+.md-math-block .MathJax_SVG_Display { text-align: center; margin: 0px; position: relative; text-indent: 0px; max-width: none; max-height: none; min-height: 0px; min-width: 100%; width: auto; overflow-y: hidden; display: block !important; }
+.MathJax_SVG_Display, .md-inline-math .MathJax_SVG_Display { width: auto; margin: inherit; display: inline-block !important; }
+.MathJax_SVG .MJX-monospace { font-family: var(--monospace); }
+.MathJax_SVG .MJX-sans-serif { font-family: sans-serif; }
+.MathJax_SVG { display: inline; font-style: normal; font-weight: 400; line-height: normal; zoom: 90%; text-indent: 0px; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; overflow-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0px; min-height: 0px; border: 0px; padding: 0px; margin: 0px; }
+.MathJax_SVG * { transition: none 0s ease 0s; }
+.MathJax_SVG_Display svg { vertical-align: middle !important; margin-bottom: 0px !important; margin-top: 0px !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="flow"] svg, [lang="mermaid"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+mark { background: rgb(255, 255, 0); color: rgb(0, 0, 0); }
+.md-html-inline .md-plain, .md-html-inline strong, mark .md-inline-math, mark strong { color: inherit; }
+mark .md-meta { color: rgb(0, 0, 0); opacity: 0.3 !important; }
+@media print {
+  .typora-export h1, .typora-export h2, .typora-export h3, .typora-export h4, .typora-export h5, .typora-export h6 { break-inside: avoid; }
+}
+.md-diagram-panel .messageText { stroke: none !important; }
+.md-diagram-panel .start-state { fill: var(--node-fill); }
+.md-diagram-panel .edgeLabel rect { opacity: 1 !important; }
+.md-require-zoom-fix foreignobject { font-size: var(--mermaid-font-zoom); }
+
+
+:root {
+    --side-bar-bg-color: #fafafa;
+    --control-text-color: #777;
+}
+
+@include-when-export url(https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext);
+
+/* open-sans-regular - latin-ext_latin */
+  /* open-sans-italic - latin-ext_latin */
+    /* open-sans-700 - latin-ext_latin */
+    /* open-sans-700italic - latin-ext_latin */
+  html {
+    font-size: 16px;
+}
+
+body {
+    font-family: "Open Sans","Clear Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: rgb(51, 51, 51);
+    line-height: 1.6;
+}
+
+#write {
+    max-width: 860px;
+  	margin: 0 auto;
+  	padding: 30px;
+    padding-bottom: 100px;
+}
+
+@media only screen and (min-width: 1400px) {
+	#write {
+		max-width: 1024px;
+	}
+}
+
+@media only screen and (min-width: 1800px) {
+	#write {
+		max-width: 1200px;
+	}
+}
+
+#write > ul:first-child,
+#write > ol:first-child{
+    margin-top: 30px;
+}
+
+a {
+    color: #4183C4;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    position: relative;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    line-height: 1.4;
+    cursor: text;
+}
+h1:hover a.anchor,
+h2:hover a.anchor,
+h3:hover a.anchor,
+h4:hover a.anchor,
+h5:hover a.anchor,
+h6:hover a.anchor {
+    text-decoration: none;
+}
+h1 tt,
+h1 code {
+    font-size: inherit;
+}
+h2 tt,
+h2 code {
+    font-size: inherit;
+}
+h3 tt,
+h3 code {
+    font-size: inherit;
+}
+h4 tt,
+h4 code {
+    font-size: inherit;
+}
+h5 tt,
+h5 code {
+    font-size: inherit;
+}
+h6 tt,
+h6 code {
+    font-size: inherit;
+}
+h1 {
+    font-size: 2.25em;
+    line-height: 1.2;
+    border-bottom: 1px solid #eee;
+}
+h2 {
+    font-size: 1.75em;
+    line-height: 1.225;
+    border-bottom: 1px solid #eee;
+}
+
+/*@media print {
+    .typora-export h1,
+    .typora-export h2 {
+        border-bottom: none;
+        padding-bottom: initial;
+    }
+
+    .typora-export h1::after,
+    .typora-export h2::after {
+        content: "";
+        display: block;
+        height: 100px;
+        margin-top: -96px;
+        border-top: 1px solid #eee;
+    }
+}*/
+
+h3 {
+    font-size: 1.5em;
+    line-height: 1.43;
+}
+h4 {
+    font-size: 1.25em;
+}
+h5 {
+    font-size: 1em;
+}
+h6 {
+   font-size: 1em;
+    color: #777;
+}
+p,
+blockquote,
+ul,
+ol,
+dl,
+table{
+    margin: 0.8em 0;
+}
+li>ol,
+li>ul {
+    margin: 0 0;
+}
+hr {
+    height: 2px;
+    padding: 0;
+    margin: 16px 0;
+    background-color: #e7e7e7;
+    border: 0 none;
+    overflow: hidden;
+    box-sizing: content-box;
+}
+
+li p.first {
+    display: inline-block;
+}
+ul,
+ol {
+    padding-left: 30px;
+}
+ul:first-child,
+ol:first-child {
+    margin-top: 0;
+}
+ul:last-child,
+ol:last-child {
+    margin-bottom: 0;
+}
+blockquote {
+    border-left: 4px solid #dfe2e5;
+    padding: 0 15px;
+    color: #777777;
+}
+blockquote blockquote {
+    padding-right: 0;
+}
+table {
+    padding: 0;
+    word-break: initial;
+}
+table tr {
+    border-top: 1px solid #dfe2e5;
+    margin: 0;
+    padding: 0;
+}
+table tr:nth-child(2n),
+thead {
+    background-color: #f8f8f8;
+}
+table th {
+    font-weight: bold;
+    border: 1px solid #dfe2e5;
+    border-bottom: 0;
+    margin: 0;
+    padding: 6px 13px;
+}
+table td {
+    border: 1px solid #dfe2e5;
+    margin: 0;
+    padding: 6px 13px;
+}
+table th:first-child,
+table td:first-child {
+    margin-top: 0;
+}
+table th:last-child,
+table td:last-child {
+    margin-bottom: 0;
+}
+
+.CodeMirror-lines {
+    padding-left: 4px;
+}
+
+.code-tooltip {
+    box-shadow: 0 1px 1px 0 rgba(0,28,36,.3);
+    border-top: 1px solid #eef2f2;
+}
+
+.md-fences,
+code,
+tt {
+    border: 1px solid #e7eaed;
+    background-color: #f8f8f8;
+    border-radius: 3px;
+    padding: 0;
+    padding: 2px 4px 0px 4px;
+    font-size: 0.9em;
+}
+
+code {
+    background-color: #f3f4f4;
+    padding: 0 2px 0 2px;
+}
+
+.md-fences {
+    margin-bottom: 15px;
+    margin-top: 15px;
+    padding-top: 8px;
+    padding-bottom: 6px;
+}
+
+
+.md-task-list-item > input {
+  margin-left: -1.3em;
+}
+
+@media print {
+    html {
+        font-size: 13px;
+    }
+    table,
+    pre {
+        page-break-inside: avoid;
+    }
+    pre {
+        word-wrap: break-word;
+    }
+}
+
+.md-fences {
+	background-color: #f8f8f8;
+}
+#write pre.md-meta-block {
+	padding: 1rem;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border: 0;
+    border-radius: 3px;
+    color: #777777;
+    margin-top: 0 !important;
+}
+
+.mathjax-block>.code-tooltip {
+	bottom: .375rem;
+}
+
+.md-mathjax-midline {
+    background: #fafafa;
+}
+
+#write>h3.md-focus:before{
+	left: -1.5625rem;
+	top: .375rem;
+}
+#write>h4.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+#write>h5.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+#write>h6.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+.md-image>.md-meta {
+    /*border: 1px solid #ddd;*/
+    border-radius: 3px;
+    padding: 2px 0px 0px 4px;
+    font-size: 0.9em;
+    color: inherit;
+}
+
+.md-tag {
+    color: #a7a7a7;
+    opacity: 1;
+}
+
+.md-toc { 
+    margin-top:20px;
+    padding-bottom:20px;
+}
+
+.sidebar-tabs {
+    border-bottom: none;
+}
+
+#typora-quick-open {
+    border: 1px solid #ddd;
+    background-color: #f8f8f8;
+}
+
+#typora-quick-open-item {
+    background-color: #FAFAFA;
+    border-color: #FEFEFE #e5e5e5 #e5e5e5 #eee;
+    border-style: solid;
+    border-width: 1px;
+}
+
+/** focus mode */
+.on-focus-mode blockquote {
+    border-left-color: rgba(85, 85, 85, 0.12);
+}
+
+header, .context-menu, .megamenu-content, footer{
+    font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.file-node-content:hover .file-node-icon,
+.file-node-content:hover .file-node-open-state{
+    visibility: visible;
+}
+
+.mac-seamless-mode #typora-sidebar {
+    background-color: #fafafa;
+    background-color: var(--side-bar-bg-color);
+}
+
+.md-lang {
+    color: #b4654d;
+}
+
+.html-for-mac .context-menu {
+    --item-hover-bg-color: #E6F0FE;
+}
+
+#md-notification .btn {
+    border: 0;
+}
+
+.dropdown-menu .divider {
+    border-color: #e5e5e5;
+}
+
+.ty-preferences .window-content {
+    background-color: #fafafa;
+}
+
+.ty-preferences .nav-group-item.active {
+    color: white;
+    background: #999;
+}
+
+ :root {--mermaid-font-zoom:1.25em ;} 
 </style>
-<p>This is a project to generate levels for GTFO. For an explanation on how to use this project, see <a href="#how-to-use">How to use</a>.</p>
-<p><a href="https://drive.google.com/drive/folders/1i37s30b550z84D27A6i4AsH7p4zlRGdS">Project releases.</a></p>
-<h2 id="project-dependencies">Project dependencies</h2>
-<ul>
-<li><a href="https://numpy.org/doc/stable/">numpy</a></li>
-<li><a href="https://xlrd.readthedocs.io/en/latest/">xlrd</a></li>
-<li><a href="https://pandas.pydata.org/docs/">pandas</a></li>
-</ul>
-<h2 id="project-contents">Project contents</h2>
-<ul>
-<li><a href="#xlsxinterfacer">XlsxInterfacer.py</a></li>
-<li><a href="#datablockio">DatablockIO.py</a></li>
-<li><a href="#enumconverter">EnumConverter.py</a></li>
-<li><a href="#levelutility">LevelUtility.py</a>
-<ul>
-<li><a href="#template">Template</a></li>
-</ul></li>
-</ul>
-<hr />
-<h2 id="xlsxinterfacer">XlsxInterfacer</h2>
-<p>A module created to interface with the pandas.DataFrame and read specific typed values.</p>
-<h2 id="datablockio">DatablockIO</h2>
-<p>A module created to read from and write to GTFO Datablocks including search blocks based on name or persistantID.</p>
-<h2 id="enumconverter">EnumConverter</h2>
-<p>A module created to convert between GTFO Enumerator names and indexes.</p>
-<hr />
-<h2 id="levelutility">LevelUtility</h2>
-<p>This is a file that is able to take a templated xlsx file and convert it into GTFO ExpeditionInTier, LevelLayout, and WardenObjective data. It takes arguments of which files to convert, converts the xlsx into dictionaries, and then writes those into the Datablocks.</p>
-<h3 id="template">Template</h3>
-<p><a href="https://docs.google.com/spreadsheets/d/1FLA-eHv9NhU3IdxcdQ29ueW8Qav9IlknaLdb4xbGZCI">Template is here.</a></p>
-<p>Notes:</p>
-<ul>
-<li>The sheet tries it’s best to stop you from doing illegal or irrational things for data types (ie you can’t put a word where a number should go) but it is not idiot proof and cannot detect logical issues (eg to go into a zone with a key, it requires that key or a level doesn’t have enough cells).</li>
-<li>Lots of variables have notes on them, look at the notes for more specific information about variables.</li>
-<li>Most values can be left blank, if leaving a value blank could be problematic, the program will probably describe a cell as empty.</li>
-<li>Some values are already filled out in the template, these are just typical values and can be changed.</li>
-</ul>
-<p>Below is a description of the sheets in the template:</p>
-<ul>
-<li>Key: A sheet describing datatypes and the version of the sheet.</li>
-<li>Meta: Data for which rundown, tier, and index the level should be in.</li>
-<li>ExpeditionInTier: Data about the expedition as a whole (eg population, fog, tileset) and general information about the sectors.</li>
-</ul>
-<p>All sheets labed LX should be duplicated per layer and renamed accordingly (eg L1, L2, L3).</p>
-<ul>
-<li>LX ExpeditionZoneData: List of all zones and information about them.</li>
-<li><p>LX ExpeditionZoneData Lists: Different lists of items a zone can have more than one of (eg terminals, enemy spawning, etc.)</p></li>
-<li>LX WardenObjective: Data about the objective, the enemy waves, objective events, etc.</li>
-<li><p>LX WardenObjective ReactorWaves: Data about the Reactor objective</p></li>
-</ul>
-<p>Note: The program requires the Zone and Objective sheets to come as a pair (even if the second is blank). If you have L1 ExpeditionZoneData, you must have L1 ExpeditionZoneData. If you have L1 WardenObjective, you must have L1 WardenObjective.</p>
-<hr />
-<h2 id="how-to-use">How to use</h2>
-<p>The usage of this program can be broken into a couple of steps:</p>
-<ul>
-<li><a href="#setup">Setup</a>
-<ul>
-<li>File Archiver (7-Zip)</li>
-<li>Modding folder</li>
-<li>Python and dependencies</li>
-<li>GTFO Hack (for testing blocks easily)</li>
-<li>(Unity) Asset Bundle Extractor (UABE) (for releasing blocks) &amp; Binary Encoder</li>
-</ul></li>
-<li><a href="#template-usage">Template Usage</a>
-<ul>
-<li>Level Design (crash course)</li>
-<li>Meta (placement in rundown)</li>
-<li>General information (ExpeditionInTier)</li>
-<li>Zones (ExpeditionZoneData &amp; Lists)</li>
-<li>Objectives (WardenObjective &amp; ReactorWaves)</li>
-</ul></li>
-<li><a href="#tool-usage">Tool Usage</a></li>
-</ul>
-<h3 id="setup">Setup</h3>
-<h4 id="zip">7-Zip</h4>
-<p>The first item needed for most of the modding is being able to extract archives. I suggest <a href="https://www.7-zip.org/">7-Zip</a>. Download the x64 (unless your computer x32).</p>
-<figure>
-<img src="resources/images/7-zip.png" alt="7-Zip image" /><figcaption>7-Zip image</figcaption>
-</figure>
-<p>After running the Installer, a context menu should be present when right clicking on .zip files (and other archives).</p>
-<h4 id="modding-folder">Modding Folder</h4>
-<p>Create a <code>GTFO-modding</code> folder (it’s name does not particularly matter, for clarity I will refer to it by that name). In it place this project’s folder inside of the <code>GTFO-modding</code> folder.</p>
-<h5 id="original-datablocks">Original Datablocks</h5>
-<p>Then download the <a href="https://discord.com/channels/734638911149703229/736410752210042950/769656076370706432">Original Datablocks</a>, move it to <code>GTFO-modding</code>, and extract the blocks (by right clicking and doing 7-Zip&gt;Extract Here). Make sure to rename the blocks folder to <code>Datablocks</code> (this is for the Level Utility to recognize it). After doing this, your <code>GTFO-modding</code> folder should look like this:</p>
-<figure>
-<img src="resources/images/gtfo-modding.png" alt="GTFO-modding folder image" /><figcaption>GTFO-modding folder image</figcaption>
-</figure>
-<h4 id="python"><a href="https://www.python.org/">Python</a></h4>
-<p>Download Python <a href="https://www.python.org/downloads/">here</a> and install it (all the default settings). Open a terminal (<code>Windows+R</code> and open CMD) and run:</p>
-<p><code>pip install pandas xlrd numpy</code></p>
-<p>This will download all the needed dependencies for the DPK Generator Project.</p>
-<h4 id="gtfo-hack">GTFO Hack</h4>
-<p>Download this <a href="https://steamdb.info/app/493520/depots/">R4 Build</a> and extract it where your steam games are (normally here: <code>C:\Program Files (x86)\Steam\steamapps\common</code>). Download the <a href="https://discord.com/channels/765711589868568596/771076197525618758/771077099620270080">GTFO hack</a> and extract it inside of the <code>common\GTFO r4</code>. To swap rundowns, switch which one is named <code>GTFO</code> and rename the old one.</p>
-<h4 id="unity-asset-bundle-extractoruabe"><a href="https://github.com/DerPopo/UABE">(Unity) Asset Bundle Extractor</a></h4>
-<p>Download UABE <a href="https://github.com/DerPopo/UABE/releases">here</a> and extract it somewhere.</p>
-<h5 id="binary-encoder">Binary Encoder</h5>
-<p>Save the <a href="https://discord.com/channels/765711589868568596/769613648908910642/769823811742334987">Binary Encoder</a>. (The best place to put is probably is in your <code>GTFO-modding</code> folder. It will be used with UABE and is needed because the datablocks are serialized.)</p>
-<hr />
-<h3 id="template-usage">Template Usage</h3>
-<p>See <a href="#template">Template</a> to see notes about the template.</p>
-<h4 id="level-design-crash-course">Level Design (crash course)</h4>
-<p>This section <strong>will not</strong> teach you how to make good levels but what it will do is walk you through the very general steps for creating the idea for the level and some tips.</p>
-<h5 id="create-a-theme">Create a theme</h5>
-<p>A level that is unique is interesting and a level that follows a single idea seems more coherent (versus being all over). A good way to do this is create something the level will focus on or a rule for the level (e.g. only use specific enemies, all alarms are the same kind, sectors unlock zones in other sectors).</p>
-<h5 id="floorplan">Floorplan</h5>
-<p>The next step is then creating a model of the level to help visualize the way the level works. This can be done whichever way, I prefer drawing the level in MS Paint or coloring different squares in Google Sheets. A thing to keep in mind while placing zones is which secuirty doors and <a href="#glossary">progression puzzles and chained puzzles</a> they take to open and make notes of where the key or cell will come from.</p>
-<h5 id="tips">Tips</h5>
-<ul>
-<li>Backtracking is not fun, try to keep the amount of walking through empty rooms to a minimum.</li>
-<li>A cell in one sector can open a door in another sector.</li>
-<li>Try to walk through the way the level should be completed and double check if “cheesing” by skipping required zones and accidental softlocks aren’t a thing.</li>
-</ul>
-<hr />
-<h4 id="meta">Meta</h4>
-<p>This describes where in the rundown the level is placed. This is for the tool to know where in the <code>RundownDataBlock.json</code> to put the ExpeditionInTier. E.g. Rundown ID 25, TierA, Index 1 describes (R4)A2 Foster</p>
-<ul>
-<li>etc., describe in cell notes</li>
-</ul>
-<hr />
-<h4 id="general-information-expeditionintier">General information (ExpeditionInTier)</h4>
-<p>A level will only have 1 ExpeditionInTier sheet to be inserted into the <code>RundownDataBlock.json</code>. This describe most general information for a particular level (including some details about the layers that are not in the other sheets.)</p>
-<ul>
-<li><code>Enabled</code> &amp; <code>Accessiblity</code>: see notes</li>
-<li><code>LevelLayoutData</code>, <code>SecondaryLayout</code>, &amp; <code>ThirdLayout</code>: An id number (1-101 are already taken by the game)</li>
-<li><code>SecondaryLayerEnabled</code> &amp; <code>ThirdLayerEnabled</code>: <code>True</code> if that Layer is in the level</li>
-</ul>
-<h5 id="descriptive">Descriptive</h5>
-<p>Name and stuff about the level.</p>
-<ul>
-<li><code>Prefix</code>: e.g. R3A</li>
-<li><code>PublicName</code>: e.g. Bolt</li>
-<li><code>ExpeditionDepth</code>: e.g. 579</li>
-<li><code>EstimatedDuration</code>: A guess at the length of the level</li>
-<li><code>ExpeditionDescription</code>: Flavortext (supports xml)</li>
-<li><code>RoleplayedWardenIntel</code>: Flavortext (supports xml)</li>
-<li><code>DevInfo</code>: A brief phrase describing the level</li>
-</ul>
-<h5 id="seeds">Seeds</h5>
-<p>Seeds the level, self explanatory.</p>
-<h5 id="specialoverridedata">SpecialOverrideData</h5>
-<p>Unsure of what exactly this does. All levels set <code>WeakResourceContainerWithPackChanceForLocked</code> to -1.</p>
-<h5 id="expedition">Expedition</h5>
-<p>Picks settings for the entire level.</p>
-<ul>
-<li><code>ComplexResourceData</code>: The level tileset. (Only <code>Complex_Mining</code> and <code>Complex_Tech</code> have bulkheads.)</li>
-<li><code>LightSettings</code>: Lights</li>
-<li><code>FogSettings</code>: Fog level (the available setting names don’t help much <code>¯\_(ツ)_/¯</code>)</li>
-<li><code>EnemyPopulation</code>: Determines the pool of enemies the groups are selected from.</li>
-<li><code>ExpeditionBalance</code>: a setting with a bunch of subsettings (only <code>Normal</code> works)</li>
-<li><code>ScoutWaveSettings</code>: <a href="#glossary">Wave Setting</a>, defaultly <code>Scout</code></li>
-<li><code>ScoutWavePopulation</code>: <a href="#glossary">Wave Population</a>, defaulty <code>Baseline</code></li>
-</ul>
-<h5 id="layerdata">LayerData</h5>
-<p>Only fill out for layers you have enabled.</p>
-<p>This section applies for <code>MainLayerData</code>, <code>SecondaryLayerData</code>, and <code>ThirdLayerData</code>.</p>
-<ul>
-<li><code>ZoneAliasStart</code>: Zone 0’s Alias</li>
-<li><code>ZonesWithBulkheadEntrance</code>: List of zones containing bulkheads</li>
-<li><em><code>BulkheadDoorControllerPlacements</code></em>: <a href="#glossary">Placements</a> for bulkhead controllers</li>
-<li><em><code>BulkheadKeyPlacements</code></em>: <a href="#glossary">Placements</a> for bulkhead keys</li>
-<li><em><code>ObjectiveData</code></em>: General about the objective
-<ul>
-<li><code>DataBlockId</code>: an id number (1-58 are already taken by the game)</li>
-<li><code>WinCondition</code>: determines whether the players extract from spawn or a forward extraction</li>
-<li><em><code>ZonePlacementDatas</code></em>: <a href="#glossary">Placements</a> for objective items</li>
-</ul></li>
-</ul>
-<hr />
-<h4 id="zones-expeditionzonedata-lists">Zones (ExpeditionZoneData &amp; Lists)</h4>
-<p>For every layer, a pair of <code>LX ExpeditionZoneData</code> and <code>LX ExpeditionZoneData Lists</code> sheets are needed. The <code>X</code> should be changed to whichever layer number it is (e.g. <code>L1 ExpeditionZoneData</code> for high). Every layer needs the sheets to come in pairs (even if the lists are empty). This will be inserted into <code>LevelLayoutDataBlock.json</code>. (Side note: the reason for the Lists sheet is due to having to adjust 3D and 4D data to be 2D to work with a spreadsheet.)</p>
-<p>General Zone Data:</p>
-<ul>
-<li><code>LocalIndex</code>: Zone index</li>
-<li><code>SubSeed</code>: Seed</li>
-<li><code>BulkheadDCScanSeed</code>: Seed</li>
-<li><code>SubComplex</code>: Narrows selected tiles</li>
-<li><code>CustomGeomorph</code>: a tile that’s garunteed to be placed a.k.a. setpiece, see <a href="#reference">Reference</a></li>
-<li><code>x</code>: zone length (North South)</li>
-<li><code>y</code>: zone width (East West)</li>
-<li><code>BuildFromLocalIndex</code>: Previous zone</li>
-<li><code>StartPosition</code>: Where in the previous zone the security door for said zone should be placed.</li>
-<li><code>StartPosition_IndexWeight</code>: 0 to 1 (0 to 100%) to determine where in zone for <code>StartPosition</code> set to <code>From_IndexWeight</code></li>
-<li><code>StartExpansion</code>: direction for the security door entering the zone</li>
-<li><code>ZoneExpansion</code>: determines which direction to continue building the zone</li>
-<li><code>LightSettings</code>: Lights</li>
-<li><code>AllowedZoneAltitude</code>: Height of zone</li>
-<li><code>ChanceToChange</code>: 0 to 1 (0 to 100%) chance for zone to stray from set altitude (*not sure about this one)</li>
-</ul>
-<p>Door information:</p>
-<ul>
-<li><code>PuzzleType</code>: <a href="#glossary">Progression puzzle</a></li>
-<li><code>CustomText</code>: Flavortext on door using <code>Locked_no_key</code> (supports xml) (default <code>&lt;color=red&gt;://ERROR: Door in emergency lockdown, unable to operate.&lt;/color&gt;</code>)</li>
-<li><code>PlacementCount</code>: number of solutions to place (default 1)</li>
-<li><code>ChainedPuzzleToEnter</code>: <a href="#glossary">Chained puzzle</a> (defaultly unlocked) (Common puzzles)</li>
-<li><code>SecurityGateToEnter</code>: Security or Apex door</li>
-<li><code>HasActiveEnemyWave</code>: Blood door?</li>
-<li><code>EnemyGroupInfrontOfDoor</code>: Enemy group that spawns directly in front of door (typically <code>Hunter_easy_infront</code>)</li>
-<li><code>EnemyGroupInArea</code>: Enemy group(s) that spawn in the back of the area (typically <code>Hunter_easy_inback</code>)</li>
-<li><code>EnemyGroupsInArea</code>: number of “<code>EnemyGroupInArea</code>”s (defaultly 1)</li>
-</ul>
-<p>Decorations (and functional):</p>
-<ul>
-<li><code>HSUClustersInZone</code> &amp; <code>CorpseClustersInZone</code> <code>ResourceContainerClustersInZone</code> &amp; <code>GeneratorClustersInZone</code> &amp; <code>CorpsesInZone</code> &amp; <code>HSUsInZone</code> &amp; <code>DeconUnitsInZone</code>: Amount of X in zone</li>
-</ul>
-<p>Item spawns (and terminals):</p>
-<ul>
-<li><code>AllowSmallPickupsAllocation</code>: True if consumables can spawn</li>
-<li><code>AllowResourceContainerAllocation</code>: True if lockers/boxes can spawn</li>
-<li><code>ForceBigPickupsAllocation</code>: True if carry items / big pickups can spawn</li>
-<li><code>ConsumableDistributionInZone</code>: Consumable setting</li>
-<li><code>BigPickupDistributionInZone</code>: Carry item / big pickup setting</li>
-<li><code>ForbidTerminalsInZone</code>: True if no terminals can spawn</li>
-<li><code>HealthMulti</code> &amp; <code>WeaponAmmoMulti</code> &amp; <code>ToolAmmoMulti</code> &amp; <code>DisinfectionMulti</code>: Resource amounts (as a %, .2 is 1 use)</li>
-<li><code>HealthPlacement</code> &amp; <code>WeaponAmmoPlacement</code> &amp; <code>ToolAmmoPlacement</code> &amp; <code>DisinfectionPlacement</code>: <a href="#glossary">Placement</a> weights</li>
-</ul>
-<h5 id="lists">Lists</h5>
-<ul>
-<li><em><code>EventsOnEnter</code></em>: Events that occur when a security door opens
-<ul>
-<li><code>DPK Identifier</code>: Describes which zone’s security door has an event</li>
-<li><code>Delay</code>: Number of seconds after the door is opened that the event triggers</li>
-<li><code>Enabled</code>: (*not sure about this one)</li>
-<li><code>RadiusMin</code>: (*not sure about this one)</li>
-<li><code>RadiusMax</code>: (*not sure about this one)</li>
-<li><code>Enabled</code>: True if the door has an intel message</li>
-<li><code>IntelMessage</code>: Flavortext (supports xml)</li>
-<li><code>Enabled</code>: True if the door has a sound event</li>
-<li><code>SoundEvent</code>: Sound event id, see <a href="#reference">Reference</a></li>
-</ul></li>
-<li><em><code>ProgressionPuzzleToEnter</code></em>: Describes all <a href="#glossary">Progression puzzles</a> solutions
-<ul>
-<li><code>DPK Identifier</code>: Describes which zone’s security door requires a puzzle</li>
-<li>PuzzleType: not functional, shows puzzle type for zone, simply for ease of use <a href="#glossary">Progression puzzle</a></li>
-<li><em><code>ZonePlacementData</code></em>: <a href="#glossary">Placement</a> of puzzle solution</li>
-</ul></li>
-<li><em><code>EnemySpawningInZone</code></em>: Describes enemy spawns
-<ul>
-<li><code>DPK Identifier</code>: Describes which zone the spawn data is for</li>
-<li>DPK Reminder: A place to write a reminder what enemy is attempting to be selected</li>
-<li><code>GroupType</code>: Enemy group type, see <a href="#reference">Reference</a></li>
-<li><code>Difficulty</code>: Enemy group difficulty, see <a href="#reference">Reference</a></li>
-<li><code>Distribution</code>: Determines distribution type, <code>None</code> places none, <code>Force_One</code> places 1 group, <code>Rel_Value</code> uses the distribution value to determine group size</li>
-<li><code>DistributionValue</code>: group population = <code>DistributionValue</code> * zone population (zone population is 25 on <code>Normal</code> for <code>ExpeditionBalance</code>) (as a %)</li>
-</ul></li>
-<li><em><code>TerminalPlacements</code></em>: Defines all terminal spawns
-<ul>
-<li><code>DPK Identifier</code>: Describes which zone the terminal is in</li>
-<li><em><code>PlacementWeights</code></em>: <a href="#glossary">Placement</a> weights</li>
-<li><code>AreaSeedOffset</code>: Seed</li>
-<li><code>MarkerSeedOffset</code>: Seed</li>
-<li><code>DPK Group</code>: <a href="#glossary">Group</a> of logs to pull from and place onto the terminal</li>
-<li><code>StartingState</code>: The state the computer spawns in (defaultly sleeping)</li>
-<li><code>AudioEventEnter</code>: Audio event the terminal begins in, see <a href="#reference">Reference</a></li>
-<li><code>AudioEventExit</code>: Audio event that occurs when the above audio event is exited, see <a href="#reference">Reference</a></li>
-</ul></li>
-<li><em><code>LocalLogFiles</code></em>: A list of log files that can be put onto terminals
-<ul>
-<li><code>DPK Group</code>: <a href="#glossary">Group</a> of logs that can put on terminals</li>
-<li><code>FileName</code>: The name of the file</li>
-<li><code>FileContent</code>: The contents of the log file (log files contents in order to be readable)</li>
-<li><code>AttachedAudioFile</code>: The id of the audio log to be attached</li>
-<li><code>AttachedAudioByteSize</code>: The display size of the audio log</li>
-</ul></li>
-<li><em><code>PowerGeneratorPlacements</code></em>: <a href="#glossary">Placement</a></li>
-<li><em><code>DisinfectionStationPlacements</code></em>: <a href="#glossary">Placement</a></li>
-<li><em><code>StaticSpawnDataContainers</code></em>: Defines spawns for static enemies (likes spitters and sacks)
-<ul>
-<li><code>DPK Identifier</code>: Describes the zone for the <a href="#glossary">Spawn Container</a></li>
-<li><code>Count</code>: Number of containers</li>
-<li><code>DistributionWeightType</code>: Describes whether the containers should be spread across the zone or localized near one weight (*not sure about this one)</li>
-<li><code>DistributionWeight</code>: 0 to 1 (0 to 100%) to determine where in zone to localize the containers when <code>DistributionWeightType</code> is <code>Weight_is_exact_node_index</code> (*not sure about this one)</li>
-<li><code>DistributionRandomBlend</code>: (*not sure about this one)</li>
-<li><code>DistributionResultPow</code>: (*not sure about this one)</li>
-<li><code>StaticSpawnDataId</code>: Which static enemy to assign to the container</li>
-<li><code>FixedSeed</code>: Seed</li>
-</ul></li>
-</ul>
-<hr />
-<h4 id="objectives-wardenobjective-reactorwaves">Objectives (WardenObjective &amp; ReactorWaves)</h4>
-<p>For every layer, a pair of <code>LX WardenObjective</code> and <code>LX ExpeditionZoneData</code> sheets are needed. The <code>X</code> should be changed to whichever layer number it is (e.g. <code>L1 WardenObjective</code> for high). Every layer needs the sheets to come in pairs (even if the Waves are empty). This will be inserted into <code>WardenObjectiveDataBlock.json</code>.</p>
-<p>For objectives, fill out only information pertaining to the objective type you are using.</p>
-<p>Generic Objective Data:</p>
-<ul>
-<li><code>Type</code>: The type of objective, see <a href="#glossary">Glossary</a></li>
-<li><code>Header</code>: Display name of objective</li>
-<li><code>MainObjective</code>: Objective text for level (displayed the whole time), see <a href="#reference">Reference</a></li>
-<li><code>FindLocationInfo</code>: Help to find where objective is located, see <a href="#reference">Reference</a></li>
-<li><code>FindLocationInfoHelp</code>: Alternate message displayed after help delay</li>
-<li><code>GoToZone</code>: Help to go to the objective, see <a href="#reference">Reference</a></li>
-<li><code>GoToZoneHelp</code>: Alternate message displayed after help delay</li>
-<li><code>InZoneFindItem</code>: Help to find the objective in its zone, see <a href="#Reference">Reference</a></li>
-<li><code>InZoneFindItemHelp</code>: Alternate message displayed after help delay</li>
-<li><code>SolveItem</code>: Help to do the objective after the item is found, see <a href="#reference">Reference</a></li>
-<li><code>SolveItemHelp</code>: Alternate message displayed after help delay</li>
-<li><code>GoToWinCondition_Elevator</code>: Help to do the objective after the item is found, see <a href="#reference">Reference</a></li>
-<li><code>GoToWinConditionHelp_Elevator</code>: Alternate message displayed after help delay</li>
-<li><code>GoToWinCondition_CustomGeo</code>: Objective that displays after objective is completed and the team needs to leave at a forward extract, see <a href="#reference">Reference</a></li>
-<li><code>GoToWinConditionHelp_CustomGeo</code>: Alternate message displayed after help delay</li>
-<li><code>GoToWinCondition_ToMainLayer</code>: Objective that displays after objective is completed and the objective is optional, see <a href="#reference">Reference</a></li>
-<li><code>GoToWinConditionHelp_ToMainLayer</code>: Alternate message displayed after help delay</li>
-<li><code>ShowHelpDelay</code>: Duration of time in seconds before help variant of objective displays (default 180)</li>
-<li><em><code>WavesOnElevatorLand</code></em>: <a href="#glossary">Generic Enemy Wave</a></li>
-<li><em><code>WavesOnActivate</code></em>: <a href="#glossary">Generic Enemy Wave</a></li>
-<li><em><code>WavesOnGotoWin</code></em>: <a href="#glossary">Generic Enemy Wave</a></li>
-<li><em><code>EventsOnGotoWin</code></em>: <a href="#glossary">Warden Objective Event</a></li>
-<li><code>ChainedPuzzleToActive</code>: Chained puzzle at the start of the objective (defaultly none, typically <code>HSU_Scan</code>)</li>
-<li><code>ChainedPuzzleMidObjective</code>: Second chained puzzle for objective (defaultly none)</li>
-<li><code>ChainedPuzzleAtExit</code>: Chained puzzle spawned at extract (defaultly none, typically <code>ExpeditionExit_Scan</code>)</li>
-<li><code>ChainedPuzzleAtExitScanSpeedMultiplier</code>: speed multiplier for extract (as a %)</li>
-</ul>
-<p>Gather (<code>GatherSmallItems</code>):</p>
-<ul>
-<li><code>Gather_RequiredCount</code>: Number of Gather items required</li>
-<li><code>Gather_ItemId</code>: Item to gether (can be any item? not sure)</li>
-<li><code>Gather_SpawnCount</code>: Amount of Gather items that spawn</li>
-<li><code>Gather_MaxPerZone</code>: Maximum Gather items that can spawn per zone</li>
-</ul>
-<p>Retrieve (<code>RetrieveBigItems</code>):</p>
-<ul>
-<li><code>Retrieve_Items</code>: List of Retrieve/Carry items needed for extract (can be any item? not sure)</li>
-</ul>
-<p>Reactor (<code>ReactorStartup</code> &amp; <code>Reactor_Shutdown</code>):</p>
-<ul>
-<li><em><code>ReactorWaves</code></em>: see <a href="#reactor-waves">Reactor Waves</a></li>
-<li><code>LightsOnFromBeginning</code>: True if level lights are on before the reactor</li>
-<li><code>LightsOnDuringIntro</code>: True if level lights are on duing the reactor startup sequences</li>
-<li><code>LightsOnWhenStartupComplete</code>: True if level lights are on after the reactor</li>
-</ul>
-<p>Command (<code>SpecialTerminalCommand</code>):</p>
-<ul>
-<li><code>SpecialTerminalCommand</code>: Name of the special terminal command</li>
-<li><code>SpecialTerminalCommandDesc</code>: Flavortext displayed when using the COMMANDS</li>
-<li><code>PostCommandOutput</code>: List of outputs displayed after the command is completed</li>
-</ul>
-<p>Distribute (<code>PowerCellDistribution</code>):</p>
-<ul>
-<li><code>PowerCellsToDistribute</code>: Number of cells to distribute to generators</li>
-</ul>
-<p>Uplink (<code>TerminalUplink</code>):</p>
-<ul>
-<li><code>Uplink_NumberOfVerificationRounds</code>: Number of uplinks per terminal</li>
-<li><code>Uplink_NumberOfTerminals</code>: Number of uplink terminals</li>
-</ul>
-<p>Cluster (<code>CentralGeneratorCluster</code>):</p>
-<ul>
-<li><code>CentralPowerGenClustser_NumberOfGenerators</code>: Number of generators in the cluster</li>
-<li><code>CentralPowerGenClustser_NumberOfPowerCells</code>: Number of cells spawned by the objective</li>
-</ul>
-<p>Activate (<code>ActivateSmallHSU</code>):</p>
-<ul>
-<li><code>ActivateHSU_ItemFromStart</code>: HSU item at start (can be any item? not sure)</li>
-<li><code>ActivateHSU_ItemAfterActivation</code>: HSU item that replaces the first after activation (can be any item? not sure)</li>
-<li><code>ActivateHSU_StopEnemyWavesOnActivation</code>: Stops waves when HSU item is inserted</li>
-<li><code>ActivateHSU_ObjectiveCompleteAfterInsertion</code>: True if inserting the HSU completes the objective, false if the objective is completed when the HSU is brought to extract</li>
-<li><em><code>ActivateHSU_Events</code></em>: <a href="#glossary">Warden Objective Event</a></li>
-</ul>
-<h5 id="reactor-waves">Reactor Waves</h5>
-<p>ReactorWaves:</p>
-<ul>
-<li><code>Wave No.</code>: Wave numbers in order (1 and up)</li>
-<li><code>Warmup</code>: Time during warmup (seconds)</li>
-<li><code>WarmupFail</code>: Time during warmup after failing (seconds)</li>
-<li><code>Wave</code>: Time during wave (seconds)</li>
-<li><code>Verify</code>: Time during verify (seconds)</li>
-<li><code>VerifyFail</code>: Time during verify after failing (seocnds)</li>
-<li><code>VerifyInOtherZone</code>: True if code is from a terminal, false if code is given</li>
-<li><code>ZoneForVerification</code>: Zone the code is located in (several codes can be located in the same zone)</li>
-</ul>
-<p>EnemyWaves:</p>
-<ul>
-<li><code>Wave No.</code>: Reactor Wave number the Enemy Wave is for, see <a href="#glossary">Identifier</a></li>
-<li><code>WaveSettings</code>: <a href="#glossary">Wave Setting</a></li>
-<li><code>WavePopulation</code>: <a href="#glossary">Wave Population</a></li>
-<li><code>SpawnTimeRel</code>: 0 to 1 (0 to 100%) as the amount through the wave duration the enemy wave will spawn</li>
-<li><code>SpawnType</code>: Determines where the enemies spawn</li>
-</ul>
-<p>Events:</p>
-<ul>
-<li><code>Wave No.</code>: Reactor Wave number the Enemy Wave is for, see <a href="#glossary">Identifier</a></li>
-<li><em><code>Events</code></em>: <a href="#glossary">Warden Objective Event</a>
-<ul>
-<li><code>Trigger</code>: <code>None</code> = being of Warmup, <code>OnStart</code> = beginning of Wave, <code>OnMid</code> = beginning of Verify, <code>OnEnd</code> = after Verify</li>
-<li>etc., see <a href="#Glossary">Warden Objective Event</a></li>
-</ul></li>
-</ul>
-<hr />
-<h3 id="tool-usage">Tool Usage</h3>
-<p>The following are the steps to use the tool.</p>
-<ol type="1">
-<li>Follow the <a href="#setup">Setup</a></li>
-<li>Design a level</li>
-<li>Create a copy of the <a href="https://docs.google.com/spreadsheets/d/1FLA-eHv9NhU3IdxcdQ29ueW8Qav9IlknaLdb4xbGZCI">Template</a> in either Google Sheets or download it as a .xlsx (to edit in Excel, Google Sheets is recommended)</li>
-<li>Fill out the copy of the template.</li>
-<li>Download the Google Sheets as an Excel file (.xlsx) if you didn’t in step 3</li>
-<li>Drag the .xlsx onto the LevelUtility (or run the tool in CLI). Note: the only Rundown, LevelLayout, and WardenObjective datablocks are edited by the tool</li>
-</ol>
-<p>GTFO Hack (testing):</p>
-<ol type="1">
-<li>(To test with the GTFO Hack) copy the updated datablocks over to <code>common\GTFO\gtfohack\CustomDataBlocks</code> (or in a folder)</li>
-<li>(To test with the GTFO Hack) after launching the game, hit ` (Grave) and type <code>LoadBlocks</code> (or if blocks are in a sub folder, <code>LoadBlocks &lt;folder&gt;</code>)</li>
-</ol>
-<p>UABE:</p>
-<ol type="1">
-<li>Use the Binary Encoder to encode all files. (All modified blocks can be dragged onto it for it to encode them.)</li>
-<li>In UABE, File &gt; Open and open <code>common\GTFO\GTFO_Data\resources.assets</code></li>
-<li>Select U2019.2.0f1 (should be the last one)</li>
-<li>Sort the blocks in alphabetical order by clicking Name</li>
-<li>To find the blocks, do View &gt; Search by name, and search "Gamedata.*" to find the blocks</li>
-<li>For each modified datablock:</li>
-<li>Select the block &gt; Plugins &gt; Import from .txt and select the bin encoded file</li>
-<li>After all blocks are added, File &gt; Save and save it as <code>resourcesModded.assets</code> (or whatever other name, it can not save to the same name). This .assets can then replace the original and be shared easier.</li>
-</ol>
-<hr />
-<h2 id="glossary">Glossary</h2>
-<ul>
-<li>Progression Puzzle: Key, Cell, or Locked status on doors</li>
-<li>Chained Puzzle: A list of scans during an alarm</li>
-<li>Wave Setting: Defines the size and frequency of waves</li>
-<li>Wave Population: Defines the exact enemies that can spawn in a wave</li>
-<li>Placement-type Data: has information about weighting and can have information about DPK Idenfier, Zone, and seeding</li>
-<li>DPK Identifier/Group: A value to differentiate items in “lists of lists.” (Due to complications with storing 3D data as 2D data).
-<ul>
-<li>e.g. Bulkhead keys need to be placed in [zones 0] AND [zone 1 or zone 2], meaning zone 0 always has a key and the other is between zones 1 and 1. This would be represented in the sheet as “a” zone 0, “b” zone 1, “b” zone 2 so the tool knows the two “b” items are in the same sublist.</li>
-<li>e.g. A Cluster requires 2 cells. These can spawn in will spawn in [zones 12 or zone 14] AND [zone 9 or zone 13], meaning one cell is in either 12 or 14 and the other is either 9 or 13. This would be represented in the sheet as “a” zone 12, “a” zone 14, “b” zone 9, “b” zone 13 so the tool knows the two “b” items are in the same sublist.</li>
-</ul></li>
-<li>Objective type: Non-exhaustive list of examples listed below:
-<ul>
-<li>HSU_FindTakeSample: R1A1, R3C1</li>
-<li>Reactor_Startup: R2D2, R4D1L1</li>
-<li>Reactor_Shutdown: R1D1</li>
-<li>GatherSmallItems: R1B1, R2C2, R4C2L1</li>
-<li>ClearAPath: R2B1, R4D2L1</li>
-<li>SpecialTerminalCommand: R4A2L3, R4B2L2</li>
-<li>RetrieveBigItems: R2B4, R2E1</li>
-<li>PowerCellDistribution: R2B2, R4B1L1</li>
-<li>TerminalUplink: R2C1, R3B1, R4C1L2</li>
-<li>CentralGeneratorCluster: R2D1, R4D2L2</li>
-<li>ActivateSmallHSU: R3A1, R3D1, R4C1L1</li>
-</ul></li>
-<li>Generic Enemy Wave: Describes an Enemy Wave (for Objectives), made of a Wave Setting, Wave Population, a spawn delay (seconds), a boolean to set the alarm noise on, and an intel message (flavortext)</li>
-<li>Warden Objective Event: Describes an objective event to unlock or open a door or show an intel message, made of a Trigger (None in most cases), a type of action to a door, the layer the event is located, the zone the event is located, a delay (seconds), and intel message (flavortext)</li>
-</ul>
-<h2 id="reference">Reference</h2>
-<p>A list of common assets, ids, and etc. which are not options provided in the list.</p>
-<h3 id="geomorphs">Geomorphs</h3>
-<p>All tiles can be found in <a href="../Datablocks/ComplexResourceSetDataBlock.json"><code>ComplexResourceSetDataBlock.json</code></a>. (Note: Only tiles within the selected ComplexResourceSet can be used. E.g. lab tiles can not be used in the Mining Complex.)</p>
-<table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Nickname</th>
-<th>Tile Path</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Mining exit</td>
-<td>Assets/AssetPrefabs/Complex/Mining/Geomorphs/geo_64x64_mining_exit_01.prefab</td>
-</tr>
-<tr class="even">
-<td>Tech exit</td>
-<td>Assets/AssetPrefabs/Complex/Tech/Geomorphs/geo_32x32_lab_exit_01.prefab</td>
-</tr>
-<tr class="odd">
-<td>R1C1 rector</td>
-<td>Assets/AssetPrefabs/Complex/Mining/Geomorphs/geo_64x64_mining_reactor_open_HA_01.prefab</td>
-</tr>
-<tr class="even">
-<td>R2D2 reactor</td>
-<td>Assets/AssetPrefabs/Complex/Mining/Geomorphs/geo_64x64_mining_reactor_HA_02.prefab</td>
-</tr>
-<tr class="odd">
-<td>R4B1L1 reactor</td>
-<td>Assets/AssetPrefabs/Complex/Tech/Geomorphs/geo_64x64_lab_reactor_HA_01.prefab</td>
-</tr>
-<tr class="even">
-<td>R2D2 bridge</td>
-<td>Assets/AssetPrefabs/Complex/Mining/Geomorphs/Refinery/geo_64x64_mining_refinery_I_HA_01.prefab</td>
-</tr>
-<tr class="odd">
-<td>R4D1 large room</td>
-<td>Assets/AssetPrefabs/Complex/Mining/Geomorphs/Refinery/geo_64x64_mining_refinery_X_HA_02.prefab</td>
-</tr>
-<tr class="even">
-<td>R3A1 activator room</td>
-<td>Assets/AssetPrefabs/Complex/Tech/Geomorphs/geo_64x64_Lab_dead_end_room_01.prefab</td>
-</tr>
-<tr class="odd">
-<td>R3B2 activator room</td>
-<td>Assets/AssetPrefabs/Complex/Mining/Geomorphs/Refinery/geo_64x64_mining_refinery_dead_end_HA_01.prefab</td>
-</tr>
-<tr class="even">
-<td>R3D1 activator room</td>
-<td>Assets/AssetPrefabs/Complex/Tech/Geomorphs/geo_64x64_Lab_dead_end_room_02.prefab</td>
-</tr>
-<tr class="odd">
-<td>R2D1 cluster room</td>
-<td>Assets/AssetPrefabs/Complex/Mining/Geomorphs/Digsite/geo_64x64_mining_dig_site_hub_HA_01.prefab</td>
-</tr>
-<tr class="even">
-<td>R4D2L2 cluster room</td>
-<td>Assets/AssetPrefabs/Complex/Tech/Geomorphs/geo_64x64_tech_lab_hub_HA_02.prefab</td>
-</tr>
-<tr class="odd">
-<td>R4B2L1 cluster room</td>
-<td>Assets/AssetPrefabs/Complex/Mining/Geomorphs/Digsite/geo_64x64_mining_dig_site_hub_HA_02.prefab</td>
-</tr>
-</tbody>
-</table>
-<h3 id="sound-events">Sound Events</h3>
-<p>All sounds can be found in <a href="resources/EVENTS.cs"><code>Wwise-ASM/AK/Events.cs</code></a>.</p>
-<table>
-<thead>
-<tr class="header">
-<th>Nickname</th>
-<th>Event Name</th>
-<th>Event Id</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>R3D1 Door Scream</td>
-<td>BIRTHER_DISTANT_ROAR</td>
-<td>3184121378</td>
-</tr>
-<tr class="even">
-<td>R4B1 Door Knocking</td>
-<td>R4_KNOCKING</td>
-<td>2879789566</td>
-</tr>
-<tr class="odd">
-<td>R3A1 Terminal Looping</td>
-<td>LOG0140_CLIP_LOOP</td>
-<td>2322593598</td>
-</tr>
-<tr class="even">
-<td>R3A1 Terminal Stop Looping</td>
-<td>LOG0140_CLIP_STOP</td>
-<td>3945188996</td>
-</tr>
-</tbody>
-</table>
-<h3 id="enemyspawninginzone">EnemySpawningInZone</h3>
-<p>All enemy groups can be found in <a href="../Datablocks/EnemyGroupDataBlock.json"><code>EnemyGroupDataBlock.json</code></a>. (Note: Populations can be checked using the <a href="https://discord.com/channels/765711589868568596/771076197525618758/771468913367318529">Population Printer</a>. This tool requires <a href="https://dotnet.microsoft.com/">.Net</a>.)</p>
-<table>
-<thead>
-<tr class="header">
-<th>Group(s) description</th>
-<th>Group Type</th>
-<th>Difficulty</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Sleepers (no scout)</td>
-<td>Hibernate</td>
-<td>Easy</td>
-</tr>
-<tr class="even">
-<td>Sleepers (possible scout)</td>
-<td>Hibernate</td>
-<td>Medium</td>
-</tr>
-<tr class="odd">
-<td>Sleepers (guaranteed scout)</td>
-<td>Hibernate</td>
-<td>Hard</td>
-</tr>
-<tr class="even">
-<td>Scouts</td>
-<td>PureDetect</td>
-<td>Medium</td>
-</tr>
-<tr class="odd">
-<td>Chargers/Bullrush</td>
-<td>Detect</td>
-<td>Easy</td>
-</tr>
-<tr class="even">
-<td>Big Chargers</td>
-<td>Detect</td>
-<td>Hard</td>
-</tr>
-<tr class="odd">
-<td>Hybrids</td>
-<td>PureSneak</td>
-<td>Medium</td>
-</tr>
-<tr class="even">
-<td>Shadows</td>
-<td>Hibernate</td>
-<td>Biss</td>
-</tr>
-<tr class="odd">
-<td>Big Shadows†</td>
-<td>NA</td>
-<td>NA</td>
-</tr>
-<tr class="even">
-<td>Shadow Scouts</td>
-<td>PureDetect</td>
-<td>Boss</td>
-</tr>
-<tr class="odd">
-<td>Birthers</td>
-<td>Hibernate</td>
-<td>MiniBoss</td>
-</tr>
-<tr class="even">
-<td>Tank</td>
-<td>Hibernate</td>
-<td>MegaBoss</td>
-</tr>
-</tbody>
-</table>
-<p>†Removed from <code>EnemyPopulationDataBlock</code></p>
-<h2 id="qa">Q&amp;A</h2>
-<p>A list of common questions and answers:</p>
-<ul>
-<li>What if I want to have an enemy population that has two different kinds of things, do I need to create my own Enemy Population in <code>EnemyPopulationDataBlock.json</code>? For example shadow scouts and hybrids.
-<ul>
-<li>No. You can have several groups per zone and so you pick pre-existing groups with what you want and throw them all in the zone.</li>
-</ul></li>
-</ul>
-<p>If you have questions please message me (and may end up on this list).</p>
-<!-- links -->
+</head>
+<body class='typora-export os-windows'>
+<div id='write'  class=''><h1><a name="dpk-generator-project" class="md-header-anchor"></a><span>DPK Generator Project</span></h1><!-- Author: Dogpetkid -->
+<!-- Date: 2020-11-06 -->
+<!-- Revised: 2021-06-04 --><p><span>This is a project used assist in the creation and understanding of levels in GTFO. This is done by converting the levels from the JSON Datablocks to a custom Excel sheet. For an explanation on how to use this project, see </span><a href='#how-to-use'><span>How to use</span></a><span>.</span></p><p><a href='https://github.com/dogpetkid/DPK-Generator-Project/releases' target='_blank'><span>Project releases.</span></a></p><h2><a name="project-dependencies" class="md-header-anchor"></a><span>Project dependencies</span></h2><ul><li><a href='https://numpy.org/doc/stable/' target='_blank'><span>numpy</span></a></li><li><a href='https://openpyxl.readthedocs.io/en/stable/' target='_blank'><span>openpyxl</span></a></li><li><a href='https://pandas.pydata.org/docs/' target='_blank'><span>pandas</span></a></li><li><a href='https://xlrd.readthedocs.io/en/latest/' target='_blank'><span>xlrd</span></a></li></ul><h2><a name="project-contents" class="md-header-anchor"></a><span>Project contents</span></h2><ul><li><a href='#xlsxinterfacer'><span>XlsxInterfacer.py</span></a></li><li><a href='#datablockio'><span>DatablockIO.py</span></a></li><li><a href='#enumconverter'><span>EnumConverter.py</span></a></li><li><a href='#levelutility'><span>LevelUtility.py</span></a></li><li><a href='#levelreverseutility'><span>LevelReverseUtility.py</span></a></li><li><a href='#template'><span>Template</span></a></li></ul><hr /><h2><a name="xlsxinterfacer" class="md-header-anchor"></a><span>XlsxInterfacer</span></h2><p><span>A module created to interface with the pandas.DataFrame to read typed values from cells and to write and save a pandas.DataFrame back to an Excel file.</span></p><h2><a name="datablockio" class="md-header-anchor"></a><span>DatablockIO</span></h2><p><span>A module created to read from and write to GTFO Datablocks including search blocks based on name or persistantID.</span></p><h2><a name="enumconverter" class="md-header-anchor"></a><span>EnumConverter</span></h2><p><span>A module created to convert between GTFO Enumerator names and indexes. This module is obsolete as of the release of </span><a href='https://gtfo.fandom.com/wiki/Rundown_005' target='_blank'><span>Rundown 005 Rebirth</span></a><span> because enumerators in the DataBlocks are represented as strings instead of integers.</span></p><hr /><h2><a name="levelutility" class="md-header-anchor"></a><span>LevelUtility</span></h2><p><span>This is a file that is able to take a templated .xlsx file and convert it into GTFO ExpeditionInTier, LevelLayout, and WardenObjective data. It takes arguments of which files to convert, converts the .xlsx into dictionaries, and then writes those into the DataBlocks. It is also a Windows Drop Target so .xlsx files can be dragged and dropped to run the program.</span></p><h2><a name="levelreverseutility" class="md-header-anchor"></a><span>LevelReverseUtility</span></h2><p><span>This is a file that is able to search and convert a Level in the JSON DataBlocks a the templated .xlsx. It takes arguments of search terms for the levels to convert and writes the dictionaries to the .xlsx.</span></p><h3><a name="template" class="md-header-anchor"></a><span>Template</span></h3><p><a href='https://docs.google.com/spreadsheets/d/1ENa6McJnomHa5ugB-VBFjMF62nslj4VwdgM_5ERVRqw' target='_blank'><span>Template is here.</span></a></p><p><span>Notes:</span></p><ul><li><span>The sheet tries it&#39;s best to stop you from doing illegal or irrational things for data types (ie you can&#39;t put a word where a number should go) but it is not idiot proof and cannot detect logical issues (eg to go into a zone with a key, it requires that key or a level doesn&#39;t have enough cells).</span></li><li><span>Most values can be left blank, if leaving a value blank could be problematic, the LevelUtility will probably not run and explain which cell is blank.</span></li></ul><p><span>Below is a description of the sheets in the template:</span></p><ul><li><span>Key: A sheet describing datatypes and the version of the sheet.</span></li><li><span>Meta: Data for which rundown, tier, and index the level should be in.</span></li><li><span>ExpeditionInTier: Data about the expedition as a whole (eg population, fog, tileset) and general information about the sectors.</span></li></ul><p><span>All sheets labed LX should be duplicated per layer and renamed accordingly (eg L1, L2, L3).</span></p><ul><li><span>LX ExpeditionZoneData: List of all zones and information about them.</span></li><li><span>LX ExpeditionZoneData Lists: Different lists of items a zone can have more than one of (eg terminals, enemy spawning, etc.)</span></li><li><span>LX WardenObjective: Data about the objective, the enemy waves, objective events, etc.</span></li><li><span>LX WardenObjective ReactorWaves: Data about the Reactor objective</span></li></ul><p><span>Note: The program requires the Zone and Objective sheets to come as a pair (even if the second is blank). If you have L1 ExpeditionZoneData, you must have L1 ExpeditionZoneData. If you have L1 WardenObjective, you must have L1 WardenObjective.</span></p><hr /><h2><a name="how-to-use" class="md-header-anchor"></a><span>How to use</span></h2><p><span>The usage of this program can be broken into a couple of steps:</span></p><ul><li><p><a href='#setup'><span>Setup</span></a></p><ul><li><span>Modding folder</span></li><li><span>MTFO</span></li><li><span>Python and dependencies</span></li><li><span>(Unity) Asset Bundle Extractor (UABE) (for releasing blocks) &amp; Binary Encoder</span></li></ul></li><li><p><a href='#template-usage'><span>Template Usage</span></a></p><ul><li><span>Level Design (crash course)</span></li><li><span>Meta (placement in rundown)</span></li></ul></li><li><p><a href='#tool-usage'><span>Tool Usage</span></a></p><ul><li><a href='#json-to-excel'><span>JSON to Excel</span></a></li><li><a href='#excel-to-json'><span>Excel to JSON</span></a></li></ul></li></ul><h3><a name="setup" class="md-header-anchor"></a><span>Setup</span></h3><h4><a name="modding-folder" class="md-header-anchor"></a><span>Modding Folder</span></h4><p><span>Create a </span><code>GTFO-modding</code><span> folder (or use an existing folder, it&#39;s name does not particularly matter, for clarity I will refer to it by that name). In </span><code>GTFO-modding</code><span> place this project&#39;s folder </span><code>GTFO-modding</code><span>.</span></p><h4><a name="mtfo" class="md-header-anchor"></a><span>MTFO</span></h4><p><span>Install </span><a href='https://gtfo.thunderstore.io/package/dakkhuza/MTFO/' target='_blank'><span>MTFO</span></a><span> to your GTFO (follow its instructions). MTFO source </span><a href='https://github.com/GTFO-Modding/MTFO' target='_blank'><span>here</span></a><span>.</span></p><h5><a name="original-datablocks" class="md-header-anchor"></a><span>Original Datablocks</span></h5><p><span>Obtain the Original Datablocks from MTFO. After obtaining the blocks, create a </span><code>GTFO-modding</code><span> folder and create a </span><code>Datablocks</code><span> folder inside of it. Move just the DataBlocks (the JSONs) into the </span><code>Datablocks</code><span> folder.</span></p><h4><a name="python" class="md-header-anchor"></a><a href='https://www.python.org/' target='_blank'><span>Python</span></a></h4><p><span>Download Python </span><a href='https://www.python.org/downloads/' target='_blank'><span>here</span></a><span> and install it (all the default settings are fine). Open a terminal (</span><code>Windows+R</code><span> and open CMD) and run:</span></p><p><code>pip install pandas openpyxl numpy xlrd</code></p><p><span>If you get </span><code>&#39;pip&#39; is not recognized as an internal or external command, operable program or batch file.</code><span>, try replacing </span><code>pip</code><span> with </span><code>py -m pip</code><span> or </span><code>python -m pip</code><span>.</span></p><p><span>This will download all the needed </span><a href='#project-dependencies'><span>dependencies listed above</span></a><span> for the DPK Generator Project.</span></p><hr /><h3><a name="template-usage" class="md-header-anchor"></a><span>Template Usage</span></h3><p><span>See </span><a href='#template'><span>Template</span></a><span> to see notes about the template. To learn what values mean, I suggest using the LevelReverseUtility to get a couple of examples of the dev&#39;s levels.</span></p><h4><a name="level-design-crash-course" class="md-header-anchor"></a><span>Level Design (crash course)</span></h4><p><span>This section </span><strong><span>will not</span></strong><span> teach you how to make good levels but what it will do is walk you through the very general steps for creating the idea for the level and some tips.</span></p><h5><a name="create-a-theme" class="md-header-anchor"></a><span>Create a theme</span></h5><p><span>A level that is unique is interesting and a level that follows a single idea seems more coherent (versus being all over). A good way to do this is create something the level will focus on or a rule for the level (e.g. only use specific enemies, all alarms are the same kind, sectors unlock zones in other sectors).</span></p><h5><a name="floorplan" class="md-header-anchor"></a><span>Floorplan</span></h5><p><span>The next step is then creating a model of the level to help visualize the way the level works. This can be done whichever way, I prefer drawing the level in MS Paint or coloring different squares in Google Sheets. A thing to keep in mind while placing zones is which secuirty doors and progression puzzles and chained puzzles they take to open and make notes of where the key or cell will come from.</span></p><h5><a name="tips" class="md-header-anchor"></a><span>Tips</span></h5><ul><li><span>Backtracking is not fun, try to keep the amount of walking through empty rooms to a minimum.</span></li><li><span>A cell in one sector can open a door in another sector.</span></li><li><span>Try to walk through the way the level should be completed and double check if &quot;cheesing&quot; by skipping required zones and accidental softlocks aren&#39;t a thing.</span></li></ul><hr /><h4><a name="meta" class="md-header-anchor"></a><span>Meta</span></h4><p><span>This describes where in the rundown the level is placed. This is for the tool to know where in the </span><code>RundownDataBlock.json</code><span> to put the ExpeditionInTier. E.g. Rundown ID 25, TierA, Index 1 describes (R4)A2 Foster</span></p><hr /><h3><a name="tool-usage" class="md-header-anchor"></a><span>Tool Usage</span></h3><p><span>The following are the steps to use the tools.</span></p><p><span>For CLI instructions, run either Utility with the </span><code>-h</code><span> or </span><code>--help</code><span> option.</span></p><h4><a name="json-to-excel" class="md-header-anchor"></a><span>JSON to Excel</span></h4><ol start='' ><li><span>Follow the </span><a href='#setup'><span>Setup</span></a></li><li><span>Run the LevelReverseUtility (or run the tool in CLI)</span></li><li><span>Specify level(s) (in the format specified by the tool) to spit out Excel files for </span></li></ol><p><strong><span>Note: the formatting may not cover all the cells that have data, you may need to copy the formatting with the Paint Format tool in Excel or Google sheets.</span></strong>
+<span>(This is due to a limitation with openpyxl where it cannot read data validation, so instead of coloring cells but leaving them without data validation, I left all cell formatting unchanged.)</span></p><h4><a name="excel-to-json" class="md-header-anchor"></a><span>Excel to JSON</span></h4><ol start='' ><li><span>Follow the </span><a href='#setup'><span>Setup</span></a></li><li><span>Design a level or edit an existing level (after using the LevelReverseUtility and skip to step 6)</span></li><li><span>Create a copy of the </span><a href='https://docs.google.com/spreadsheets/d/1ENa6McJnomHa5ugB-VBFjMF62nslj4VwdgM_5ERVRqw' target='_blank'><span>Template</span></a><span> in either Google Sheets or download it as a .xlsx (to edit in Excel, Google Sheets is recommended)</span></li><li><span>Fill out the copy of the template.</span></li><li><span>Download the Google Sheets as an Excel file (.xlsx) if you didn&#39;t in step 3</span></li><li><span>Drag the .xlsx onto the LevelUtility (or run the tool in CLI).</span></li></ol><p><strong><span>Note: the only Rundown, LevelLayout, and WardenObjective datablocks are edited by the LevelUtility</span></strong></p><hr /><h2><a name="feedback" class="md-header-anchor"></a><span>Feedback</span></h2><p><span>If you find a bug, please report it </span><a href='https://github.com/dogpetkid/DPK-Generator-Project/issues' target='_blank'><span>here</span></a><span>.</span></p><p><span>If you have questions please message me.</span></p><!-- links --></div>
+</body>
+</html>
