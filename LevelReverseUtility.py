@@ -17,6 +17,7 @@ import openpyxl
 import pandas
 import xlrd
 
+import ConfigManager
 import DatablockIO
 import EnumConverter
 import XlsxInterfacer
@@ -52,13 +53,11 @@ winreserveregex = "[<>:\"/\\\\|?*]"
 # R: Rundown
 # G: Generator
 # S: Sheet (minor changes to the sheet are insignificant to the utility)
-Version = "5.1"
+Version = ConfigManager.config["Project"]["Version"]
 # relative path to location for datablocks, defaultly its folder should be on the same layer as this project's folder
-blockpath = os.path.join(os.path.dirname(__file__),"..\\Datablocks\\") # TODO create an argument to change the blockpath
+blockpath = os.path.join(os.path.dirname(__file__), ConfigManager.config["Project"]["blockpath"])
 # path to template file
-templatepath = os.path.join(os.path.dirname(__file__),"Template for Generator R5.xlsx")
-# persistentID of the default rundown to insert levels into
-rundowndefault = 26 # R5
+templatepath = os.path.join(os.path.dirname(__file__), ConfigManager.config["LevelReverseUtility"]["templatepath"])
 #####
 
 def writePublicNameFromDict(datablock:DatablockIO.datablock, interface:XlsxInterfacer.interface, x:int, y:int, dictionary:dict, key:str):
@@ -87,24 +86,30 @@ def writeEnumFromDict(enum:io.FileIO, interface:XlsxInterfacer.interface, x:int,
 
 # load all datablock files
 if True:
-    # DATABLOCK_Rundown = DatablockIO.datablock(open(blockpath+"RundownDataBlock.json", 'r', encoding="utf8"))
-    # DATABLOCK_LevelLayout = DatablockIO.datablock(open(blockpath+"LevelLayoutDataBlock.json", 'r', encoding="utf8"))
-    # DATABLOCK_WardenObjective = DatablockIO.datablock(open(blockpath+"WardenObjectiveDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_ArtifactDistributionDataBlock = DatablockIO.datablock(open(blockpath+"ArtifactDistributionDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_BigPickupDistribution = DatablockIO.datablock(open(blockpath+"BigPickupDistributionDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_ChainedPuzzle = DatablockIO.datablock(open(blockpath+"ChainedPuzzleDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_ComplexResourceSet = DatablockIO.datablock(open(blockpath+"ComplexResourceSetDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_ConsumableDistribution = DatablockIO.datablock(open(blockpath+"ConsumableDistributionDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_Enemy = DatablockIO.datablock(open(blockpath+"EnemyDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_EnemyGroup = DatablockIO.datablock(open(blockpath+"EnemyGroupDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_EnemyPopulation = DatablockIO.datablock(open(blockpath+"EnemyPopulationDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_ExpeditionBalance = DatablockIO.datablock(open(blockpath+"ExpeditionBalanceDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_FogSettings = DatablockIO.datablock(open(blockpath+"FogSettingsDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_Item = DatablockIO.datablock(open(blockpath+"ItemDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_LightSettings = DatablockIO.datablock(open(blockpath+"LightSettingsDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_StaticSpawn = DatablockIO.datablock(open(blockpath+"StaticSpawnDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_SurvivalWavePopulation = DatablockIO.datablock(open(blockpath+"SurvivalWavePopulationDataBlock.json", 'r', encoding="utf8"))
-    DATABLOCK_SurvivalWaveSettings = DatablockIO.datablock(open(blockpath+"SurvivalWaveSettingsDataBlock.json", 'r', encoding="utf8"))
+    try:
+        # DATABLOCK_Rundown = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"RundownDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        # DATABLOCK_LevelLayout = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"LevelLayoutDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        # DATABLOCK_WardenObjective = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"WardenObjectiveDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_ArtifactDistributionDataBlock = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"ArtifactDistributionDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_BigPickupDistribution = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"BigPickupDistributionDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_ChainedPuzzle = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"ChainedPuzzleDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_ComplexResourceSet = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"ComplexResourceSetDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_ConsumableDistribution = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"ConsumableDistributionDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_Enemy = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"EnemyDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_EnemyGroup = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"EnemyGroupDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_EnemyPopulation = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"EnemyPopulationDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_ExpeditionBalance = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"ExpeditionBalanceDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_FogSettings = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"FogSettingsDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_Item = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"ItemDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_LightSettings = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"LightSettingsDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_StaticSpawn = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"StaticSpawnDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_SurvivalWavePopulation = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"SurvivalWavePopulationDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_SurvivalWaveSettings = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"SurvivalWaveSettingsDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+    except FileNotFoundError as e:
+        if __name__ == "__main__":
+            print("Missing a DataBlock: " + str(e))
+            input()
+        raise FileNotFoundError("Missing a DataBlock: " + str(e))
 
 # load all enum files
 if True:
@@ -1113,7 +1118,10 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
     logger.info("Starting reverse utilty job: \""+desiredReverse+"\"")
 
     # check the template version before doing any searching
-    iKey = XlsxInterfacer.interface(pandas.read_excel(templatepath, "Key", header=None))
+    try:
+        iKey = XlsxInterfacer.interface(pandas.read_excel(templatepath, "Key", header=None))
+    except FileNotFoundError as e:
+        raise FileNotFoundError("Missing template file: " + str(e))
     if iKey.read(str, 0, 5).split(".")[0:2] != Version.split(".")[0:2]:
         logger.critical("Version mismatch between utility and tempalte sheet, incompatible.")
         return False
@@ -1395,9 +1403,15 @@ def main():
     logger.debug("Running DPK's LevelReverseUtilty with the given arguments:\n\t"+str(args))
 
     # Open Datablocks to get level from
-    RundownDataBlock =  DatablockIO.datablock(open(blockpath+"RundownDataBlock.json", 'r', encoding="utf-8"))
-    LevelLayoutDataBlock = DatablockIO.datablock(open(blockpath+"LevelLayoutDataBlock.json", 'r', encoding="utf8"))
-    WardenObjectiveDataBlock = DatablockIO.datablock(open(blockpath+"WardenObjectiveDataBlock.json", 'r', encoding="utf8"))
+    try:
+        RundownDataBlock = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"RundownDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        LevelLayoutDataBlock = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"LevelLayoutDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        WardenObjectiveDataBlock = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"WardenObjectiveDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+    except FileNotFoundError as e:
+        if not args.noinput:
+            print("Missing a DataBlock: " + str(e))
+            input()
+        raise FileNotFoundError("Missing a DataBlock: " + str(e))
 
     if not(args.directory):
         args.directory = os.path.dirname(__file__)

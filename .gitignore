@@ -1,5 +1,10 @@
+# Ignore xlsx files except template
 /*.xlsx
 !Template for Generator R5.xlsx
+
+# Ignore the config because its generated when it is missing
+/config.json
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

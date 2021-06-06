@@ -2,7 +2,7 @@
 
 <!-- Author: Dogpetkid -->
 <!-- Date: 2020-11-06 -->
-<!-- Revised: 2021-06-04 -->
+<!-- Revised: 2021-06-06 -->
 
 This is a project used assist in the creation and understanding of levels in GTFO. This is done by converting the levels from the JSON Datablocks to a custom Excel sheet. For an explanation on how to use this project, see [How to use](#how-to-use).
 
@@ -37,6 +37,10 @@ A module created to read from and write to GTFO Datablocks including search bloc
 ## EnumConverter
 
 A module created to convert between GTFO Enumerator names and indexes. This module is obsolete as of the release of [Rundown 005 Rebirth][Rundown005] because enumerators in the DataBlocks are represented as strings instead of integers.
+
+## ConfigManager
+
+A module created to ensure the existence of a config file and read the values from it.
 
 ---
 
