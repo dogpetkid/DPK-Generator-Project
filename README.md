@@ -2,7 +2,7 @@
 
 <!-- Author: Dogpetkid -->
 <!-- Date: 2020-11-06 -->
-<!-- Revised: 2021-06-06 -->
+<!-- Revised: 2022-07-04 -->
 
 This is a project used assist in the creation and understanding of levels in GTFO. This is done by converting the levels from the JSON Datablocks to a custom Excel sheet. For an explanation on how to use this project, see [How to use](#how-to-use).
 
@@ -20,6 +20,7 @@ This is a project used assist in the creation and understanding of levels in GTF
 - [XlsxInterfacer.py](#xlsxinterfacer)
 - [DatablockIO.py](#datablockio)
 - [EnumConverter.py](#enumconverter)
+- [TestUtilities.sh](#testutility)
 - [LevelUtility.py](#levelutility)
 - [LevelReverseUtility.py](#levelreverseutility)
 - [Template](#template)
@@ -43,6 +44,10 @@ A module created to convert between GTFO Enumerator names and indexes. This modu
 A module created to ensure the existence of a config file and read the values from it.
 
 ---
+
+## TestUtilities
+
+This is a test for utilty development to check the functionality of the LevelUtilites going in reverse and forward to see they are truely inverses of each other that produce the same ouput blocks given input blocks.
 
 ## LevelUtility
 
