@@ -28,7 +28,7 @@ except (KeyError, TypeError):
 try:
     if type(config["Project"]["Version"]) != str:raise TypeError
 except (KeyError, TypeError):
-    config["Project"]["Version"] = "5.1"
+    config["Project"]["Version"] = "7.0"
 try:
     if type(config["Project"]["blockpath"]) != str:raise TypeError
 except (KeyError, TypeError):
@@ -60,7 +60,7 @@ except (KeyError, TypeError):
 try:
     if type(config["LevelReverseUtility"]["templatepath"]) != str:raise TypeError
 except (KeyError, TypeError):
-    config["LevelReverseUtility"]["templatepath"] = ".\\Template for Generator R5.xlsx"
+    config["LevelReverseUtility"]["templatepath"] = ".\\Template for Generator R7.xlsx"
 
 cfg.truncate(0)
 cfg.seek(0)
