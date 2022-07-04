@@ -344,15 +344,15 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
         iExpeditionInTier.writeFromDict(12, 12, ExpeditionInTierData["Descriptive"], "EstimatedDuration")
         # TODO regex replace new lines to be "\n"
         try:
-            desc = re.sub(devnewlnregex, sheetcrlf, ExpeditionInTierData["Descriptive"]["ExpeditionDescription"])
+            desc = re.sub(devnewlnregex, sheetcrlf, str(ExpeditionInTierData["Descriptive"]["ExpeditionDescription"])) # TODO fix this bodge for localization
             iExpeditionInTier.write(desc, 12, 13)
         except KeyError:pass
         try:
-            desc = re.sub(devnewlnregex, sheetcrlf, ExpeditionInTierData["Descriptive"]["RoleplayedWardenIntel"])
+            desc = re.sub(devnewlnregex, sheetcrlf, str(ExpeditionInTierData["Descriptive"]["RoleplayedWardenIntel"])) # TODO fix this bodge for localization
             iExpeditionInTier.write(desc, 12, 14)
         except KeyError:pass
         try:
-            desc = re.sub(devnewlnregex, sheetlf, ExpeditionInTierData["Descriptive"]["DevInfo"])
+            desc = re.sub(devnewlnregex, sheetlf, str(ExpeditionInTierData["Descriptive"]["DevInfo"])) # TODO fix this bodge for localization
             iExpeditionInTier.write(desc, 12, 15)
         except KeyError:pass
     except KeyError:pass
@@ -629,7 +629,7 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+1, row, Snippet, "Parsed Group")
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+2, row, Snippet, "FileName")
             try:
-                content = re.sub(devnewlnregex, sheetcrlf, Snippet["FileContent"])
+                content = re.sub(devnewlnregex, sheetcrlf, str(Snippet["FileContent"])) # TODO fix this bodge for localization
                 content = re.sub(devtabregex, sheettb, content)
                 iExpeditionZoneDataLists.write(content, startcolLocalLogFiles+3, row)
             except KeyError:pass
