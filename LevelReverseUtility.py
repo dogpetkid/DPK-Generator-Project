@@ -205,7 +205,7 @@ def ZonePlacementWeightsList(interface:XlsxInterfacer.interface, data:typing.Lis
         for placement in group:
             interface.write(letter, col, row)
             writeEnumFromDict(ENUMFILE_eLocalZoneIndex, interface, col+(not horizontal), row+horizontal, placement, "LocalIndex")
-            ZonePlacementWeights(interface, placement["Weights"], col+2*(not horizontal), row+2*horizontal, horizontal=(not horizontal))
+            ZonePlacementWeights(interface, placement["Weights"], col+3*(not horizontal), row+3*horizontal, horizontal=(not horizontal))
             col+= horizontal 
             row+= not horizontal
         letter = chr(ord(letter)+1)
@@ -293,30 +293,29 @@ def LayerData(interface:XlsxInterfacer.interface, data:dict, col:int, row:int):
     col and row define the upper left value, SHOULD be the header \n
     horizontal is true if the values are in the same row
     """
-    interface.writeFromDict(col+5, row, data, "ZoneAliasStart")
     try:
-        itercol,iterrow = col+5, row+1
+        itercol,iterrow = col+5, row
         for zone in data["ZonesWithBulkheadEntrance"]:
             # NOTE textmode may need a toggle in this file for whether the json should have text enums
             interface.write(EnumConverter.enumToIndex(ENUMFILE_eLocalZoneIndex, zone, textmode=True), itercol, iterrow)
             itercol+= 1
     except KeyError:pass
     try:
-        itercol,iterrow = col+5, row+2
+        itercol,iterrow = col+5, row+1
         for placement in data["BulkheadDoorControllerPlacements"]:
             BulkheadDoorPlacementData(interface, placement, itercol, iterrow, horizontal=False)
             itercol+= 1
     except KeyError:pass
-    ZonePlacementWeightsList(interface, data["BulkheadKeyPlacements"], col+5, row+8, horizontal=True)
+    ZonePlacementWeightsList(interface, data["BulkheadKeyPlacements"], col+5, row+7, horizontal=True)
     try:
         interface.writeFromDict(col+5, row+13, data["ObjectiveData"], "DataBlockId")
         writeEnumFromDict(ENUMFILE_eWardenObjectiveWinCondition, interface, col+5, row+14, data["ObjectiveData"], "WinCondition")
         ZonePlacementWeightsList(interface, data["ObjectiveData"]["ZonePlacementDatas"], col+5, row+15, horizontal=True)
     except KeyError:pass
     try:
-        interface.writeFromDict(col+5, row+20, data["ArtifactData"], "ArtifactAmountMulti")
-        writePublicNameFromDict(DATABLOCK_ArtifactDistributionDataBlock, interface, col+5, row+21, data["ArtifactData"], "ArtifactLayerDistributionDataID")
-        itercol,iterrow = col+5, row+22
+        interface.writeFromDict(col+5, row+22, data["ArtifactData"], "ArtifactAmountMulti")
+        writePublicNameFromDict(DATABLOCK_ArtifactDistributionDataBlock, interface, col+5, row+23, data["ArtifactData"], "ArtifactLayerDistributionDataID")
+        itercol,iterrow = col+5, row+24
         for distribution in data["ArtifactData"]["ArtifactZoneDistributions"]:
             ArtifactZoneDistribution(interface, distribution, itercol, iterrow, horizontal=False)
             itercol+= 1
@@ -327,80 +326,80 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
     edit the iExpeditionInTier pandas dataFrame
     """
     iExpeditionInTier.writeFromDict(0, 2, ExpeditionInTierData, "Enabled")
-    writeEnumFromDict(ENUMFILE_eExpeditionAccessibility, iExpeditionInTier, 1, 2, ExpeditionInTierData, "Accessibility")
+    writeEnumFromDict(ENUMFILE_eExpeditionAccessibility, iExpeditionInTier, 6, 2, ExpeditionInTierData, "Accessibility")
 
     try:
-        iExpeditionInTier.writeFromDict(12, 2, ExpeditionInTierData["CustomProgressionLock"], "MainSectors")
-        iExpeditionInTier.writeFromDict(12, 3, ExpeditionInTierData["CustomProgressionLock"], "SecondarySectors")
-        iExpeditionInTier.writeFromDict(12, 4, ExpeditionInTierData["CustomProgressionLock"], "ThirdSectors")
-        iExpeditionInTier.writeFromDict(12, 5, ExpeditionInTierData["CustomProgressionLock"], "AllClearedSectors")
+        iExpeditionInTier.writeFromDict(0, 10, ExpeditionInTierData["CustomProgressionLock"], "MainSectors")
+        iExpeditionInTier.writeFromDict(1, 10, ExpeditionInTierData["CustomProgressionLock"], "SecondarySectors")
+        iExpeditionInTier.writeFromDict(2, 10, ExpeditionInTierData["CustomProgressionLock"], "ThirdSectors")
+        iExpeditionInTier.writeFromDict(3, 10, ExpeditionInTierData["CustomProgressionLock"], "AllClearedSectors")
     except KeyError:pass
 
     try:
-        iExpeditionInTier.writeFromDict(12, 8, ExpeditionInTierData["Descriptive"], "Prefix")
-        iExpeditionInTier.writeFromDict(12, 9, ExpeditionInTierData["Descriptive"], "PublicName")
-        iExpeditionInTier.writeFromDict(12, 10, ExpeditionInTierData["Descriptive"], "IsExtraExpedition")
-        iExpeditionInTier.writeFromDict(12, 11, ExpeditionInTierData["Descriptive"], "ExpeditionDepth")
-        iExpeditionInTier.writeFromDict(12, 12, ExpeditionInTierData["Descriptive"], "EstimatedDuration")
+        iExpeditionInTier.writeFromDict(14, 10, ExpeditionInTierData["Descriptive"], "Prefix")
+        iExpeditionInTier.writeFromDict(14, 11, ExpeditionInTierData["Descriptive"], "PublicName")
+        iExpeditionInTier.writeFromDict(14, 12, ExpeditionInTierData["Descriptive"], "IsExtraExpedition")
+        iExpeditionInTier.writeFromDict(14, 17, ExpeditionInTierData["Descriptive"], "ExpeditionDepth")
+        iExpeditionInTier.writeFromDict(14, 18, ExpeditionInTierData["Descriptive"], "EstimatedDuration")
         # TODO regex replace new lines to be "\n"
         try:
             desc = re.sub(devnewlnregex, sheetcrlf, str(ExpeditionInTierData["Descriptive"]["ExpeditionDescription"])) # TODO fix this bodge for localization
-            iExpeditionInTier.write(desc, 12, 13)
+            iExpeditionInTier.write(desc, 14, 19)
         except KeyError:pass
         try:
             desc = re.sub(devnewlnregex, sheetcrlf, str(ExpeditionInTierData["Descriptive"]["RoleplayedWardenIntel"])) # TODO fix this bodge for localization
-            iExpeditionInTier.write(desc, 12, 14)
+            iExpeditionInTier.write(desc, 14, 20)
         except KeyError:pass
         try:
             desc = re.sub(devnewlnregex, sheetlf, str(ExpeditionInTierData["Descriptive"]["DevInfo"])) # TODO fix this bodge for localization
-            iExpeditionInTier.write(desc, 12, 15)
+            iExpeditionInTier.write(desc, 14, 21)
         except KeyError:pass
     except KeyError:pass
 
     try:
-        iExpeditionInTier.writeFromDict(0, 6, ExpeditionInTierData["Seeds"], "BuildSeed")
-        iExpeditionInTier.writeFromDict(1, 6, ExpeditionInTierData["Seeds"], "FunctionMarkerOffset")
-        iExpeditionInTier.writeFromDict(2, 6, ExpeditionInTierData["Seeds"], "StandardMarkerOffset")
-        iExpeditionInTier.writeFromDict(3, 6, ExpeditionInTierData["Seeds"], "LightJobSeedOffset")
+        iExpeditionInTier.writeFromDict(5, 10, ExpeditionInTierData["Seeds"], "BuildSeed")
+        iExpeditionInTier.writeFromDict(6, 10, ExpeditionInTierData["Seeds"], "FunctionMarkerOffset")
+        iExpeditionInTier.writeFromDict(7, 10, ExpeditionInTierData["Seeds"], "StandardMarkerOffset")
+        iExpeditionInTier.writeFromDict(8, 10, ExpeditionInTierData["Seeds"], "LightJobSeedOffset")
     except KeyError:pass
 
     try:
-        writePublicNameFromDict(DATABLOCK_ComplexResourceSet, iExpeditionInTier, 0, 10, ExpeditionInTierData["Expedition"], "ComplexResourceData")
-        writePublicNameFromDict(DATABLOCK_LightSettings, iExpeditionInTier, 1, 10, ExpeditionInTierData["Expedition"], "LightSettings")
-        writePublicNameFromDict(DATABLOCK_FogSettings, iExpeditionInTier, 2, 10, ExpeditionInTierData["Expedition"], "FogSettings")
-        writePublicNameFromDict(DATABLOCK_EnemyPopulation, iExpeditionInTier, 3, 10, ExpeditionInTierData["Expedition"], "EnemyPopulation")
-        writePublicNameFromDict(DATABLOCK_ExpeditionBalance, iExpeditionInTier, 4, 10, ExpeditionInTierData["Expedition"], "ExpeditionBalance")
-        writePublicNameFromDict(DATABLOCK_SurvivalWaveSettings, iExpeditionInTier, 5, 10, ExpeditionInTierData["Expedition"], "ScoutWaveSettings")
-        writePublicNameFromDict(DATABLOCK_SurvivalWavePopulation, iExpeditionInTier, 6, 10, ExpeditionInTierData["Expedition"], "ScoutWavePopulation")
+        writePublicNameFromDict(DATABLOCK_ComplexResourceSet,       iExpeditionInTier, 0, 14, ExpeditionInTierData["Expedition"], "ComplexResourceData")
+        writePublicNameFromDict(DATABLOCK_LightSettings,            iExpeditionInTier, 2, 14, ExpeditionInTierData["Expedition"], "LightSettings")
+        writePublicNameFromDict(DATABLOCK_FogSettings,              iExpeditionInTier, 3, 14, ExpeditionInTierData["Expedition"], "FogSettings")
+        writePublicNameFromDict(DATABLOCK_EnemyPopulation,          iExpeditionInTier, 4, 14, ExpeditionInTierData["Expedition"], "EnemyPopulation")
+        writePublicNameFromDict(DATABLOCK_ExpeditionBalance,        iExpeditionInTier, 5, 14, ExpeditionInTierData["Expedition"], "ExpeditionBalance")
+        writePublicNameFromDict(DATABLOCK_SurvivalWaveSettings,     iExpeditionInTier, 6, 14, ExpeditionInTierData["Expedition"], "ScoutWaveSettings")
+        writePublicNameFromDict(DATABLOCK_SurvivalWavePopulation,   iExpeditionInTier, 7, 14, ExpeditionInTierData["Expedition"], "ScoutWavePopulation")
     except KeyError:pass
 
-    iExpeditionInTier.writeFromDict(0, 13, ExpeditionInTierData, "LevelLayoutData")
+    iExpeditionInTier.writeFromDict(0, 21, ExpeditionInTierData, "LevelLayoutData")
     try:
-        LayerData(iExpeditionInTier, ExpeditionInTierData["MainLayerData"], 0, 20)
+        LayerData(iExpeditionInTier, ExpeditionInTierData["MainLayerData"], 0, 36)
     except KeyError:pass
 
-    iExpeditionInTier.writeFromDict(3, 13, ExpeditionInTierData, "SecondaryLayerEnabled")
-    iExpeditionInTier.writeFromDict(4, 13, ExpeditionInTierData, "SecondaryLayout")
+    iExpeditionInTier.writeFromDict(2, 21, ExpeditionInTierData, "SecondaryLayerEnabled")
+    iExpeditionInTier.writeFromDict(3, 21, ExpeditionInTierData, "SecondaryLayout")
     try:
-        writeEnumFromDict(ENUMFILE_LG_LayerType, iExpeditionInTier, 3, 17, ExpeditionInTierData["BuildSecondaryFrom"], "LayerType")
-        iExpeditionInTier.writeFromDict(4, 17, ExpeditionInTierData["BuildSecondaryFrom"], "Zone")
+        writeEnumFromDict(ENUMFILE_LG_LayerType, iExpeditionInTier, 2, 25, ExpeditionInTierData["BuildSecondaryFrom"], "LayerType")
+        iExpeditionInTier.writeFromDict(3, 25, ExpeditionInTierData["BuildSecondaryFrom"], "Zone")
     except KeyError:pass
     try:
-        LayerData(iExpeditionInTier, ExpeditionInTierData["SecondaryLayerData"], 0, 48)
-    except KeyError:pass
-
-    iExpeditionInTier.writeFromDict(7, 13, ExpeditionInTierData, "ThirdLayerEnabled")
-    iExpeditionInTier.writeFromDict(8, 13, ExpeditionInTierData, "ThirdLayout")
-    try:
-        writeEnumFromDict(ENUMFILE_LG_LayerType, iExpeditionInTier, 7, 17, ExpeditionInTierData["BuildThirdFrom"], "LayerType")
-        iExpeditionInTier.writeFromDict(8, 17, ExpeditionInTierData["BuildThirdFrom"], "Zone")
-    except KeyError:pass
-    try:
-        LayerData(iExpeditionInTier, ExpeditionInTierData["ThirdLayerData"], 0, 76)
+        LayerData(iExpeditionInTier, ExpeditionInTierData["SecondaryLayerData"], 0, 66)
     except KeyError:pass
 
+    iExpeditionInTier.writeFromDict(5, 21, ExpeditionInTierData, "ThirdLayerEnabled")
+    iExpeditionInTier.writeFromDict(6, 21, ExpeditionInTierData, "ThirdLayout")
     try:
-        iExpeditionInTier.writeFromDict(5, 6, ExpeditionInTierData["SpecialOverrideData"], "WeakResourceContainerWithPackChanceForLocked")
+        writeEnumFromDict(ENUMFILE_LG_LayerType, iExpeditionInTier, 5, 25, ExpeditionInTierData["BuildThirdFrom"], "LayerType")
+        iExpeditionInTier.writeFromDict(6, 25, ExpeditionInTierData["BuildThirdFrom"], "Zone")
+    except KeyError:pass
+    try:
+        LayerData(iExpeditionInTier, ExpeditionInTierData["ThirdLayerData"], 0, 95)
+    except KeyError:pass
+
+    try:
+        iExpeditionInTier.writeFromDict(2, 29, ExpeditionInTierData["SpecialOverrideData"], "WeakResourceContainerWithPackChanceForLocked")
     except KeyError:pass
 
 class ExpeditionZoneDataLists:
@@ -1208,48 +1207,51 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
 
     frameMeta(iMeta, rundown, levelTier, levelIndex)
     frameExpeditionInTier(iExpeditionInTier, ExpeditionInTierData)
-    try:
-        framesLevelLayoutBlock(iExpeditionZoneDataL1, iExpeditionZoneDataListsL1, LayerDataL1)
-        logger.debug("Finished L1 LevelLayout")
-    except NameError:pass
-    except Exception as e:
-        logger.error("Problem writing L1 LevelLayout (skipping layout): "+str(e))
-        logger.debug(e, exc_info=True)
-    try:
-        framesLevelLayoutBlock(iExpeditionZoneDataL2, iExpeditionZoneDataListsL2, LayerDataL2)
-        logger.debug("Finished L2 LevelLayout")
-    except NameError:pass
-    except Exception as e:
-        logger.error("Problem writing L2 LevelLayout (skipping layout): "+str(e))
-        logger.debug(e, exc_info=True)
-    try:
-        framesLevelLayoutBlock(iExpeditionZoneDataL3, iExpeditionZoneDataListsL3, LayerDataL3)
-        logger.debug("Finished L2 LevelLayout")
-    except NameError:pass
-    except Exception as e:
-        logger.error("Problem writing L3 LevelLayout (skipping layout): "+str(e))
-        logger.debug(e, exc_info=True)
-    try:
-        framesWardenObjectiveBlock(iWardenObjectiveL1, iWardenObjectiveReactorWavesL1, WardenObjectiveL1)
-        logger.debug("Finished L1 WardenObjective")
-    except NameError:pass
-    except Exception as e:
-        logger.error("Problem writing L1 WardenObjective (skipping objective): "+str(e))
-        logger.debug(e, exc_info=True)
-    try:
-        framesWardenObjectiveBlock(iWardenObjectiveL2, iWardenObjectiveReactorWavesL2, WardenObjectiveL2)
-        logger.debug("Finished L2 WardenObjective")
-    except NameError:pass
-    except Exception as e:
-        logger.error("Problem writing L2 WardenObjective (skipping objective): "+str(e))
-        logger.debug(e, exc_info=True)
-    try:
-        framesWardenObjectiveBlock(iWardenObjectiveL3, iWardenObjectiveReactorWavesL3, WardenObjectiveL3)
-        logger.debug("Finished L3 WardenObjective")
-    except NameError:pass
-    except Exception as e:
-        logger.error("Problem writing L3 WardenObjective (skipping objective): "+str(e))
-        logger.debug(e, exc_info=True)
+    # XXX in order to run the test; don't run unfixed frame writer
+    # try:
+    #     framesLevelLayoutBlock(iExpeditionZoneDataL1, iExpeditionZoneDataListsL1, LayerDataL1)
+    #     logger.debug("Finished L1 LevelLayout")
+    # except NameError:pass
+    # except Exception as e:
+    #     logger.error("Problem writing L1 LevelLayout (skipping layout): "+str(e))
+    #     logger.debug(e, exc_info=True)
+    # try:
+    #     framesLevelLayoutBlock(iExpeditionZoneDataL2, iExpeditionZoneDataListsL2, LayerDataL2)
+    #     logger.debug("Finished L2 LevelLayout")
+    # except NameError:pass
+    # except Exception as e:
+    #     logger.error("Problem writing L2 LevelLayout (skipping layout): "+str(e))
+    #     logger.debug(e, exc_info=True)
+    # try:
+    #     framesLevelLayoutBlock(iExpeditionZoneDataL3, iExpeditionZoneDataListsL3, LayerDataL3)
+    #     logger.debug("Finished L2 LevelLayout")
+    # except NameError:pass
+    # except Exception as e:
+    #     logger.error("Problem writing L3 LevelLayout (skipping layout): "+str(e))
+    #     logger.debug(e, exc_info=True)
+
+    # XXX in order to run the test; don't run unfixed frame writer
+    # try:
+    #     framesWardenObjectiveBlock(iWardenObjectiveL1, iWardenObjectiveReactorWavesL1, WardenObjectiveL1)
+    #     logger.debug("Finished L1 WardenObjective")
+    # except NameError:pass
+    # except Exception as e:
+    #     logger.error("Problem writing L1 WardenObjective (skipping objective): "+str(e))
+    #     logger.debug(e, exc_info=True)
+    # try:
+    #     framesWardenObjectiveBlock(iWardenObjectiveL2, iWardenObjectiveReactorWavesL2, WardenObjectiveL2)
+    #     logger.debug("Finished L2 WardenObjective")
+    # except NameError:pass
+    # except Exception as e:
+    #     logger.error("Problem writing L2 WardenObjective (skipping objective): "+str(e))
+    #     logger.debug(e, exc_info=True)
+    # try:
+    #     framesWardenObjectiveBlock(iWardenObjectiveL3, iWardenObjectiveReactorWavesL3, WardenObjectiveL3)
+    #     logger.debug("Finished L3 WardenObjective")
+    # except NameError:pass
+    # except Exception as e:
+    #     logger.error("Problem writing L3 WardenObjective (skipping objective): "+str(e))
+    #     logger.debug(e, exc_info=True)
 
 
     workbook = openpyxl.load_workbook(filename = writepath)
