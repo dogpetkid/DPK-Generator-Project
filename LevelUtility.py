@@ -1044,10 +1044,12 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
     except NameError:pass
     except Exception as e:
         logger.error("Problem reading L2 LevelLayout (skipping layout): "+str(e))
+        logger.debug(e, exc_info=True)
     try:arrdictLevelLayoutBlock[2] = LevelLayoutBlock(iL3ExpeditionZoneData, iL3ExpeditionZoneDataLists)
     except NameError:pass
     except Exception as e:
         logger.error("Problem reading L3 LevelLayout (skipping layout): "+str(e))
+        logger.debug(e, exc_info=True)
 
     arrdictWardenObjectiveBlock = [None,None,None]
     try:arrdictWardenObjectiveBlock[0] = WardenObjectiveBlock(iL1WardenObjective, iL1WardenObjectiveReactorWaves)
@@ -1057,10 +1059,12 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
     except NameError:pass
     except Exception as e:
         logger.error("Problem reading L2 WardenOjbective (skipping objective): "+str(e))
+        logger.debug(e, exc_info=True)
     try:arrdictWardenObjectiveBlock[2] = WardenObjectiveBlock(iL3WardenObjective, iL3WardenObjectiveReactorWaves)
     except NameError:pass
     except Exception as e:
         logger.error("Problem reading L3 WardenOjbective (skipping objective): "+str(e))
+        logger.debug(e, exc_info=True)
 
     # copy descriptive from ExpeditionInTier into LevelLayout and WardenObjective blocks
     finalizeData(dictExpeditionInTier, arrdictLevelLayoutBlock, arrdictWardenObjectiveBlock)
@@ -1194,6 +1198,7 @@ def main():
         except Exception as e:
             # This if condition is to not write this twice in the debug log when something goes wrong
             logger.error("Something went wrong reading the sheet: \""+path+"\"\n\t"+str(e))
+            logger.debug(e, exc_info=True)
             continue
         logger.info("Finished with: \""+path+"\"")
         anythingDone = True

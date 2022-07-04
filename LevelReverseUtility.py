@@ -1214,36 +1214,42 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
     except NameError:pass
     except Exception as e:
         logger.error("Problem writing L1 LevelLayout (skipping layout): "+str(e))
+        logger.debug(e, exc_info=True)
     try:
         framesLevelLayoutBlock(iExpeditionZoneDataL2, iExpeditionZoneDataListsL2, LayerDataL2)
         logger.debug("Finished L2 LevelLayout")
     except NameError:pass
     except Exception as e:
         logger.error("Problem writing L2 LevelLayout (skipping layout): "+str(e))
+        logger.debug(e, exc_info=True)
     try:
         framesLevelLayoutBlock(iExpeditionZoneDataL3, iExpeditionZoneDataListsL3, LayerDataL3)
         logger.debug("Finished L2 LevelLayout")
     except NameError:pass
     except Exception as e:
         logger.error("Problem writing L3 LevelLayout (skipping layout): "+str(e))
+        logger.debug(e, exc_info=True)
     try:
         framesWardenObjectiveBlock(iWardenObjectiveL1, iWardenObjectiveReactorWavesL1, WardenObjectiveL1)
         logger.debug("Finished L1 WardenObjective")
     except NameError:pass
     except Exception as e:
         logger.error("Problem writing L1 WardenObjective (skipping objective): "+str(e))
+        logger.debug(e, exc_info=True)
     try:
         framesWardenObjectiveBlock(iWardenObjectiveL2, iWardenObjectiveReactorWavesL2, WardenObjectiveL2)
         logger.debug("Finished L2 WardenObjective")
     except NameError:pass
     except Exception as e:
         logger.error("Problem writing L2 WardenObjective (skipping objective): "+str(e))
+        logger.debug(e, exc_info=True)
     try:
         framesWardenObjectiveBlock(iWardenObjectiveL3, iWardenObjectiveReactorWavesL3, WardenObjectiveL3)
         logger.debug("Finished L3 WardenObjective")
     except NameError:pass
     except Exception as e:
         logger.error("Problem writing L3 WardenObjective (skipping objective): "+str(e))
+        logger.debug(e, exc_info=True)
 
 
     workbook = openpyxl.load_workbook(filename = writepath)
@@ -1439,6 +1445,7 @@ def main():
                 logger.info("Failed with: \""+desiredReverse+"\"")
         except Exception as e:
             logger.error("Exception with: \""+desiredReverse+"\"\n\t"+str(e))
+            logger.debug(e, exc_info=True)
 
     # TODO allow for a secondary job just to search for a level but not run the reverse tool on it
 
