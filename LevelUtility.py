@@ -433,7 +433,10 @@ class ExpeditionZoneDataLists:
         self.stubPowerGeneratorPlacements = {}
         self.stubDisinfectionStationPlacements = {}
         self.stubStaticSpawnDataContainers = {}
-        
+
+        # XXX in order to run the test; don't run unfixed frame reader
+        return
+
         row = startrow
         # EventsOnEnter
         while not(iExpeditionZoneDataLists.isEmpty(startcolEventsOnEnter,row)):
@@ -631,9 +634,9 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     """returns the ExpeditionZoneData for a particular row"""
     # set up some checkpoints so if some of the data gets reformatted, not the entire function needs to be altered,
     # just the headings and contents of the section will need edited column values
-    colPuzzleType = XlsxInterfacer.ctn("Q")
-    colHSUClustersInZone = XlsxInterfacer.ctn("AH")
-    colHealthMulti = XlsxInterfacer.ctn("AY")
+    colPuzzleType = XlsxInterfacer.ctn("AF")
+    colHSUClustersInZone = XlsxInterfacer.ctn("BH")
+    colHealthMulti = XlsxInterfacer.ctn("BZ")
 
     data = {}
 
@@ -641,29 +644,29 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     # NOTE textmode may need a toggle in this file for whether the json should have text enums
     data["LocalIndex"] =  EnumConverter.enumToIndex(ENUMFILE_eLocalZoneIndex, zonestr, textmode=True)
 
-    iExpeditionZoneData.readIntoDict(int, 1, row, data, "SubSeed")
-    iExpeditionZoneData.readIntoDict(int, 2, row, data, "BulkheadDCScanSeed")
-    iExpeditionZoneData.readIntoDict(str, 3, row, data, "SubComplex")
+    iExpeditionZoneData.readIntoDict(int, 5, row, data, "SubSeed")
+    iExpeditionZoneData.readIntoDict(int, 8, row, data, "BulkheadDCScanSeed")
+    iExpeditionZoneData.readIntoDict(str, 9, row, data, "SubComplex")
     EnumConverter.enumInDict(ENUMFILE_SubComplex, data, "SubComplex")
-    iExpeditionZoneData.readIntoDict(str, 4, row, data, "CustomGeomorph")
+    iExpeditionZoneData.readIntoDict(str, 10, row, data, "CustomGeomorph")
     data["CoverageMinMax"] = {}
-    data["CoverageMinMax"]["x"] = iExpeditionZoneData.read(float, 5, row)
-    data["CoverageMinMax"]["y"] = iExpeditionZoneData.read(float, 6, row)
-    iExpeditionZoneData.readIntoDict(str, 7, row, data, "BuildFromLocalIndex")
+    data["CoverageMinMax"]["x"] = iExpeditionZoneData.read(float, 12, row)
+    data["CoverageMinMax"]["y"] = iExpeditionZoneData.read(float, 13, row)
+    iExpeditionZoneData.readIntoDict(str, 14, row, data, "BuildFromLocalIndex")
     EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, data, "BuildFromLocalIndex")
-    iExpeditionZoneData.readIntoDict(str, 8, row, data, "StartPosition")
+    iExpeditionZoneData.readIntoDict(str, 15, row, data, "StartPosition")
     EnumConverter.enumInDict(ENUMFILE_eZoneBuildFromType, data, "StartPosition")
-    iExpeditionZoneData.readIntoDict(float, 9, row, data, "StartPosition_IndexWeight")
-    iExpeditionZoneData.readIntoDict(str, 10, row, data, "StartExpansion")
+    iExpeditionZoneData.readIntoDict(float, 16, row, data, "StartPosition_IndexWeight")
+    iExpeditionZoneData.readIntoDict(str, 17, row, data, "StartExpansion")
     EnumConverter.enumInDict(ENUMFILE_eZoneBuildFromExpansionType, data, "StartExpansion")
-    iExpeditionZoneData.readIntoDict(str, 11, row, data, "ZoneExpansion")
+    iExpeditionZoneData.readIntoDict(str, 18, row, data, "ZoneExpansion")
     EnumConverter.enumInDict(ENUMFILE_eZoneExpansionType, data, "ZoneExpansion")
-    iExpeditionZoneData.readIntoDict(str, 12, row, data, "LightSettings")
+    iExpeditionZoneData.readIntoDict(str, 19, row, data, "LightSettings")
     DatablockIO.nameInDict(DATABLOCK_LightSettings, data, "LightSettings")
     data["AltitudeData"] = {}
-    iExpeditionZoneData.readIntoDict(str, 13, row, data["AltitudeData"], "AllowedZoneAltitude")
+    iExpeditionZoneData.readIntoDict(str, 20, row, data["AltitudeData"], "AllowedZoneAltitude")
     EnumConverter.enumInDict(ENUMFILE_eWantedZoneHeighs, data["AltitudeData"], "AllowedZoneAltitude")
-    iExpeditionZoneData.readIntoDict(float, 14, row, data["AltitudeData"], "ChanceToChange")
+    iExpeditionZoneData.readIntoDict(float, 21, row, data["AltitudeData"], "ChanceToChange")
     data["EventsOnEnter"] = listdata.EventsOnEnter(zonestr)
 
     data["ProgressionPuzzleToEnter"] = {}
@@ -674,21 +677,21 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     data["ProgressionPuzzleToEnter"]["ZonePlacementData"] = listdata.ProgressionPuzzleToEnterZonePlacementData(zonestr)
     iExpeditionZoneData.readIntoDict(str, colPuzzleType+4, row, data, "ChainedPuzzleToEnter")
     DatablockIO.nameInDict(DATABLOCK_ChainedPuzzle, data, "ChainedPuzzleToEnter")
-    iExpeditionZoneData.readIntoDict(str, colPuzzleType+5, row, data, "SecurityGateToEnter")
+    iExpeditionZoneData.readIntoDict(str, colPuzzleType+8, row, data, "SecurityGateToEnter")
     EnumConverter.enumInDict(ENUMFILE_eSecurityGateType, data, "SecurityGateToEnter")
     data["ActiveEnemyWave"] = {}
-    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+6, row, data["ActiveEnemyWave"], "HasActiveEnemyWave")
-    iExpeditionZoneData.readIntoDict(str, colPuzzleType+7, row, data["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")
+    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+16, row, data["ActiveEnemyWave"], "HasActiveEnemyWave")
+    iExpeditionZoneData.readIntoDict(str, colPuzzleType+17, row, data["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")
     DatablockIO.nameInDict(DATABLOCK_EnemyGroup, data["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")
-    iExpeditionZoneData.readIntoDict(str, colPuzzleType+8, row, data["ActiveEnemyWave"], "EnemyGroupInArea")
+    iExpeditionZoneData.readIntoDict(str, colPuzzleType+18, row, data["ActiveEnemyWave"], "EnemyGroupInArea")
     DatablockIO.nameInDict(DATABLOCK_EnemyGroup, data["ActiveEnemyWave"], "EnemyGroupInArea")
-    iExpeditionZoneData.readIntoDict(int, colPuzzleType+9, row, data["ActiveEnemyWave"], "EnemyGroupsInArea")
+    iExpeditionZoneData.readIntoDict(int, colPuzzleType+19, row, data["ActiveEnemyWave"], "EnemyGroupsInArea")
     data["EnemySpawningInZone"] = listdata.EnemySpawningInZone(zonestr)
-    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+11, row, data, "EnemyRespawning")
-    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+12, row, data, "EnemyRespawnRequireOtherZone")
-    iExpeditionZoneData.readIntoDict(int, colPuzzleType+13, row, data, "EnemyRespawnRoomDistance")
-    iExpeditionZoneData.readIntoDict(float, colPuzzleType+14, row, data, "EnemyRespawnTimeInterval")
-    iExpeditionZoneData.readIntoDict(float, colPuzzleType+15, row, data, "EnemyRespawnCountMultiplier")
+    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+22, row, data, "EnemyRespawning")
+    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+23, row, data, "EnemyRespawnRequireOtherZone")
+    iExpeditionZoneData.readIntoDict(int, colPuzzleType+24, row, data, "EnemyRespawnRoomDistance")
+    iExpeditionZoneData.readIntoDict(float, colPuzzleType+25, row, data, "EnemyRespawnTimeInterval")
+    iExpeditionZoneData.readIntoDict(float, colPuzzleType+26, row, data, "EnemyRespawnCountMultiplier")
     data["EnemyRespawnExcludeList"] = listdata.EnemyRespawnExcludeList(zonestr)
 
     iExpeditionZoneData.readIntoDict(int, colHSUClustersInZone, row, data, "HSUClustersInZone")
@@ -711,7 +714,7 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+12, row, data, "BigPickupDistributionInZone")
     DatablockIO.nameInDict(DATABLOCK_BigPickupDistribution, data, "BigPickupDistributionInZone")
     data["TerminalPlacements"] = listdata.TerminalPlacements(zonestr)
-    iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+14, row, data, "ForbidTerminalsInZone")
+    iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+15, row, data, "ForbidTerminalsInZone")
     data["PowerGeneratorPlacements"] = listdata.PowerGeneratorPlacements(zonestr)
     data["DisinfectionStationPlacements"] = listdata.DisinfectionStationPlacements(zonestr)
 
@@ -1036,20 +1039,19 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
     except Exception as e:raise Exception("Problem creating ExpeditionInTier: "+str(e))
 
     arrdictLevelLayoutBlock = [None,None,None]
-    # XXX in order to run the test; don't run unfixed frame reader
-    # try:arrdictLevelLayoutBlock[0] = LevelLayoutBlock(iL1ExpeditionZoneData, iL1ExpeditionZoneDataLists)
-    # except NameError:pass
-    # except Exception as e:raise Exception("Problem reading L1 LevelLayout: "+str(e))
-    # try:arrdictLevelLayoutBlock[1] = LevelLayoutBlock(iL2ExpeditionZoneData, iL2ExpeditionZoneDataLists)
-    # except NameError:pass
-    # except Exception as e:
-    #     logger.error("Problem reading L2 LevelLayout (skipping layout): "+str(e))
-    #     logger.debug(e, exc_info=True)
-    # try:arrdictLevelLayoutBlock[2] = LevelLayoutBlock(iL3ExpeditionZoneData, iL3ExpeditionZoneDataLists)
-    # except NameError:pass
-    # except Exception as e:
-    #     logger.error("Problem reading L3 LevelLayout (skipping layout): "+str(e))
-    #     logger.debug(e, exc_info=True)
+    try:arrdictLevelLayoutBlock[0] = LevelLayoutBlock(iL1ExpeditionZoneData, iL1ExpeditionZoneDataLists)
+    except NameError:pass
+    except Exception as e:raise Exception("Problem reading L1 LevelLayout: "+str(e))
+    try:arrdictLevelLayoutBlock[1] = LevelLayoutBlock(iL2ExpeditionZoneData, iL2ExpeditionZoneDataLists)
+    except NameError:pass
+    except Exception as e:
+        logger.error("Problem reading L2 LevelLayout (skipping layout): "+str(e))
+        logger.debug(e, exc_info=True)
+    try:arrdictLevelLayoutBlock[2] = LevelLayoutBlock(iL3ExpeditionZoneData, iL3ExpeditionZoneDataLists)
+    except NameError:pass
+    except Exception as e:
+        logger.error("Problem reading L3 LevelLayout (skipping layout): "+str(e))
+        logger.debug(e, exc_info=True)
 
     arrdictWardenObjectiveBlock = [None,None,None]
     # XXX in order to run the test; don't run unfixed frame reader

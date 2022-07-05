@@ -680,28 +680,28 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, ExpeditionZ
     """
     # set up some checkpoints so if some of the data gets reformatted, not the entire function needs to be altered,
     # just the headings and contents of the section will need edited column values
-    colPuzzleType = XlsxInterfacer.ctn("Q")
-    colHSUClustersInZone = XlsxInterfacer.ctn("AH")
-    colHealthMulti = XlsxInterfacer.ctn("AY")
+    colPuzzleType = XlsxInterfacer.ctn("AF")
+    colHSUClustersInZone = XlsxInterfacer.ctn("BH")
+    colHealthMulti = XlsxInterfacer.ctn("BZ")
 
     writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneData, 0, row, ExpeditionZoneData, "LocalIndex")
-    iExpeditionZoneData.writeFromDict(1, row, ExpeditionZoneData, "SubSeed")
-    iExpeditionZoneData.writeFromDict(2, row, ExpeditionZoneData, "BulkheadDCScanSeed")
-    writeEnumFromDict(ENUMFILE_SubComplex, iExpeditionZoneData, 3, row, ExpeditionZoneData, "SubComplex")
-    iExpeditionZoneData.writeFromDict(4, row, ExpeditionZoneData, "CustomGeomorph")
+    iExpeditionZoneData.writeFromDict(5, row, ExpeditionZoneData, "SubSeed")
+    iExpeditionZoneData.writeFromDict(8, row, ExpeditionZoneData, "BulkheadDCScanSeed")
+    writeEnumFromDict(ENUMFILE_SubComplex, iExpeditionZoneData, 9, row, ExpeditionZoneData, "SubComplex")
+    iExpeditionZoneData.writeFromDict(10, row, ExpeditionZoneData, "CustomGeomorph")
     try:
-        iExpeditionZoneData.writeFromDict(5, row, ExpeditionZoneData["CoverageMinMax"], "x")
-        iExpeditionZoneData.writeFromDict(6, row, ExpeditionZoneData["CoverageMinMax"], "y")
+        iExpeditionZoneData.writeFromDict(12, row, ExpeditionZoneData["CoverageMinMax"], "x")
+        iExpeditionZoneData.writeFromDict(13, row, ExpeditionZoneData["CoverageMinMax"], "y")
     except KeyError:pass
-    writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneData, 7, row, ExpeditionZoneData, "BuildFromLocalIndex")
-    writeEnumFromDict(ENUMFILE_eZoneBuildFromType, iExpeditionZoneData, 8, row, ExpeditionZoneData, "StartPosition")
-    iExpeditionZoneData.writeFromDict(9, row, ExpeditionZoneData, "StartPosition_IndexWeight")
-    writeEnumFromDict(ENUMFILE_eZoneBuildFromExpansionType, iExpeditionZoneData, 10, row, ExpeditionZoneData, "StartExpansion")
-    writeEnumFromDict(ENUMFILE_eZoneExpansionType, iExpeditionZoneData, 11, row, ExpeditionZoneData, "ZoneExpansion")
-    writePublicNameFromDict(DATABLOCK_LightSettings, iExpeditionZoneData, 12, row, ExpeditionZoneData, "LightSettings")
+    writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneData, 14, row, ExpeditionZoneData, "BuildFromLocalIndex")
+    writeEnumFromDict(ENUMFILE_eZoneBuildFromType, iExpeditionZoneData, 15, row, ExpeditionZoneData, "StartPosition")
+    iExpeditionZoneData.writeFromDict(16, row, ExpeditionZoneData, "StartPosition_IndexWeight")
+    writeEnumFromDict(ENUMFILE_eZoneBuildFromExpansionType, iExpeditionZoneData, 17, row, ExpeditionZoneData, "StartExpansion")
+    writeEnumFromDict(ENUMFILE_eZoneExpansionType, iExpeditionZoneData, 18, row, ExpeditionZoneData, "ZoneExpansion")
+    writePublicNameFromDict(DATABLOCK_LightSettings, iExpeditionZoneData, 19, row, ExpeditionZoneData, "LightSettings")
     try:
-        writeEnumFromDict(ENUMFILE_eWantedZoneHeighs, iExpeditionZoneData, 13, row, ExpeditionZoneData["AltitudeData"], "AllowedZoneAltitude")
-        iExpeditionZoneData.writeFromDict(14, row, ExpeditionZoneData["AltitudeData"], "ChanceToChange")
+        writeEnumFromDict(ENUMFILE_eWantedZoneHeighs, iExpeditionZoneData, 20, row, ExpeditionZoneData["AltitudeData"], "AllowedZoneAltitude")
+        iExpeditionZoneData.writeFromDict(21, row, ExpeditionZoneData["AltitudeData"], "ChanceToChange")
     except KeyError:pass
     # EventsOnEnter in lists
 
@@ -712,19 +712,19 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, ExpeditionZ
         # ProgressionPuzzleToEnter's ZonePlacementData in lists
     except KeyError:pass
     writePublicNameFromDict(DATABLOCK_ChainedPuzzle, iExpeditionZoneData, colPuzzleType+4, row, ExpeditionZoneData, "ChainedPuzzleToEnter")
-    writeEnumFromDict(ENUMFILE_eSecurityGateType, iExpeditionZoneData, colPuzzleType+5, row, ExpeditionZoneData, "SecurityGateToEnter")
+    writeEnumFromDict(ENUMFILE_eSecurityGateType, iExpeditionZoneData, colPuzzleType+8, row, ExpeditionZoneData, "SecurityGateToEnter")
     try:
-        iExpeditionZoneData.writeFromDict(colPuzzleType+6, row, ExpeditionZoneData["ActiveEnemyWave"], "HasActiveEnemyWave")
-        writePublicNameFromDict(DATABLOCK_EnemyGroup, iExpeditionZoneData, colPuzzleType+7, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")
-        writePublicNameFromDict(DATABLOCK_EnemyGroup, iExpeditionZoneData, colPuzzleType+8, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupInArea")
-        iExpeditionZoneData.writeFromDict(colPuzzleType+9, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupsInArea")
+        iExpeditionZoneData.writeFromDict(colPuzzleType+16, row, ExpeditionZoneData["ActiveEnemyWave"], "HasActiveEnemyWave")
+        writePublicNameFromDict(DATABLOCK_EnemyGroup, iExpeditionZoneData, colPuzzleType+17, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")
+        writePublicNameFromDict(DATABLOCK_EnemyGroup, iExpeditionZoneData, colPuzzleType+18, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupInArea")
+        iExpeditionZoneData.writeFromDict(colPuzzleType+19, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupsInArea")
     except KeyError:pass
     # EnemySpawningInZone in lists
-    iExpeditionZoneData.writeFromDict(colPuzzleType+11, row, ExpeditionZoneData, "EnemyRespawning")
-    iExpeditionZoneData.writeFromDict(colPuzzleType+12, row, ExpeditionZoneData, "EnemyRespawnRequireOtherZone")
-    iExpeditionZoneData.writeFromDict(colPuzzleType+13, row, ExpeditionZoneData, "EnemyRespawnRoomDistance")
-    iExpeditionZoneData.writeFromDict(colPuzzleType+14, row, ExpeditionZoneData, "EnemyRespawnTimeInterval")
-    iExpeditionZoneData.writeFromDict(colPuzzleType+15, row, ExpeditionZoneData, "EnemyRespawnCountMultiplier")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+22, row, ExpeditionZoneData, "EnemyRespawning")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+23, row, ExpeditionZoneData, "EnemyRespawnRequireOtherZone")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+24, row, ExpeditionZoneData, "EnemyRespawnRoomDistance")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+25, row, ExpeditionZoneData, "EnemyRespawnTimeInterval")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+26, row, ExpeditionZoneData, "EnemyRespawnCountMultiplier")
     # EnemyRespawnExcludeList in lists
 
     iExpeditionZoneData.writeFromDict(colHSUClustersInZone, row, ExpeditionZoneData, "HSUClustersInZone")
@@ -741,7 +741,7 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, ExpeditionZ
     writePublicNameFromDict(DATABLOCK_ConsumableDistribution, iExpeditionZoneData, colHSUClustersInZone+11, row, ExpeditionZoneData, "ConsumableDistributionInZone")
     writePublicNameFromDict(DATABLOCK_BigPickupDistribution, iExpeditionZoneData, colHSUClustersInZone+12, row, ExpeditionZoneData, "BigPickupDistributionInZone")
     # TerminalPlacements in lists
-    iExpeditionZoneData.writeFromDict(colHSUClustersInZone+14, row, ExpeditionZoneData, "ForbidTerminalsInZone")
+    iExpeditionZoneData.writeFromDict(colHSUClustersInZone+15, row, ExpeditionZoneData, "ForbidTerminalsInZone")
     # PowerGeneratorPlacements in lists
     # DisinfectionStationPlacements in lists
 
@@ -768,7 +768,8 @@ def framesLevelLayoutBlock(iExpeditionZoneData:XlsxInterfacer.interface, iExpedi
     edit the iExpeditionZoneData and iExpeditionZoneDataLists pandas dataFrames for a single level layout
     """
 
-    ExpeditionZoneDataLists(LevelLayout).write(iExpeditionZoneDataLists)
+    # XXX in order to run the test; don't run unfixed frame writer
+    # ExpeditionZoneDataLists(LevelLayout).write(iExpeditionZoneDataLists)
 
     row = 2
 
@@ -1207,28 +1208,27 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
 
     frameMeta(iMeta, rundown, levelTier, levelIndex)
     frameExpeditionInTier(iExpeditionInTier, ExpeditionInTierData)
-    # XXX in order to run the test; don't run unfixed frame writer
-    # try:
-    #     framesLevelLayoutBlock(iExpeditionZoneDataL1, iExpeditionZoneDataListsL1, LayerDataL1)
-    #     logger.debug("Finished L1 LevelLayout")
-    # except NameError:pass
-    # except Exception as e:
-    #     logger.error("Problem writing L1 LevelLayout (skipping layout): "+str(e))
-    #     logger.debug(e, exc_info=True)
-    # try:
-    #     framesLevelLayoutBlock(iExpeditionZoneDataL2, iExpeditionZoneDataListsL2, LayerDataL2)
-    #     logger.debug("Finished L2 LevelLayout")
-    # except NameError:pass
-    # except Exception as e:
-    #     logger.error("Problem writing L2 LevelLayout (skipping layout): "+str(e))
-    #     logger.debug(e, exc_info=True)
-    # try:
-    #     framesLevelLayoutBlock(iExpeditionZoneDataL3, iExpeditionZoneDataListsL3, LayerDataL3)
-    #     logger.debug("Finished L2 LevelLayout")
-    # except NameError:pass
-    # except Exception as e:
-    #     logger.error("Problem writing L3 LevelLayout (skipping layout): "+str(e))
-    #     logger.debug(e, exc_info=True)
+    try:
+        framesLevelLayoutBlock(iExpeditionZoneDataL1, iExpeditionZoneDataListsL1, LayerDataL1)
+        logger.debug("Finished L1 LevelLayout")
+    except NameError:pass
+    except Exception as e:
+        logger.error("Problem writing L1 LevelLayout (skipping layout): "+str(e))
+        logger.debug(e, exc_info=True)
+    try:
+        framesLevelLayoutBlock(iExpeditionZoneDataL2, iExpeditionZoneDataListsL2, LayerDataL2)
+        logger.debug("Finished L2 LevelLayout")
+    except NameError:pass
+    except Exception as e:
+        logger.error("Problem writing L2 LevelLayout (skipping layout): "+str(e))
+        logger.debug(e, exc_info=True)
+    try:
+        framesLevelLayoutBlock(iExpeditionZoneDataL3, iExpeditionZoneDataListsL3, LayerDataL3)
+        logger.debug("Finished L2 LevelLayout")
+    except NameError:pass
+    except Exception as e:
+        logger.error("Problem writing L3 LevelLayout (skipping layout): "+str(e))
+        logger.debug(e, exc_info=True)
 
     # XXX in order to run the test; don't run unfixed frame writer
     # try:
