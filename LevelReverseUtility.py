@@ -922,6 +922,7 @@ def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWarde
     try:
         itercol,iterrow = 1, rowChainedPuzzleToActive+10
         for item in WardenObjective["Retrieve_Items"]:
+            if str(item) == "0": continue # don't attempt to try to find blocks with id zero
             iWardenObjective.write(DatablockIO.idToName(DATABLOCK_Item, item), itercol, iterrow)
             itercol+= 1
     except KeyError:pass
