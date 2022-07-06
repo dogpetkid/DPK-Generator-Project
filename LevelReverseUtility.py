@@ -854,60 +854,62 @@ def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWarde
     """
     edits the iWardenObjective and iWardenObjectiveReactorWaves pandas dataFrames for a single warden objective
     """
-
-    rowWavesOnElevatorLand = 22-1
-    rowChainedPuzzleToActive = 70-1
-    rowLightsOnFromBeginning = 84-1
-    rowActivateHSU_ItemFromStart = 103-1
+    # set up some checkpoints so if some of the data gets reformatted, not the entire function needs to be altered,
+    # just the headings and contents of the section will need edited column values
+    rowWavesOnElevatorLand = 25-1
+    rowChainedPuzzleToActive = 172-1
+    rowLightsOnFromBeginning = 185-1
+    rowActivateHSU_ItemFromStart = 206-1
+    rowSurvival_TimeToActivate = 252-1
+    rowname = 274-1
 
     writeEnumFromDict(ENUMFILE_eWardenObjectiveType, iWardenObjective, 1, 1, WardenObjective, "Type")
     iWardenObjective.writeFromDict(1, 3, WardenObjective, "Header")
     iWardenObjective.writeFromDict(1, 4, WardenObjective, "MainObjective")
-    iWardenObjective.writeFromDict(1, 5, WardenObjective, "FindLocationInfo")
-    iWardenObjective.writeFromDict(1, 6, WardenObjective, "FindLocationInfoHelp")
-    iWardenObjective.writeFromDict(1, 7, WardenObjective, "GoToZone")
-    iWardenObjective.writeFromDict(1, 8, WardenObjective, "GoToZoneHelp")
-    iWardenObjective.writeFromDict(1, 9, WardenObjective, "InZoneFindItem")
-    iWardenObjective.writeFromDict(1, 10, WardenObjective, "InZoneFindItemHelp")
-    iWardenObjective.writeFromDict(1, 11, WardenObjective, "SolveItem")
-    iWardenObjective.writeFromDict(1, 12, WardenObjective, "SolveItemHelp")
-    iWardenObjective.writeFromDict(1, 13, WardenObjective, "GoToWinCondition_Elevator")
-    iWardenObjective.writeFromDict(1, 14, WardenObjective, "GoToWinConditionHelp_Elevator")
-    iWardenObjective.writeFromDict(1, 15, WardenObjective, "GoToWinCondition_CustomGeo")
-    iWardenObjective.writeFromDict(1, 16, WardenObjective, "GoToWinConditionHelp_CustomGeo")
-    iWardenObjective.writeFromDict(1, 17, WardenObjective, "GoToWinCondition_ToMainLayer")
-    iWardenObjective.writeFromDict(1, 18, WardenObjective, "GoToWinConditionHelp_ToMainLayer")
-    iWardenObjective.writeFromDict(1, 19, WardenObjective, "ShowHelpDelay")
+    iWardenObjective.writeFromDict(1, 8, WardenObjective, "FindLocationInfo")
+    iWardenObjective.writeFromDict(1, 9, WardenObjective, "FindLocationInfoHelp")
+    iWardenObjective.writeFromDict(1, 10, WardenObjective, "GoToZone")
+    iWardenObjective.writeFromDict(1, 11, WardenObjective, "GoToZoneHelp")
+    iWardenObjective.writeFromDict(1, 12, WardenObjective, "InZoneFindItem")
+    iWardenObjective.writeFromDict(1, 13, WardenObjective, "InZoneFindItemHelp")
+    iWardenObjective.writeFromDict(1, 14, WardenObjective, "SolveItem")
+    iWardenObjective.writeFromDict(1, 15, WardenObjective, "SolveItemHelp")
+    iWardenObjective.writeFromDict(1, 16, WardenObjective, "GoToWinCondition_Elevator")
+    iWardenObjective.writeFromDict(1, 17, WardenObjective, "GoToWinConditionHelp_Elevator")
+    iWardenObjective.writeFromDict(1, 18, WardenObjective, "GoToWinCondition_CustomGeo")
+    iWardenObjective.writeFromDict(1, 19, WardenObjective, "GoToWinConditionHelp_CustomGeo")
+    iWardenObjective.writeFromDict(1, 20, WardenObjective, "GoToWinCondition_ToMainLayer")
+    iWardenObjective.writeFromDict(1, 21, WardenObjective, "GoToWinConditionHelp_ToMainLayer")
+    iWardenObjective.writeFromDict(1, 22, WardenObjective, "ShowHelpDelay")
 
     try:
         GenericEnemyWaveDataList(iWardenObjective, WardenObjective["WavesOnElevatorLand"], 2, rowWavesOnElevatorLand+1, horizontal=True)
     except KeyError:pass
-    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+6, WardenObjective, "WaveOnElevatorWardenIntel")
-    writePublicNameFromDict(DATABLOCK_FogSettings, iWardenObjective, 1, rowWavesOnElevatorLand+8, WardenObjective, "FogTransitionDataOnElevatorLand")
-    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+6, WardenObjective, "WaveOnElevatorWardenIntel")
-    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+9, WardenObjective, "FogTransitionDurationOnElevatorLand")
+    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+44, WardenObjective, "WaveOnElevatorWardenIntel")
+    writePublicNameFromDict(DATABLOCK_FogSettings, iWardenObjective, 1, rowWavesOnElevatorLand+46, WardenObjective, "FogTransitionDataOnElevatorLand")
+    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+47, WardenObjective, "FogTransitionDurationOnElevatorLand")
     try:
-        GenericEnemyWaveDataList(iWardenObjective, WardenObjective["WavesOnActivate"], 2, rowWavesOnElevatorLand+12, horizontal=True)
+        GenericEnemyWaveDataList(iWardenObjective, WardenObjective["WavesOnActivate"], 2, rowWavesOnElevatorLand+52, horizontal=True)
     except KeyError:pass
-    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+17, WardenObjective, "StopAllWavesBeforeGotoWin")
     try:
-        itercol,iterrow = 2, rowWavesOnElevatorLand+20
+        itercol,iterrow = 2, rowWavesOnElevatorLand+60
         for event in WardenObjective["EventsOnActivate"]:
             WardenObjectiveEventData(iWardenObjective, event, itercol, iterrow, horizontal=False)
             itercol+= 1
     except KeyError:pass
+    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+100, WardenObjective, "StopAllWavesBeforeGotoWin")
     try:
-        GenericEnemyWaveDataList(iWardenObjective, WardenObjective["WavesOnGotoWin"], 2, rowWavesOnElevatorLand+29, horizontal=True)
+        GenericEnemyWaveDataList(iWardenObjective, WardenObjective["WavesOnGotoWin"], 2, rowWavesOnElevatorLand+103, horizontal=True)
     except KeyError:pass
-    writeEnumFromDict(ENUMFILE_eRetrieveExitWaveTrigger, iWardenObjective, 1, rowWavesOnElevatorLand+34, WardenObjective, "WaveOnGotoWinTrigger")
+    writeEnumFromDict(ENUMFILE_eRetrieveExitWaveTrigger, iWardenObjective, 1, rowWavesOnElevatorLand+104, WardenObjective, "WaveOnGotoWinTrigger")
     try:
-        itercol,iterrow = 2, rowWavesOnElevatorLand+37
+        itercol,iterrow = 2, rowWavesOnElevatorLand+112
         for event in WardenObjective["EventsOnGotoWin"]:
             WardenObjectiveEventData(iWardenObjective, event, itercol, iterrow, horizontal=False)
             itercol+= 1
     except KeyError:pass
-    writePublicNameFromDict(DATABLOCK_FogSettings, iWardenObjective, 1, rowWavesOnElevatorLand+45, WardenObjective, "FogTransitionDataOnGotoWin")
-    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+46, WardenObjective, "FogTransitionDurationOnGotoWin")
+    writePublicNameFromDict(DATABLOCK_FogSettings, iWardenObjective, 1, rowWavesOnElevatorLand+143, WardenObjective, "FogTransitionDataOnGotoWin")
+    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+144, WardenObjective, "FogTransitionDurationOnGotoWin")
 
     writePublicNameFromDict(DATABLOCK_ChainedPuzzle, iWardenObjective, 1, rowChainedPuzzleToActive, WardenObjective, "ChainedPuzzleToActive")
     writePublicNameFromDict(DATABLOCK_ChainedPuzzle, iWardenObjective, 1, rowChainedPuzzleToActive+1, WardenObjective, "ChainedPuzzleMidObjective")
@@ -923,27 +925,28 @@ def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWarde
             iWardenObjective.write(DatablockIO.idToName(DATABLOCK_Item, item), itercol, iterrow)
             itercol+= 1
     except KeyError:pass
-    ReactorWaveData(WardenObjective).write(iWardenObjectiveReactorWaves)
+    # XXX in order to run the test; don't run unfixed frame writer
+    # ReactorWaveData(WardenObjective).write(iWardenObjectiveReactorWaves)
 
     iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning, WardenObjective, "LightsOnFromBeginning")
     iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+1, WardenObjective, "LightsOnDuringIntro")
     iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+2, WardenObjective, "LightsOnWhenStartupComplete")
-    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+4, WardenObjective, "SpecialTerminalCommand")
-    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+5, WardenObjective, "SpecialTerminalCommandDesc")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+5, WardenObjective, "SpecialTerminalCommand")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+6, WardenObjective, "SpecialTerminalCommandDesc")
     try:
         # TODO if an output string is blank, it will not be placed on the list which may leave a hole in the list
-        itercol,iterrow = 1, rowLightsOnFromBeginning+6
+        itercol,iterrow = 1, rowLightsOnFromBeginning+7
         for output in WardenObjective["PostCommandOutput"]:
             iWardenObjective.write(output, itercol, iterrow)
             itercol+= 1
     except KeyError:pass
-    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+8, WardenObjective, "PowerCellsToDistribute")
-    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+10, WardenObjective, "Uplink_NumberOfVerificationRounds")
-    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+11, WardenObjective, "Uplink_NumberOfTerminals")
-    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+13, WardenObjective, "CentralPowerGenClustser_NumberOfGenerators")
-    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+14, WardenObjective, "CentralPowerGenClustser_NumberOfPowerCells")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+10, WardenObjective, "PowerCellsToDistribute")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+12, WardenObjective, "Uplink_NumberOfVerificationRounds")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+13, WardenObjective, "Uplink_NumberOfTerminals")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+16, WardenObjective, "CentralPowerGenClustser_NumberOfGenerators")
+    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+17, WardenObjective, "CentralPowerGenClustser_NumberOfPowerCells")
     try:
-        itercol,iterrow = 1,rowLightsOnFromBeginning+16
+        itercol,iterrow = 1,rowLightsOnFromBeginning+19
         for step in WardenObjective["CentralPowerGenClustser_FogDataSteps"]:
             GeneralFogDataStep(iWardenObjective, step, itercol, iterrow, horizontal=False)
             itercol+= 1
@@ -951,18 +954,18 @@ def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWarde
 
     writePublicNameFromDict(DATABLOCK_Item, iWardenObjective, 1, rowActivateHSU_ItemFromStart, WardenObjective, "ActivateHSU_ItemFromStart")
     writePublicNameFromDict(DATABLOCK_Item, iWardenObjective, 1, rowActivateHSU_ItemFromStart+1, WardenObjective, "ActivateHSU_ItemAfterActivation")
-    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+2, WardenObjective, "ActivateHSU_StopEnemyWavesOnActivation")
-    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+3, WardenObjective, "ActivateHSU_ObjectiveCompleteAfterInsertion")
-    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+4, WardenObjective, "ActivateHSU_RequireItemAfterActivationInExitScan")
+    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+4, WardenObjective, "ActivateHSU_StopEnemyWavesOnActivation")
+    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+5, WardenObjective, "ActivateHSU_ObjectiveCompleteAfterInsertion")
+    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+6, WardenObjective, "ActivateHSU_RequireItemAfterActivationInExitScan")
     try:
-        itercol,iterrow = 2, rowActivateHSU_ItemFromStart+7
+        itercol,iterrow = 2, rowActivateHSU_ItemFromStart+9
         for event in WardenObjective["ActivateHSU_Events"]:
             WardenObjectiveEventData(iWardenObjective, event, itercol, iterrow, horizontal=False)
     except KeyError:pass
 
-    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+15, WardenObjective, "name")
-    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+16, WardenObjective, "internalEnabled")
-    iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+17, WardenObjective, "persistentID")
+    iWardenObjective.writeFromDict(1, rowname, WardenObjective, "name")
+    iWardenObjective.writeFromDict(1, rowname+1, WardenObjective, "internalEnabled")
+    iWardenObjective.writeFromDict(1, rowname+2, WardenObjective, "persistentID")
 
 
 def getExpeditionInTierData(levelIdentifier:str, RundownDataBlock:DatablockIO.datablock):
@@ -1230,28 +1233,27 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
         logger.error("Problem writing L3 LevelLayout (skipping layout): "+str(e))
         logger.debug(e, exc_info=True)
 
-    # XXX in order to run the test; don't run unfixed frame writer
-    # try:
-    #     framesWardenObjectiveBlock(iWardenObjectiveL1, iWardenObjectiveReactorWavesL1, WardenObjectiveL1)
-    #     logger.debug("Finished L1 WardenObjective")
-    # except NameError:pass
-    # except Exception as e:
-    #     logger.error("Problem writing L1 WardenObjective (skipping objective): "+str(e))
-    #     logger.debug(e, exc_info=True)
-    # try:
-    #     framesWardenObjectiveBlock(iWardenObjectiveL2, iWardenObjectiveReactorWavesL2, WardenObjectiveL2)
-    #     logger.debug("Finished L2 WardenObjective")
-    # except NameError:pass
-    # except Exception as e:
-    #     logger.error("Problem writing L2 WardenObjective (skipping objective): "+str(e))
-    #     logger.debug(e, exc_info=True)
-    # try:
-    #     framesWardenObjectiveBlock(iWardenObjectiveL3, iWardenObjectiveReactorWavesL3, WardenObjectiveL3)
-    #     logger.debug("Finished L3 WardenObjective")
-    # except NameError:pass
-    # except Exception as e:
-    #     logger.error("Problem writing L3 WardenObjective (skipping objective): "+str(e))
-    #     logger.debug(e, exc_info=True)
+    try:
+        framesWardenObjectiveBlock(iWardenObjectiveL1, iWardenObjectiveReactorWavesL1, WardenObjectiveL1)
+        logger.debug("Finished L1 WardenObjective")
+    except NameError:pass
+    except Exception as e:
+        logger.error("Problem writing L1 WardenObjective (skipping objective): "+str(e))
+        logger.debug(e, exc_info=True)
+    try:
+        framesWardenObjectiveBlock(iWardenObjectiveL2, iWardenObjectiveReactorWavesL2, WardenObjectiveL2)
+        logger.debug("Finished L2 WardenObjective")
+    except NameError:pass
+    except Exception as e:
+        logger.error("Problem writing L2 WardenObjective (skipping objective): "+str(e))
+        logger.debug(e, exc_info=True)
+    try:
+        framesWardenObjectiveBlock(iWardenObjectiveL3, iWardenObjectiveReactorWavesL3, WardenObjectiveL3)
+        logger.debug("Finished L3 WardenObjective")
+    except NameError:pass
+    except Exception as e:
+        logger.error("Problem writing L3 WardenObjective (skipping objective): "+str(e))
+        logger.debug(e, exc_info=True)
 
 
     workbook = openpyxl.load_workbook(filename = writepath)

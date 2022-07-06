@@ -223,9 +223,9 @@ def GenericEnemyWaveData(interface:XlsxInterfacer.interface, col:int, row:int, h
     DatablockIO.nameInDict(DATABLOCK_SurvivalWaveSettings, data, "WaveSettings")
     interface.readIntoDict(str, col+horizontal, row+(not horizontal), data, "WavePopulation")
     DatablockIO.nameInDict(DATABLOCK_SurvivalWavePopulation, data, "WavePopulation")
-    interface.readIntoDict(float, col+2*horizontal, row+2*(not horizontal), data, "SpawnDelay")
-    interface.readIntoDict(bool, col+3*horizontal, row+3*(not horizontal), data, "TriggerAlarm")
-    interface.readIntoDict(str, col+4*horizontal, row+4*(not horizontal), data, "IntelMessage")
+    interface.readIntoDict(float, col+3*horizontal, row+3*(not horizontal), data, "SpawnDelay")
+    interface.readIntoDict(bool, col+4*horizontal, row+4*(not horizontal), data, "TriggerAlarm")
+    interface.readIntoDict(str, col+5*horizontal, row+5*(not horizontal), data, "IntelMessage")
     return data
 
 def GenericEnemyWaveDataList(interface:XlsxInterfacer.interface, col:int, row:int, horizontal:bool=True):
@@ -809,56 +809,59 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     """returns the Warden Objective"""
     # set up some checkpoints so if some of the data gets reformatted, not the entire function needs to be altered,
     # just the headings and contents of the section will need edited column values
-    rowWavesOnElevatorLand = 22-1
-    rowChainedPuzzleToActive = 70-1
-    rowLightsOnFromBeginning = 84-1
-    rowActivateHSU_ItemFromStart = 103-1
+    rowWavesOnElevatorLand = 25-1
+    rowChainedPuzzleToActive = 172-1
+    rowLightsOnFromBeginning = 185-1
+    rowActivateHSU_ItemFromStart = 206-1
+    rowSurvival_TimeToActivate = 252-1
+    rowname = 274-1
 
     data = {}
 
     data["Type"] = iWardenObjective.read(str, 1, 1)
     EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveType, data, "Type")
-    data["Header"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 3)
-    data["MainObjective"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 4)
-    data["FindLocationInfo"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 5)
-    data["FindLocationInfoHelp"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 6)
-    data["GoToZone"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 7)
-    data["GoToZoneHelp"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 8)
-    data["InZoneFindItem"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 9)
-    data["InZoneFindItemHelp"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 10)
-    data["SolveItem"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 11)
-    data["SolveItemHelp"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 12)
-    data["GoToWinCondition_Elevator"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 13)
-    data["GoToWinConditionHelp_Elevator"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 14)
-    data["GoToWinCondition_CustomGeo"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 15)
-    data["GoToWinConditionHelp_CustomGeo"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 16)
-    data["GoToWinCondition_ToMainLayer"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 17)
-    data["GoToWinConditionHelp_ToMainLayer"] = iWardenObjective.read(XlsxInterfacer.blankable, 1, 18)
-    iWardenObjective.readIntoDict(float, 1, 19, data, "ShowHelpDelay")
+    data["Header"] =                            iWardenObjective.read(XlsxInterfacer.blankable, 1, 3)
+    data["MainObjective"] =                     iWardenObjective.read(XlsxInterfacer.blankable, 1, 4)
+
+    data["FindLocationInfo"] =                  iWardenObjective.read(XlsxInterfacer.blankable, 1, 8)
+    data["FindLocationInfoHelp"] =              iWardenObjective.read(XlsxInterfacer.blankable, 1, 9)
+    data["GoToZone"] =                          iWardenObjective.read(XlsxInterfacer.blankable, 1, 10)
+    data["GoToZoneHelp"] =                      iWardenObjective.read(XlsxInterfacer.blankable, 1, 11)
+    data["InZoneFindItem"] =                    iWardenObjective.read(XlsxInterfacer.blankable, 1, 12)
+    data["InZoneFindItemHelp"] =                iWardenObjective.read(XlsxInterfacer.blankable, 1, 13)
+    data["SolveItem"] =                         iWardenObjective.read(XlsxInterfacer.blankable, 1, 14)
+    data["SolveItemHelp"] =                     iWardenObjective.read(XlsxInterfacer.blankable, 1, 15)
+    data["GoToWinCondition_Elevator"] =         iWardenObjective.read(XlsxInterfacer.blankable, 1, 16)
+    data["GoToWinConditionHelp_Elevator"] =     iWardenObjective.read(XlsxInterfacer.blankable, 1, 17)
+    data["GoToWinCondition_CustomGeo"] =        iWardenObjective.read(XlsxInterfacer.blankable, 1, 18)
+    data["GoToWinConditionHelp_CustomGeo"] =    iWardenObjective.read(XlsxInterfacer.blankable, 1, 19)
+    data["GoToWinCondition_ToMainLayer"] =      iWardenObjective.read(XlsxInterfacer.blankable, 1, 20)
+    data["GoToWinConditionHelp_ToMainLayer"] =  iWardenObjective.read(XlsxInterfacer.blankable, 1, 21)
+    iWardenObjective.readIntoDict(float, 1, 22, data, "ShowHelpDelay")
 
     data["WavesOnElevatorLand"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+1, horizontal=True)
-    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+6, data, "WaveOnElevatorWardenIntel")
-    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+8, data, "FogTransitionDataOnElevatorLand")
+    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+44, data, "WaveOnElevatorWardenIntel")
+    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+46, data, "FogTransitionDataOnElevatorLand")
     DatablockIO.nameInDict(DATABLOCK_FogSettings, data, "FogTransitionDataOnElevatorLand")
-    iWardenObjective.readIntoDict(float, 1, rowWavesOnElevatorLand+9, data, "FogTransitionDurationOnElevatorLand")
-    data["WavesOnActivate"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+12, horizontal=True)
-    iWardenObjective.readIntoDict(bool, 1, rowWavesOnElevatorLand+17, data, "StopAllWavesBeforeGotoWin")
+    iWardenObjective.readIntoDict(float, 1, rowWavesOnElevatorLand+47, data, "FogTransitionDurationOnElevatorLand")
+    data["WavesOnActivate"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+52, horizontal=True)
     data["EventsOnActivate"] = []
-    col,row = 2,rowWavesOnElevatorLand+20
+    col,row = 2,rowWavesOnElevatorLand+60
     while not(iWardenObjective.isEmpty(col, row)):
         data["EventsOnActivate"].append(WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False))
         col+= 1
-    data["WavesOnGotoWin"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+29, horizontal=True)
-    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+34, data, "WaveOnGotoWinTrigger")
+    iWardenObjective.readIntoDict(bool, 1, rowWavesOnElevatorLand+100, data, "StopAllWavesBeforeGotoWin")
+    data["WavesOnGotoWin"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+103, horizontal=True)
+    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+104, data, "WaveOnGotoWinTrigger")
     EnumConverter.enumInDict(ENUMFILE_eRetrieveExitWaveTrigger, data, "WaveOnGotoWinTrigger")
     data["EventsOnGotoWin"] = []
-    col,row = 2,rowWavesOnElevatorLand+37
+    col,row = 2,rowWavesOnElevatorLand+112
     while not(iWardenObjective.isEmpty(col, row)):
         data["EventsOnGotoWin"].append(WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False))
         col+= 1
-    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+45, data, "FogTransitionDataOnGotoWin")
+    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+143, data, "FogTransitionDataOnGotoWin")
     DatablockIO.nameInDict(DATABLOCK_FogSettings, data, "FogTransitionDataOnGotoWin")
-    iWardenObjective.readIntoDict(float, 1, rowWavesOnElevatorLand+46, data, "FogTransitionDurationOnGotoWin")
+    iWardenObjective.readIntoDict(float, 1, rowWavesOnElevatorLand+144, data, "FogTransitionDurationOnGotoWin")
 
     iWardenObjective.readIntoDict(str, 1, rowChainedPuzzleToActive, data, "ChainedPuzzleToActive")
     DatablockIO.nameInDict(DATABLOCK_ChainedPuzzle, data, "ChainedPuzzleToActive")
@@ -877,25 +880,26 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     while not(iWardenObjective.isEmpty(col, row)):
         data["Retrieve_Items"].append(DatablockIO.nameToId(DATABLOCK_Item, iWardenObjective.read(str, col, row)))
         col+= 1
-    data["ReactorWaves"] = ReactorWaveData(iWardenObjectiveReactorWaves).waves
+    # XXX in order to run the test; don't run unfixed frame reader
+    # data["ReactorWaves"] = ReactorWaveData(iWardenObjectiveReactorWaves).waves
 
     iWardenObjective.readIntoDict(bool, 1, rowLightsOnFromBeginning, data, "LightsOnFromBeginning")
     iWardenObjective.readIntoDict(bool, 1, rowLightsOnFromBeginning+1, data, "LightsOnDuringIntro")
     iWardenObjective.readIntoDict(bool, 1, rowLightsOnFromBeginning+2, data, "LightsOnWhenStartupComplete")
-    iWardenObjective.readIntoDict(str, 1, rowLightsOnFromBeginning+4, data, "SpecialTerminalCommand")
-    iWardenObjective.readIntoDict(str, 1, rowLightsOnFromBeginning+5, data, "SpecialTerminalCommandDesc")
+    iWardenObjective.readIntoDict(str, 1, rowLightsOnFromBeginning+5, data, "SpecialTerminalCommand")
+    iWardenObjective.readIntoDict(str, 1, rowLightsOnFromBeginning+6, data, "SpecialTerminalCommandDesc")
     data["PostCommandOutput"] = []
-    col,row = 1,rowLightsOnFromBeginning+6
+    col,row = 1,rowLightsOnFromBeginning+7
     while not(iWardenObjective.isEmpty(col, row)):
         data["PostCommandOutput"].append(iWardenObjective.read(str, col, row))
         col+= 1
-    iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+8, data, "PowerCellsToDistribute")
-    iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+10, data, "Uplink_NumberOfVerificationRounds")
-    iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+11, data, "Uplink_NumberOfTerminals")
-    iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+13, data, "CentralPowerGenClustser_NumberOfGenerators")
-    iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+14, data, "CentralPowerGenClustser_NumberOfPowerCells")
+    iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+10, data, "PowerCellsToDistribute")
+    iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+12, data, "Uplink_NumberOfVerificationRounds")
+    iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+13, data, "Uplink_NumberOfTerminals")
+    iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+16, data, "CentralPowerGenClustser_NumberOfGenerators")
+    iWardenObjective.readIntoDict(int, 1, rowLightsOnFromBeginning+17, data, "CentralPowerGenClustser_NumberOfPowerCells")
     data["CentralPowerGenClustser_FogDataSteps"] = []
-    col,row = 1,rowLightsOnFromBeginning+16
+    col,row = 1,rowLightsOnFromBeginning+19
     while not(iWardenObjective.isEmpty(col,row)):
         data["CentralPowerGenClustser_FogDataSteps"].append(GeneralFogDataStep(iWardenObjective, col, row, horizontal=False))
         col+= 1
@@ -904,11 +908,11 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     DatablockIO.nameInDict(DATABLOCK_Item, data, "ActivateHSU_ItemFromStart")
     iWardenObjective.readIntoDict(str, 1, rowActivateHSU_ItemFromStart+1, data, "ActivateHSU_ItemAfterActivation")
     DatablockIO.nameInDict(DATABLOCK_Item, data, "ActivateHSU_ItemAfterActivation")
-    iWardenObjective.readIntoDict(bool, 1, rowActivateHSU_ItemFromStart+2, data, "ActivateHSU_StopEnemyWavesOnActivation")
-    iWardenObjective.readIntoDict(bool, 1, rowActivateHSU_ItemFromStart+3, data, "ActivateHSU_ObjectiveCompleteAfterInsertion")
-    iWardenObjective.readIntoDict(bool, 1, rowActivateHSU_ItemFromStart+4, data, "ActivateHSU_RequireItemAfterActivationInExitScan")
+    iWardenObjective.readIntoDict(bool, 1, rowActivateHSU_ItemFromStart+4, data, "ActivateHSU_StopEnemyWavesOnActivation")
+    iWardenObjective.readIntoDict(bool, 1, rowActivateHSU_ItemFromStart+5, data, "ActivateHSU_ObjectiveCompleteAfterInsertion")
+    iWardenObjective.readIntoDict(bool, 1, rowActivateHSU_ItemFromStart+6, data, "ActivateHSU_RequireItemAfterActivationInExitScan")
     data["ActivateHSU_Events"] = []
-    col,row = 2,rowActivateHSU_ItemFromStart+7
+    col,row = 2,rowActivateHSU_ItemFromStart+9
     while not(iWardenObjective.isEmpty(col,row)):
         data["ActivateHSU_Events"].append(WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False))
         col+= 1
@@ -918,9 +922,9 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     data["internalEnabled"] = False
     data["persistentID"] = 0
     # Attempt to fill default values with those from the table
-    iWardenObjective.readIntoDict(str,1, rowActivateHSU_ItemFromStart+15, data, "name")
-    iWardenObjective.readIntoDict(bool,1, rowActivateHSU_ItemFromStart+16, data, "internalEnabled")
-    iWardenObjective.readIntoDict(int,1, rowActivateHSU_ItemFromStart+17, data, "persistentID")
+    iWardenObjective.readIntoDict(str,1, rowname, data, "name")
+    iWardenObjective.readIntoDict(bool,1, rowname+1, data, "internalEnabled")
+    iWardenObjective.readIntoDict(int,1, rowname+2, data, "persistentID")
     return data
 
 def finalizeData(dictExpeditionInTier:dict, arrdictLevelLayoutBlock:typing.List[dict], arrdictWardenObjectiveBlock:typing.List[dict]):
@@ -1054,20 +1058,19 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
         logger.debug(e, exc_info=True)
 
     arrdictWardenObjectiveBlock = [None,None,None]
-    # XXX in order to run the test; don't run unfixed frame reader
-    # try:arrdictWardenObjectiveBlock[0] = WardenObjectiveBlock(iL1WardenObjective, iL1WardenObjectiveReactorWaves)
-    # except NameError:pass
-    # except Exception as e:raise Exception("Problem reading L1 WardenOjbective: "+str(e))
-    # try:arrdictWardenObjectiveBlock[1] = WardenObjectiveBlock(iL2WardenObjective, iL2WardenObjectiveReactorWaves)
-    # except NameError:pass
-    # except Exception as e:
-    #     logger.error("Problem reading L2 WardenOjbective (skipping objective): "+str(e))
-    #     logger.debug(e, exc_info=True)
-    # try:arrdictWardenObjectiveBlock[2] = WardenObjectiveBlock(iL3WardenObjective, iL3WardenObjectiveReactorWaves)
-    # except NameError:pass
-    # except Exception as e:
-    #     logger.error("Problem reading L3 WardenOjbective (skipping objective): "+str(e))
-    #     logger.debug(e, exc_info=True)
+    try:arrdictWardenObjectiveBlock[0] = WardenObjectiveBlock(iL1WardenObjective, iL1WardenObjectiveReactorWaves)
+    except NameError:pass
+    except Exception as e:raise Exception("Problem reading L1 WardenOjbective: "+str(e))
+    try:arrdictWardenObjectiveBlock[1] = WardenObjectiveBlock(iL2WardenObjective, iL2WardenObjectiveReactorWaves)
+    except NameError:pass
+    except Exception as e:
+        logger.error("Problem reading L2 WardenOjbective (skipping objective): "+str(e))
+        logger.debug(e, exc_info=True)
+    try:arrdictWardenObjectiveBlock[2] = WardenObjectiveBlock(iL3WardenObjective, iL3WardenObjectiveReactorWaves)
+    except NameError:pass
+    except Exception as e:
+        logger.error("Problem reading L3 WardenOjbective (skipping objective): "+str(e))
+        logger.debug(e, exc_info=True)
 
     # copy descriptive from ExpeditionInTier into LevelLayout and WardenObjective blocks
     finalizeData(dictExpeditionInTier, arrdictLevelLayoutBlock, arrdictWardenObjectiveBlock)
