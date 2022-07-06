@@ -1146,7 +1146,7 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
         shutil.copy(templatepath,writepath)
         fxlsx = open(writepath, 'rb+')
     except PermissionError:
-        raise PermissionError("PermissionError opening \""+writepath+"\", is it open?")
+        raise PermissionError("PermissionError opening \""+writepath+"\", is it open elsewhere?")
 
     iMeta = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "Meta", header=None))
     iExpeditionInTier = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "ExpeditionInTier", header=None))
