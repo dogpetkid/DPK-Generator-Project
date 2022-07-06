@@ -31,9 +31,9 @@ git reset --hard
 # run tools
 cd "$generatorfolder"
 echo "Start reverse utility..."
-python ./LevelReverseUtility.py -v DEBUG -n "Unit 23" EVAL Cargo Dense Vault Monster Sublimation Reckless Mother AWOL Chaos
+python ./LevelReverseUtility.py -v DEBUG -n "Unit 23" Evaluation Cargo Dense Vault Monster Sublimation Reckless Mother AWOL Chaos
 echo "Start forward utility..."
-python ./LevelUtility.py -v DEBUG -n "Unit 23.xlsx" EVAL.xlsx Cargo.xlsx Dense.xlsx Vault.xlsx Monster.xlsx Sublimation.xlsx Reckless.xlsx Mother.xlsx AWOL.xlsx Chaos.xlsx
+python ./LevelUtility.py -v DEBUG -n "Unit 23.xlsx" Evaluation.xlsx Cargo.xlsx Dense.xlsx Vault.xlsx Monster.xlsx Sublimation.xlsx Reckless.xlsx Mother.xlsx AWOL.xlsx Chaos.xlsx
 
 cd "$datablocksfolder"
 echo "Diff:"
