@@ -14,15 +14,17 @@ datablocksfolder="$(dirname "$generatorfolder")/OriginalDataBlocks"
 set -e
 
 cd "$datablocksfolder"
-git diff
-git status
 # only prompt if not confirmed in terminal
 if [ "$1" != "-y" ]; then
+	git diff
+	git status
 	# prompt the user to run test (since blocks will be overwritten)
 	read -p "Confirm test run (blocks will be overwritten): " CONFIRM
 	if [ "$CONFIRM" != "y" ] && [ "$CONFIRM" != "Y" ] && [ "$CONFIRM" != "yes" ] && [ "$CONFIRM" != "Yes" ]; then
 		exit
 	fi
+else
+	git status
 fi
 
 # reset blocks
@@ -36,8 +38,10 @@ echo "Start forward utility..."
 python ./LevelUtility.py -v DEBUG -n "Unit 23.xlsx" Evaluation.xlsx Cargo.xlsx Dense.xlsx Vault.xlsx Monster.xlsx Sublimation.xlsx Reckless.xlsx Mother.xlsx AWOL.xlsx Chaos.xlsx
 
 cd "$datablocksfolder"
-echo "Diff:"
-git diff
+if [ "$1" != "-y" ]; then
+	echo "Diff:"
+	git diff
+fi
 # don't reset again, leave results to be examined
 
 cd "$here"
