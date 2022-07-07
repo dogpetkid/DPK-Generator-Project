@@ -168,7 +168,7 @@ def ZonePlacementData(interface:XlsxInterfacer.interface, data:dict, col:int, ro
     horizontal is true if the values are in the same row
     """
     writeEnumFromDict(ENUMFILE_eLocalZoneIndex, interface, col, row, data, "LocalIndex")
-    try:ZonePlacementWeights(interface, data["Weights"], col+horizontal, row+(not horizontal), horizontal)
+    try:ZonePlacementWeights(interface, data["Weights"], col+2*horizontal, row+2*(not horizontal), horizontal)
     except KeyError:pass
 
 def BulkheadDoorPlacementData(interface:XlsxInterfacer.interface, data:dict, col:int, row:int, horizontal=False):

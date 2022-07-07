@@ -151,7 +151,7 @@ def ZonePlacementData(interface:XlsxInterfacer.interface, col:int, row:int, hori
     data = {}
     interface.readIntoDict(str, col, row, data, "LocalIndex")
     EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, data, "LocalIndex")
-    data["Weights"] = ZonePlacementWeights(interface, col+horizontal, row+(not horizontal), horizontal)
+    data["Weights"] = ZonePlacementWeights(interface, col+2*horizontal, row+2*(not horizontal), horizontal)
     return data
 
 def BulkheadDoorPlacementData(interface:XlsxInterfacer.interface, col:int, row:int, horizontal:bool=False):
