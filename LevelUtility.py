@@ -263,17 +263,17 @@ def WardenObjectiveEventData(interface:XlsxInterfacer.interface, col:int, row:in
     horizontal is true if the values are in the same row
     """
     data = {}
-    interface.readIntoDict(str, col, row, data, "Trigger")
-    EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveEventTrigger, data, "Trigger")
-    interface.readIntoDict(str, col+horizontal, row+(not horizontal), data, "Type")
+    interface.readIntoDict(str, col, row, data, "Type")
     EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveEventType, data, "Type")
-    interface.readIntoDict(str, col+2*horizontal, row+2*(not horizontal), data, "Layer")
+    interface.readIntoDict(str, col+3*horizontal, row+3*(not horizontal), data, "Trigger")
+    EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveEventTrigger, data, "Trigger")
+    interface.readIntoDict(str, col+6*horizontal, row+6*(not horizontal), data, "Layer")
     EnumConverter.enumInDict(ENUMFILE_LG_LayerType, data, "Layer")
-    interface.readIntoDict(str, col+3*horizontal, row+3*(not horizontal), data, "LocalIndex")
+    interface.readIntoDict(str, col+8*horizontal, row+8*(not horizontal), data, "LocalIndex")
     EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, data, "LocalIndex")
-    interface.readIntoDict(float, col+4*horizontal, row+4*(not horizontal), data, "Delay")
-    interface.readIntoDict(str, col+5*horizontal, row+5*(not horizontal), data, "WardenIntel")
-    interface.readIntoDict(int, col+6*horizontal, row+6*(not horizontal), data, "SoundID")
+    interface.readIntoDict(float, col+9*horizontal, row+9*(not horizontal), data, "Delay")
+    interface.readIntoDict(str, col+12*horizontal, row+12*(not horizontal), data, "WardenIntel")
+    interface.readIntoDict(int, col+15*horizontal, row+15*(not horizontal), data, "SoundID")
     # TODO convert sound placeholders
     return data
 

@@ -260,13 +260,13 @@ def WardenObjectiveEventData(interface:XlsxInterfacer.interface, data:dict, col:
     col and row define the upper left value (not header) \n
     horizontal is true if the values are in the same row
     """
-    writeEnumFromDict(ENUMFILE_eWardenObjectiveEventTrigger, interface, col, row, data, "Trigger")
-    writeEnumFromDict(ENUMFILE_eWardenObjectiveEventType, interface, col+horizontal, row+(not horizontal), data, "Type")
-    writeEnumFromDict(ENUMFILE_LG_LayerType, interface, col+2*horizontal, row+2*(not horizontal), data, "Layer")
-    writeEnumFromDict(ENUMFILE_eLocalZoneIndex, interface, col+3*horizontal, row+3*(not horizontal), data, "LocalIndex")
-    interface.writeFromDict(col+4*horizontal, row+4*(not horizontal), data, "Delay")
-    interface.writeFromDict(col+5*horizontal, row+5*(not horizontal), data, "WardenIntel")
-    interface.writeFromDict(col+6*horizontal, row+6*(not horizontal), data, "SoundID")
+    writeEnumFromDict(ENUMFILE_eWardenObjectiveEventType, interface, col, row, data, "Type")
+    writeEnumFromDict(ENUMFILE_eWardenObjectiveEventTrigger, interface, col+3*horizontal, row+3*(not horizontal), data, "Trigger")
+    writeEnumFromDict(ENUMFILE_LG_LayerType, interface, col+6*horizontal, row+6*(not horizontal), data, "Layer")
+    writeEnumFromDict(ENUMFILE_eLocalZoneIndex, interface, col+8*horizontal, row+8*(not horizontal), data, "LocalIndex")
+    interface.writeFromDict(col+9*horizontal, row+9*(not horizontal), data, "Delay")
+    interface.writeFromDict(col+12*horizontal, row+12*(not horizontal), data, "WardenIntel")
+    interface.writeFromDict(col+15*horizontal, row+15*(not horizontal), data, "SoundID")
     # TODO convert sound id to name of sound
 
 def GeneralFogDataStep(interface:XlsxInterfacer.interface, data:dict, col:int, row:int, horizontal:bool=False):
