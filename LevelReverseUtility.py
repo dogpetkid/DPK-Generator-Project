@@ -8,6 +8,7 @@ import logging
 import os
 import re
 import shutil
+import sys
 import textwrap
 import time
 import typing
@@ -1376,7 +1377,7 @@ def main():
     logfilehandler.setFormatter(logformatter)
     logger.addHandler(logfilehandler)
 
-    consoleloghandler = logging.StreamHandler()
+    consoleloghandler = logging.StreamHandler(stream=sys.stdout)
     consoleloghandler.setLevel(getattr(logging, args.verbosity))
     consoleloghandler.setFormatter(consoleformatter)
     logger.addHandler(consoleloghandler)
