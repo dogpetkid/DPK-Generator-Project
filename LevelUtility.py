@@ -412,16 +412,29 @@ class ExpeditionZoneDataLists:
         """Generates numerous stubs that can have zone specific data request from the object getters"""
         startrow = 2
 
-        startcolEventsOnEnter = XlsxInterfacer.ctn("A")
-        startcolProgressionPuzzleToEnter = XlsxInterfacer.ctn("K")
-        startcolEnemySpawningInZone = XlsxInterfacer.ctn("R")
-        startcolEnemyRespawnExcludeList = XlsxInterfacer.ctn("Y")
-        startcolTerminalPlacements = XlsxInterfacer.ctn("AB")
-        startcolLocalLogFiles = XlsxInterfacer.ctn("AM")
-        startcolParsedLog = XlsxInterfacer.ctn("AU")
-        startcolPowerGeneratorPlacements = XlsxInterfacer.ctn("AX")
-        startcolDisinfectionStationPlacements = XlsxInterfacer.ctn("BE")
-        startcolStaticSpawnDataContainers = XlsxInterfacer.ctn("BL")
+        startcolEventsOnEnter =                     XlsxInterfacer.ctn("C")
+        startcolEventsOnPortalWarp =                XlsxInterfacer.ctn("M")
+        startcolEventsOnApproachDoor =              XlsxInterfacer.ctn("AX")
+        startcolEventsOnUnlockDoor =                XlsxInterfacer.ctn("CJ")
+        startcolEventsOnOpenDoor =                  XlsxInterfacer.ctn("EJ")
+        startcolEventsOnDoorScanStart =             XlsxInterfacer.ctn("FV")
+        startcolEventsOnDoorScanDone =              XlsxInterfacer.ctn("HH")
+        startcolEventsOnBossDeath =                 XlsxInterfacer.ctn("IT")
+        startcolEventsOnTrigger =                   XlsxInterfacer.ctn("KF")
+        startcolProgressionPuzzleToEnter =          XlsxInterfacer.ctn("LS")
+        startcolEventsOnTerminalDeactivateAlarm =   XlsxInterfacer.ctn("MA")
+        startcolWorldEventChainedPuzzleDatas =      XlsxInterfacer.ctn("NM")
+        startcolEnemySpawningInZone =               XlsxInterfacer.ctn("PD")
+        startcolEnemyRespawnExcludeList =           XlsxInterfacer.ctn("PK")
+        startcolSpecificPickupSpawningDatas =       XlsxInterfacer.ctn("PN")
+        startcolLocalLogFiles =                     XlsxInterfacer.ctn("QO")
+        startcolUniqueCommands =                    XlsxInterfacer.ctn("QW")
+        startcolCommandEvents =                     XlsxInterfacer.ctn("RD")
+        startcolTerminalZoneSelectionDatas =        XlsxInterfacer.ctn("RI")
+        startcolTerminalPlacements =                XlsxInterfacer.ctn("PR")
+        startcolPowerGeneratorPlacements =          XlsxInterfacer.ctn("TD")
+        startcolDisinfectionStationPlacements =     XlsxInterfacer.ctn("TK")
+        startcolStaticSpawnDataContainers =         XlsxInterfacer.ctn("TR")
 
         self.stubEventsOnEnter = {}
         self.stubProgressionPuzzleToEnter = {}
@@ -429,13 +442,9 @@ class ExpeditionZoneDataLists:
         self.stubEnemyRespawnExcludeList = {}
         self.stubTerminalPlacements = {}
         self.stubLocalLogFiles = {}
-        self.stubParsedLog = {}
         self.stubPowerGeneratorPlacements = {}
         self.stubDisinfectionStationPlacements = {}
         self.stubStaticSpawnDataContainers = {}
-
-        # XXX in order to run the test; don't run unfixed frame reader
-        return
 
         row = startrow
         # EventsOnEnter
@@ -496,19 +505,11 @@ class ExpeditionZoneDataLists:
             row+= 1
 
         row = startrow
-        # ParsedLog
-        while not(iExpeditionZoneDataLists.isEmpty(startcolParsedLog,row)):
-            Snippet = iExpeditionZoneDataLists.read(XlsxInterfacer.blankable, startcolParsedLog+1,row)
-            EnsureKeyInDictArray(self.stubParsedLog, iExpeditionZoneDataLists.read(str, startcolParsedLog, row))
-            self.stubLocalLogFiles[iExpeditionZoneDataLists.read(str, startcolParsedLog, row)].append(Snippet)
-            row+= 1
-
-        row = startrow
         # LocalLogFiles
         while not(iExpeditionZoneDataLists.isEmpty(startcolLocalLogFiles,row)):
             Snippet = {}
-            iExpeditionZoneDataLists.readIntoDict(str, startcolLocalLogFiles+2, row, Snippet, "FileName")
-            iExpeditionZoneDataLists.readIntoDict(str, startcolLocalLogFiles+3, row, Snippet, "FileContent")
+            iExpeditionZoneDataLists.readIntoDict(str, startcolLocalLogFiles+1, row, Snippet, "FileName")
+            iExpeditionZoneDataLists.readIntoDict(str, startcolLocalLogFiles+2, row, Snippet, "FileContent")
             try:
                 Snippet["FileContent"] = re.sub(sheetnewlnregex, devcrlf, Snippet["FileContent"])
                 Snippet["FileContent"] = re.sub(sheettabregex, devtb, Snippet["FileContent"])
@@ -533,8 +534,8 @@ class ExpeditionZoneDataLists:
             Snippet["StartingStateData"] = {}
             iExpeditionZoneDataLists.readIntoDict(str, startcolTerminalPlacements+7, row, Snippet["StartingStateData"], "StartingState")
             EnumConverter.enumInDict(ENUMFILE_TERM_State, Snippet["StartingStateData"], "StartingState")
-            iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+8, row, Snippet["StartingStateData"], "AudioEventEnter")
-            iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+9, row, Snippet["StartingStateData"], "AudioEventExit")
+            iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+11, row, Snippet["StartingStateData"], "AudioEventEnter")
+            iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+12, row, Snippet["StartingStateData"], "AudioEventExit")
             # TODO convert sound placeholders
             EnsureKeyInDictArray(self.stubTerminalPlacements, iExpeditionZoneDataLists.read(str, startcolTerminalPlacements, row))
             self.stubTerminalPlacements[iExpeditionZoneDataLists.read(str, startcolTerminalPlacements, row)].append(Snippet)

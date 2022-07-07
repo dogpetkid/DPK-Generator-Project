@@ -415,14 +415,11 @@ class ExpeditionZoneDataLists:
         self.stubTerminalPlacements = []
         self.stubLocalLogFiles = []
         groupedLocalLogFiles = []
-        self.stubParsedLog = []
-        groupedParsedLog = []
         self.stubPowerGeneratorPlacements = []
         self.stubDisinfectionStationPlacements = []
         self.stubStaticSpawnDataContainers = []
 
         loggroupstart = 'A'
-        parsedgroupstart = 'A'
 
         for ZoneData in LevelLayout["Zones"]:
             zone = EnumConverter.indexToEnum(ENUMFILE_eLocalZoneIndex, ZoneData["LocalIndex"], False)
@@ -470,7 +467,7 @@ class ExpeditionZoneDataLists:
                     self.stubStaticSpawnDataContainers.append(dict({"ZoneIndex":zone},**e))
             except KeyError:pass
 
-            # Unlike the other lists, the terminal placement is several dimentions deep and must be handled piece by piece to find unique ParsedLogs and Log files
+            # Unlike the other lists, the terminal placement is several dimentions deep and must be handled piece by piece to find unique Log files
             try:
                 # TerminalPlacements
                 for placement in ZoneData["TerminalPlacements"]:
@@ -482,29 +479,6 @@ class ExpeditionZoneDataLists:
                             # if there are no logs, keep the group blank
                             placement["LocalLogFiles"] = ""
                             raise KeyError # jump to the no logs exist
-
-                        for logfile in logfiles:
-
-                            # ParsedLog
-                            try: # if there are pared logs...
-                                parseds = logfile["ParsedLog"] # will jump to the except if no parsed exist
-
-                                if parseds == []:
-                                    # if there are no parsed logs, keep the group blank
-                                    logfile["Parsed Group"] = ""
-                                    raise KeyError # jump to the no parsed exist
-
-                                try: # if parseds group has been handled, find it's group
-                                    parsedsindex = groupedParsedLog.index(parseds)
-                                except ValueError: # parseds has not already been handled
-                                    groupedParsedLog.append(parseds)
-                                    parsedsindex = len(groupedParsedLog) - 1
-                                    for parsed in parseds: # add each parsed log to the stub
-                                        self.stubParsedLog.append({"Parsed Group":chr(ord(parsedgroupstart)+parsedsindex),"value":parsed})
-                                finally: # finally, change the log file to reflect the parsed group
-                                    logfile["Parsed Group"] = chr(ord(parsedgroupstart)+parsedsindex)
-
-                            except KeyError:pass # no parsed exist, pass
 
                         # LocalLogFiles
                         try: # if log goup has been handled, find it's group
@@ -528,16 +502,29 @@ class ExpeditionZoneDataLists:
         """Iterates through the numerous stubs and writes them to the specified interface"""
         startrow = 2
 
-        startcolEventsOnEnter = XlsxInterfacer.ctn("A")
-        startcolProgressionPuzzleToEnter = XlsxInterfacer.ctn("K")
-        startcolEnemySpawningInZone = XlsxInterfacer.ctn("R")
-        startcolEnemyRespawnExcludeList = XlsxInterfacer.ctn("Y")
-        startcolTerminalPlacements = XlsxInterfacer.ctn("AB")
-        startcolLocalLogFiles = XlsxInterfacer.ctn("AM")
-        startcolParsedLog = XlsxInterfacer.ctn("AU")
-        startcolPowerGeneratorPlacements = XlsxInterfacer.ctn("AX")
-        startcolDisinfectionStationPlacements = XlsxInterfacer.ctn("BE")
-        startcolStaticSpawnDataContainers = XlsxInterfacer.ctn("BL")
+        startcolEventsOnEnter =                     XlsxInterfacer.ctn("C")
+        startcolEventsOnPortalWarp =                XlsxInterfacer.ctn("M")
+        startcolEventsOnApproachDoor =              XlsxInterfacer.ctn("AX")
+        startcolEventsOnUnlockDoor =                XlsxInterfacer.ctn("CJ")
+        startcolEventsOnOpenDoor =                  XlsxInterfacer.ctn("EJ")
+        startcolEventsOnDoorScanStart =             XlsxInterfacer.ctn("FV")
+        startcolEventsOnDoorScanDone =              XlsxInterfacer.ctn("HH")
+        startcolEventsOnBossDeath =                 XlsxInterfacer.ctn("IT")
+        startcolEventsOnTrigger =                   XlsxInterfacer.ctn("KF")
+        startcolProgressionPuzzleToEnter =          XlsxInterfacer.ctn("LS")
+        startcolEventsOnTerminalDeactivateAlarm =   XlsxInterfacer.ctn("MA")
+        startcolWorldEventChainedPuzzleDatas =      XlsxInterfacer.ctn("NM")
+        startcolEnemySpawningInZone =               XlsxInterfacer.ctn("PD")
+        startcolEnemyRespawnExcludeList =           XlsxInterfacer.ctn("PK")
+        startcolSpecificPickupSpawningDatas =       XlsxInterfacer.ctn("PN")
+        startcolLocalLogFiles =                     XlsxInterfacer.ctn("QO")
+        startcolUniqueCommands =                    XlsxInterfacer.ctn("QW")
+        startcolCommandEvents =                     XlsxInterfacer.ctn("RD")
+        startcolTerminalZoneSelectionDatas =        XlsxInterfacer.ctn("RI")
+        startcolTerminalPlacements =                XlsxInterfacer.ctn("PR")
+        startcolPowerGeneratorPlacements =          XlsxInterfacer.ctn("TD")
+        startcolDisinfectionStationPlacements =     XlsxInterfacer.ctn("TK")
+        startcolStaticSpawnDataContainers =         XlsxInterfacer.ctn("TR")
 
         row = startrow
         # EventsOnEnter
@@ -613,8 +600,8 @@ class ExpeditionZoneDataLists:
             try:
                 writeEnumFromDict(ENUMFILE_TERM_State, iExpeditionZoneDataLists, startcolTerminalPlacements+7, row, Snippet["StartingStateData"], "StartingState")
 
-                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+8, row, Snippet["StartingStateData"], "AudioEventEnter")
-                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+9, row, Snippet["StartingStateData"], "AudioEventExit")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+11, row, Snippet["StartingStateData"], "AudioEventEnter")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+12, row, Snippet["StartingStateData"], "AudioEventExit")
                 # TODO convert sound placeholders
             except KeyError:pass
 
@@ -625,25 +612,17 @@ class ExpeditionZoneDataLists:
         for Snippet in self.stubLocalLogFiles:
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles, row, Snippet, "Log Group")
 
-            iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+1, row, Snippet, "Parsed Group")
-            iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+2, row, Snippet, "FileName")
+            iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+1, row, Snippet, "FileName")
             try:
                 content = re.sub(devnewlnregex, sheetcrlf, str(Snippet["FileContent"])) # TODO fix this bodge for localization
                 content = re.sub(devtabregex, sheettb, content)
-                iExpeditionZoneDataLists.write(content, startcolLocalLogFiles+3, row)
+                iExpeditionZoneDataLists.write(content, startcolLocalLogFiles+2, row)
             except KeyError:pass
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+4, row, Snippet, "AttachedAudioFile")
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+5, row, Snippet, "AttachedAudioByteSize")
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+6, row, Snippet, "PlayerDialogToTriggerAfterAudio")
             # TODO convert sound placeholders
 
-            row+= 1
-
-        row = startrow
-        # ParsedLog
-        for Snippet in self.stubParsedLog:
-            iExpeditionZoneDataLists.writeFromDict(startcolParsedLog, row, Snippet, "Parsed Group")
-            iExpeditionZoneDataLists.writeFromDict(startcolParsedLog+1, row, Snippet, "value")
             row+= 1
 
         row = startrow
@@ -768,8 +747,7 @@ def framesLevelLayoutBlock(iExpeditionZoneData:XlsxInterfacer.interface, iExpedi
     edit the iExpeditionZoneData and iExpeditionZoneDataLists pandas dataFrames for a single level layout
     """
 
-    # XXX in order to run the test; don't run unfixed frame writer
-    # ExpeditionZoneDataLists(LevelLayout).write(iExpeditionZoneDataLists)
+    ExpeditionZoneDataLists(LevelLayout).write(iExpeditionZoneDataLists)
 
     row = 2
 
