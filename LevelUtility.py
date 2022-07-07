@@ -190,7 +190,7 @@ def ZonePlacementWeightsList(interface:XlsxInterfacer.interface, col:int, row:in
     while not(interface.isEmpty(col, row)):
         Snippet = {}
         identifier = interface.read(str, col, row)
-        interface.readIntoDict(str, col+(not horizontal), row+horizontal, Snippet, "LocalIndex")
+        interface.readIntoDict(str, col+2*(not horizontal), row+2*horizontal, Snippet, "LocalIndex")
         EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, Snippet, "LocalIndex")
         # the direction of the set of weights and values in the data are perpendicular
         Snippet["Weights"] = ZonePlacementWeights(interface, col+3*(not horizontal), row+3*horizontal, horizontal=(not horizontal))

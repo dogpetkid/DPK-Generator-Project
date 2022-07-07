@@ -204,7 +204,7 @@ def ZonePlacementWeightsList(interface:XlsxInterfacer.interface, data:typing.Lis
     for group in data:
         for placement in group:
             interface.write(letter, col, row)
-            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, interface, col+(not horizontal), row+horizontal, placement, "LocalIndex")
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, interface, col+2*(not horizontal), row+2*horizontal, placement, "LocalIndex")
             ZonePlacementWeights(interface, placement["Weights"], col+3*(not horizontal), row+3*horizontal, horizontal=(not horizontal))
             col+= horizontal 
             row+= not horizontal
