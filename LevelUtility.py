@@ -741,9 +741,9 @@ class ReactorWaveData:
         """Generates stubs and the wave data to be returned from the getters"""
         startrow = 2
 
-        startcolReactorWaves = XlsxInterfacer.ctn("B")
-        startcolEnemyWaves = XlsxInterfacer.ctn("K")
-        startcolEvents = XlsxInterfacer.ctn("Q")
+        startcolReactorWaves =  XlsxInterfacer.ctn("A")
+        startcolEnemyWaves =    XlsxInterfacer.ctn("J")
+        startcolEvents =        XlsxInterfacer.ctn("Q")
 
         self.waves = []
         self.stubEnemyWaves = {}
@@ -751,15 +751,15 @@ class ReactorWaveData:
 
         # EnemyWaves
         row = startrow
-        while not(iWardenObjectiveReactorWaves.isEmpty(startcolEnemyWaves-1, row)):
+        while not(iWardenObjectiveReactorWaves.isEmpty(startcolEnemyWaves, row)):
             Snippet = {}
-            waveNo = iWardenObjectiveReactorWaves.read(str, startcolEnemyWaves-1, row)
-            iWardenObjectiveReactorWaves.readIntoDict(str, startcolEnemyWaves, row, Snippet, "WaveSettings")
+            waveNo = iWardenObjectiveReactorWaves.read(str, startcolEnemyWaves, row)
+            iWardenObjectiveReactorWaves.readIntoDict(str, startcolEnemyWaves+1, row, Snippet, "WaveSettings")
             DatablockIO.nameInDict(DATABLOCK_SurvivalWaveSettings, Snippet, "WaveSettings")
-            iWardenObjectiveReactorWaves.readIntoDict(str, startcolEnemyWaves+1, row, Snippet, "WavePopulation")
+            iWardenObjectiveReactorWaves.readIntoDict(str, startcolEnemyWaves+2, row, Snippet, "WavePopulation")
             DatablockIO.nameInDict(DATABLOCK_SurvivalWavePopulation, Snippet, "WavePopulation")
-            iWardenObjectiveReactorWaves.readIntoDict(float, startcolEnemyWaves+2, row, Snippet, "SpawnTimeRel")
-            iWardenObjectiveReactorWaves.readIntoDict(str, startcolEnemyWaves+3, row, Snippet, "SpawnType")
+            iWardenObjectiveReactorWaves.readIntoDict(float, startcolEnemyWaves+4, row, Snippet, "SpawnTimeRel")
+            iWardenObjectiveReactorWaves.readIntoDict(str, startcolEnemyWaves+5, row, Snippet, "SpawnType")
             EnumConverter.enumInDict(ENUMFILE_eReactorWaveSpawnType, Snippet, "SpawnType")
             EnsureKeyInDictArray(self.stubEnemyWaves, waveNo)
             self.stubEnemyWaves[waveNo].append(Snippet)
@@ -767,10 +767,10 @@ class ReactorWaveData:
 
         # Events
         row = startrow
-        while not(iWardenObjectiveReactorWaves.isEmpty(startcolEvents-1, row)):
+        while not(iWardenObjectiveReactorWaves.isEmpty(startcolEvents, row)):
             Snippet = {}
-            waveNo = iWardenObjectiveReactorWaves.read(str, startcolEvents-1, row)
-            Snippet = WardenObjectiveEventData(iWardenObjectiveReactorWaves, startcolEvents, row, horizontal=True)
+            waveNo = iWardenObjectiveReactorWaves.read(str, startcolEvents, row)
+            Snippet = WardenObjectiveEventData(iWardenObjectiveReactorWaves, startcolEvents+1, row, horizontal=True)
             EnsureKeyInDictArray(self.stubEvents, waveNo)
             self.stubEvents[waveNo].append(Snippet)
             row+= 1
@@ -779,14 +779,14 @@ class ReactorWaveData:
         row = startrow
         while not(iWardenObjectiveReactorWaves.isEmpty(startcolReactorWaves, row)):
             wave = {}
-            waveNo = iWardenObjectiveReactorWaves.read(str, startcolReactorWaves-1, row)
-            iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves, row, wave, "Warmup")
-            iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves+1, row, wave, "WarmupFail")
-            iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves+2, row, wave, "Wave")
-            iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves+3, row, wave, "Verify")
-            iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves+4, row, wave, "VerifyFail")
-            iWardenObjectiveReactorWaves.readIntoDict(bool, startcolReactorWaves+5, row, wave, "VerifyInOtherZone")
-            iWardenObjectiveReactorWaves.readIntoDict(str, startcolReactorWaves+6, row, wave, "ZoneForVerification")
+            waveNo = iWardenObjectiveReactorWaves.read(str, startcolReactorWaves, row)
+            iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves+1, row, wave, "Warmup")
+            iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves+2, row, wave, "WarmupFail")
+            iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves+3, row, wave, "Wave")
+            iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves+4, row, wave, "Verify")
+            iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves+5, row, wave, "VerifyFail")
+            iWardenObjectiveReactorWaves.readIntoDict(bool, startcolReactorWaves+6, row, wave, "VerifyInOtherZone")
+            iWardenObjectiveReactorWaves.readIntoDict(str, startcolReactorWaves+7, row, wave, "ZoneForVerification")
             EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, wave, "ZoneForVerification")
             wave["EnemyWaves"] = self.EnemyWaves(waveNo)
             wave["Events"] = self.Events(waveNo)
@@ -881,8 +881,7 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     while not(iWardenObjective.isEmpty(col, row)):
         data["Retrieve_Items"].append(DatablockIO.nameToId(DATABLOCK_Item, iWardenObjective.read(str, col, row)))
         col+= 1
-    # XXX in order to run the test; don't run unfixed frame reader
-    # data["ReactorWaves"] = ReactorWaveData(iWardenObjectiveReactorWaves).waves
+    data["ReactorWaves"] = ReactorWaveData(iWardenObjectiveReactorWaves).waves
 
     iWardenObjective.readIntoDict(bool, 1, rowLightsOnFromBeginning, data, "LightsOnFromBeginning")
     iWardenObjective.readIntoDict(bool, 1, rowLightsOnFromBeginning+1, data, "LightsOnDuringIntro")

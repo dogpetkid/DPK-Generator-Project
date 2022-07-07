@@ -794,38 +794,38 @@ class ReactorWaveData:
         """Iterates through the numerous stubs and writes them to the specified interface"""
         startrow = 2
 
-        startcolReactorWaves = XlsxInterfacer.ctn("B")
-        startcolEnemyWaves = XlsxInterfacer.ctn("K")
-        startcolEvents = XlsxInterfacer.ctn("Q")
+        startcolReactorWaves =  XlsxInterfacer.ctn("A")
+        startcolEnemyWaves =    XlsxInterfacer.ctn("J")
+        startcolEvents =        XlsxInterfacer.ctn("Q")
 
         # ReactorWaves
         row = startrow
         for Snippet in self.waves:
-            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves-1, row, Snippet, "WaveNo")
-            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves, row, Snippet, "Warmup")
-            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+1, row, Snippet, "WarmupFail")
-            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+2, row, Snippet, "Wave")
-            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+3, row, Snippet, "Verify")
-            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+4, row, Snippet, "VerifyFail")
-            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+5, row, Snippet, "VerifyInOtherZone")
-            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iWardenObjectiveReactorWaves, startcolReactorWaves+6, row, Snippet, "ZoneForVerification")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves, row, Snippet, "WaveNo")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+1, row, Snippet, "Warmup")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+2, row, Snippet, "WarmupFail")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+3, row, Snippet, "Wave")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+4, row, Snippet, "Verify")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+5, row, Snippet, "VerifyFail")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolReactorWaves+6, row, Snippet, "VerifyInOtherZone")
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iWardenObjectiveReactorWaves, startcolReactorWaves+7, row, Snippet, "ZoneForVerification")
             row+= 1
 
         # EnemyWaves
         row = startrow
         for Snippet in self.stubEnemyWaves:
-            iWardenObjectiveReactorWaves.writeFromDict(startcolEnemyWaves-1, row, Snippet, "WaveNo")
-            writePublicNameFromDict(DATABLOCK_SurvivalWaveSettings, iWardenObjectiveReactorWaves, startcolEnemyWaves, row, Snippet, "WaveSettings")
-            writePublicNameFromDict(DATABLOCK_SurvivalWavePopulation, iWardenObjectiveReactorWaves, startcolEnemyWaves+1, row, Snippet, "WavePopulation")
-            iWardenObjectiveReactorWaves.writeFromDict(startcolEnemyWaves+2, row, Snippet, "SpawnTimeRel")
-            writeEnumFromDict(ENUMFILE_eReactorWaveSpawnType, iWardenObjectiveReactorWaves, startcolEnemyWaves+3, row, Snippet, "SpawnType")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolEnemyWaves, row, Snippet, "WaveNo")
+            writePublicNameFromDict(DATABLOCK_SurvivalWaveSettings, iWardenObjectiveReactorWaves, startcolEnemyWaves+1, row, Snippet, "WaveSettings")
+            writePublicNameFromDict(DATABLOCK_SurvivalWavePopulation, iWardenObjectiveReactorWaves, startcolEnemyWaves+2, row, Snippet, "WavePopulation")
+            iWardenObjectiveReactorWaves.writeFromDict(startcolEnemyWaves+4, row, Snippet, "SpawnTimeRel")
+            writeEnumFromDict(ENUMFILE_eReactorWaveSpawnType, iWardenObjectiveReactorWaves, startcolEnemyWaves+5, row, Snippet, "SpawnType")
             row+= 1
 
         # Events
         row = startrow
         for Snippet in self.stubEvents:
-            iWardenObjectiveReactorWaves.writeFromDict(startcolEvents-1, row, Snippet, "WaveNo")
-            WardenObjectiveEventData(iWardenObjectiveReactorWaves, Snippet, startcolEvents, row, horizontal=True)
+            iWardenObjectiveReactorWaves.writeFromDict(startcolEvents, row, Snippet, "WaveNo")
+            WardenObjectiveEventData(iWardenObjectiveReactorWaves, Snippet, startcolEvents+1, row, horizontal=True)
             row+= 1
 
 def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjectiveReactorWaves:XlsxInterfacer.interface, WardenObjective:dict):
@@ -904,8 +904,7 @@ def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWarde
             iWardenObjective.write(DatablockIO.idToName(DATABLOCK_Item, item), itercol, iterrow)
             itercol+= 1
     except KeyError:pass
-    # XXX in order to run the test; don't run unfixed frame writer
-    # ReactorWaveData(WardenObjective).write(iWardenObjectiveReactorWaves)
+    ReactorWaveData(WardenObjective).write(iWardenObjectiveReactorWaves)
 
     iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning, WardenObjective, "LightsOnFromBeginning")
     iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+1, WardenObjective, "LightsOnDuringIntro")
