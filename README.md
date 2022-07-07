@@ -2,7 +2,7 @@
 
 <!-- Author: Dogpetkid -->
 <!-- Date: 2020-11-06 -->
-<!-- Revised: 2022-07-04 -->
+<!-- Revised: 2022-07-06 -->
 
 This is a project used assist in the creation and understanding of levels in GTFO. This is done by converting the levels from the JSON Datablocks to a custom Excel sheet. For an explanation on how to use this project, see [How to use](#how-to-use).
 
@@ -60,6 +60,8 @@ This is a file that is able to search and convert a Level in the JSON DataBlocks
 ### Template
 
 [Template is here.][DPK Template]
+
+[Examples are here.][DPK Examples]
 
 Notes:
 
@@ -194,7 +196,19 @@ If you have questions please message me.
 [Releases]: <https://github.com/dogpetkid/DPK-Generator-Project/releases>
 [Issues]: <https://github.com/dogpetkid/DPK-Generator-Project/issues>
 
-[DPK Template]: <https://docs.google.com/spreadsheets/d/1ENa6McJnomHa5ugB-VBFjMF62nslj4VwdgM_5ERVRqw>
+[DPK Template R4]:    <https://docs.google.com/spreadsheets/d/1FLA-eHv9NhU3IdxcdQ29ueW8Qav9IlknaLdb4xbGZCI>
+[DPK Template R4.5]:  <https://docs.google.com/spreadsheets/d/1h8_x696sogM0EfCk12Obe5s54njQnwDFdKBTKDK5pCA>
+[DPK Template R5]:    <https://docs.google.com/spreadsheets/d/1ENa6McJnomHa5ugB-VBFjMF62nslj4VwdgM_5ERVRqw>
+[DPK Template R5.5]:  <https://docs.google.com/spreadsheets/d/1Cj61cjBLrr3IapRl0hLCyTyh-KsHU8XOiFWtUpDD838>
+[DPK Template R6]:    <https://docs.google.com/spreadsheets/d/1Do1gqrZF76om__69-nwDxdbMDiq31PjN1rswzD5FdRA>
+<!-- R6.5 skipped -->
+[DPK Template R7]:    <https://docs.google.com/spreadsheets/d/1mlimulF0Zdq59YI02uk2ekdyOBibXp7r_b3S_7Yf7aw>
+[DPK Template]:       <https://docs.google.com/spreadsheets/d/1mlimulF0Zdq59YI02uk2ekdyOBibXp7r_b3S_7Yf7aw>
+
+[DPK Examples R5]:    <https://drive.google.com/drive/folders/1v-7E3mU6teUiluVgBV3CrUQKFfCrI7HS>
+<!-- R6 skipped -->
+[DPK Examples R7]:    <https://drive.google.com/drive/folders/1SMCCBy-87BhpeE5lGjm7lsQboql07YLn>
+[DPK Examples]:       <https://drive.google.com/drive/folders/1SMCCBy-87BhpeE5lGjm7lsQboql07YLn>
 
 [python]: <https://www.python.org/>
 [python downloads]: <https://www.python.org/downloads/>
