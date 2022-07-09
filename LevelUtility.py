@@ -333,28 +333,28 @@ def LayerData(interface:XlsxInterfacer.interface, col:int, row:int):
     """
     data = {}
     data["ZonesWithBulkheadEntrance"] = []
-    itercol,iterrow = col+5, row
+    itercol,iterrow = col, row
     while not(interface.isEmpty(itercol, iterrow)):
         # NOTE textmode may need a toggle in this file for whether the json should have text enums
         data["ZonesWithBulkheadEntrance"].append(EnumConverter.enumToIndex(ENUMFILE_eLocalZoneIndex, interface.read(str, itercol, iterrow), textmode=True))
         itercol+= 1
     data["BulkheadDoorControllerPlacements"] = []
-    itercol,iterrow = col+5, row+1
+    itercol,iterrow = col, row+1
     while not(interface.isEmpty(itercol, iterrow)):
         data["BulkheadDoorControllerPlacements"].append(BulkheadDoorPlacementData(interface, itercol, iterrow, horizontal=False))
         itercol+= 1
-    data["BulkheadKeyPlacements"] = ZonePlacementWeightsList(interface, col+5, row+7, horizontal=True)
+    data["BulkheadKeyPlacements"] = ZonePlacementWeightsList(interface, col, row+7, horizontal=True)
     data["ObjectiveData"] = {}
-    interface.readIntoDict(int, col+5, row+13, data["ObjectiveData"], "DataBlockId")
-    interface.readIntoDict(str, col+5, row+14, data["ObjectiveData"], "WinCondition")
+    interface.readIntoDict(int, col, row+13, data["ObjectiveData"], "DataBlockId")
+    interface.readIntoDict(str, col, row+14, data["ObjectiveData"], "WinCondition")
     EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveWinCondition, data["ObjectiveData"], "WinCondition")
-    data["ObjectiveData"]["ZonePlacementDatas"] = ZonePlacementWeightsList(interface, col+5, row+15, horizontal=True)
+    data["ObjectiveData"]["ZonePlacementDatas"] = ZonePlacementWeightsList(interface, col, row+15, horizontal=True)
     data["ArtifactData"] = {}
-    interface.readIntoDict(float, col+5, row+22, data["ArtifactData"], "ArtifactAmountMulti")
-    interface.readIntoDict(str, col+5, row+23, data["ArtifactData"], "ArtifactLayerDistributionDataID")
+    interface.readIntoDict(float, col, row+22, data["ArtifactData"], "ArtifactAmountMulti")
+    interface.readIntoDict(str, col, row+23, data["ArtifactData"], "ArtifactLayerDistributionDataID")
     DatablockIO.nameInDict(DATABLOCK_ArtifactDistribution, data["ArtifactData"], "ArtifactLayerDistributionDataID")
     data["ArtifactData"]["ArtifactZoneDistributions"] = []
-    itercol,iterrow = col+5, row+24
+    itercol,iterrow = col, row+24
     while not(interface.isEmpty(itercol, iterrow)):
         data["ArtifactData"]["ArtifactZoneDistributions"].append(ArtifactZoneDistribution(interface, itercol, iterrow, horizontal=False))
         itercol+= 1
@@ -401,7 +401,7 @@ def ExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface):
     iExpeditionInTier.readIntoDict(str, 7, 14, data["Expedition"], "ScoutWavePopulation")
     DatablockIO.nameInDict(DATABLOCK_SurvivalWavePopulation, data["Expedition"], "ScoutWavePopulation")
     data["LevelLayoutData"] = iExpeditionInTier.read(int, 0, 21)
-    data["MainLayerData"] = LayerData(iExpeditionInTier, 0, 36)
+    data["MainLayerData"] = LayerData(iExpeditionInTier, 5, 37)
     iExpeditionInTier.readIntoDict(bool, 2, 21, data, "SecondaryLayerEnabled")
     iExpeditionInTier.readIntoDict(int, 3, 21, data, "SecondaryLayout")
     data["BuildSecondaryFrom"] = {}
@@ -409,7 +409,7 @@ def ExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface):
     EnumConverter.enumInDict(ENUMFILE_LG_LayerType, data["BuildSecondaryFrom"], "LayerType")
     iExpeditionInTier.readIntoDict(str, 3, 25, data["BuildSecondaryFrom"], "Zone")
     EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, data["BuildSecondaryFrom"], "Zone")
-    data["SecondaryLayerData"] = LayerData(iExpeditionInTier, 0, 66)
+    data["SecondaryLayerData"] = LayerData(iExpeditionInTier, 5, 67)
     iExpeditionInTier.readIntoDict(bool, 5, 21, data, "ThirdLayerEnabled")
     iExpeditionInTier.readIntoDict(int, 6, 21, data, "ThirdLayout")
     data["BuildThirdFrom"] = {}
@@ -417,7 +417,7 @@ def ExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface):
     EnumConverter.enumInDict(ENUMFILE_LG_LayerType, data["BuildThirdFrom"], "LayerType")
     iExpeditionInTier.readIntoDict(str, 6, 25, data["BuildThirdFrom"], "Zone")
     EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, data["BuildThirdFrom"], "Zone")
-    data["ThirdLayerData"] = LayerData(iExpeditionInTier, 0, 95)
+    data["ThirdLayerData"] = LayerData(iExpeditionInTier, 5, 97)
     data["SpecialOverrideData"] = {}
     iExpeditionInTier.readIntoDict(float, 2, 29, data["SpecialOverrideData"], "WeakResourceContainerWithPackChanceForLocked")
     return data
@@ -1057,19 +1057,19 @@ def UtilityJob(LevelXlsxFile:io.BytesIO, RundownBlock:DatablockIO.datablock, Lev
 
     try:
         iL1WardenObjective = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L1 WardenObjective", header=None))
-        iL1WardenObjectiveReactorWaves = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L1 WardenObjective ReactorWaves", header=None))
+        iL1WardenObjectiveReactorWaves = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L1 WardenObjective Lists", header=None))
         logger.debug("Found L1 WardenObjective")
     except (xlrd.biffh.XLRDError, ValueError):
         logger.debug("No L1 WardenObjective")
     try:
         iL2WardenObjective = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L2 WardenObjective", header=None))
-        iL2WardenObjectiveReactorWaves = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L2 WardenObjective ReactorWaves", header=None))
+        iL2WardenObjectiveReactorWaves = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L2 WardenObjective Lists", header=None))
         logger.debug("Found L2 WardenObjective")
     except (xlrd.biffh.XLRDError, ValueError):
         logger.debug("No L2 WardenObjective")
     try:
         iL3WardenObjective = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L3 WardenObjective", header=None))
-        iL3WardenObjectiveReactorWaves = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L3 WardenObjective ReactorWaves", header=None))
+        iL3WardenObjectiveReactorWaves = XlsxInterfacer.interface(pandas.read_excel(LevelXlsxFile, "L3 WardenObjective Lists", header=None))
         logger.debug("Found L3 WardenObjective")
     except (xlrd.biffh.XLRDError, ValueError):
         logger.debug("No L3 WardenObjective")

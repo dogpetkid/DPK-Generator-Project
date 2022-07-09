@@ -28,7 +28,7 @@ except (KeyError, TypeError):
 try:
     if type(config["Project"]["Version"]) != str:raise TypeError
 except (KeyError, TypeError):
-    config["Project"]["Version"] = "7.0"
+    config["Project"]["Version"] = "7.1"
 try:
     if type(config["Project"]["blockpath"]) != str:raise TypeError
 except (KeyError, TypeError):

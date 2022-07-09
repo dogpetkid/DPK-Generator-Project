@@ -329,28 +329,28 @@ def LayerData(interface:XlsxInterfacer.interface, data:dict, col:int, row:int):
     horizontal is true if the values are in the same row
     """
     try:
-        itercol,iterrow = col+5, row
+        itercol,iterrow = col, row
         for zone in data["ZonesWithBulkheadEntrance"]:
             # NOTE textmode may need a toggle in this file for whether the json should have text enums
             interface.write(EnumConverter.enumToIndex(ENUMFILE_eLocalZoneIndex, zone, textmode=True), itercol, iterrow)
             itercol+= 1
     except KeyError:pass
     try:
-        itercol,iterrow = col+5, row+1
+        itercol,iterrow = col, row+1
         for placement in data["BulkheadDoorControllerPlacements"]:
             BulkheadDoorPlacementData(interface, placement, itercol, iterrow, horizontal=False)
             itercol+= 1
     except KeyError:pass
-    ZonePlacementWeightsList(interface, data["BulkheadKeyPlacements"], col+5, row+7, horizontal=True)
+    ZonePlacementWeightsList(interface, data["BulkheadKeyPlacements"], col, row+7, horizontal=True)
     try:
-        interface.writeFromDict(col+5, row+13, data["ObjectiveData"], "DataBlockId")
-        writeEnumFromDict(ENUMFILE_eWardenObjectiveWinCondition, interface, col+5, row+14, data["ObjectiveData"], "WinCondition")
-        ZonePlacementWeightsList(interface, data["ObjectiveData"]["ZonePlacementDatas"], col+5, row+15, horizontal=True)
+        interface.writeFromDict(col, row+13, data["ObjectiveData"], "DataBlockId")
+        writeEnumFromDict(ENUMFILE_eWardenObjectiveWinCondition, interface, col, row+14, data["ObjectiveData"], "WinCondition")
+        ZonePlacementWeightsList(interface, data["ObjectiveData"]["ZonePlacementDatas"], col, row+15, horizontal=True)
     except KeyError:pass
     try:
-        interface.writeFromDict(col+5, row+22, data["ArtifactData"], "ArtifactAmountMulti")
-        writePublicNameFromDict(DATABLOCK_ArtifactDistribution, interface, col+5, row+23, data["ArtifactData"], "ArtifactLayerDistributionDataID")
-        itercol,iterrow = col+5, row+24
+        interface.writeFromDict(col, row+22, data["ArtifactData"], "ArtifactAmountMulti")
+        writePublicNameFromDict(DATABLOCK_ArtifactDistribution, interface, col, row+23, data["ArtifactData"], "ArtifactLayerDistributionDataID")
+        itercol,iterrow = col, row+24
         for distribution in data["ArtifactData"]["ArtifactZoneDistributions"]:
             ArtifactZoneDistribution(interface, distribution, itercol, iterrow, horizontal=False)
             itercol+= 1
@@ -410,7 +410,7 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
 
     iExpeditionInTier.writeFromDict(0, 21, ExpeditionInTierData, "LevelLayoutData")
     try:
-        LayerData(iExpeditionInTier, ExpeditionInTierData["MainLayerData"], 0, 36)
+        LayerData(iExpeditionInTier, ExpeditionInTierData["MainLayerData"], 5, 37)
     except KeyError:pass
 
     iExpeditionInTier.writeFromDict(2, 21, ExpeditionInTierData, "SecondaryLayerEnabled")
@@ -420,7 +420,7 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
         iExpeditionInTier.writeFromDict(3, 25, ExpeditionInTierData["BuildSecondaryFrom"], "Zone")
     except KeyError:pass
     try:
-        LayerData(iExpeditionInTier, ExpeditionInTierData["SecondaryLayerData"], 0, 66)
+        LayerData(iExpeditionInTier, ExpeditionInTierData["SecondaryLayerData"], 5, 67)
     except KeyError:pass
 
     iExpeditionInTier.writeFromDict(5, 21, ExpeditionInTierData, "ThirdLayerEnabled")
@@ -430,7 +430,7 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
         iExpeditionInTier.writeFromDict(6, 25, ExpeditionInTierData["BuildThirdFrom"], "Zone")
     except KeyError:pass
     try:
-        LayerData(iExpeditionInTier, ExpeditionInTierData["ThirdLayerData"], 0, 95)
+        LayerData(iExpeditionInTier, ExpeditionInTierData["ThirdLayerData"], 5, 97)
     except KeyError:pass
 
     try:
@@ -1199,7 +1199,7 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
         if id_ == 0:raise KeyError
         WardenObjectiveL1 = WardenObjectiveDataBlock.data["Blocks"][WardenObjectiveDataBlock.find(id_)]
         iWardenObjectiveL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective", header=None))
-        iWardenObjectiveReactorWavesL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective ReactorWaves", header=None))
+        iWardenObjectiveReactorWavesL1 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective Lists", header=None))
         logger.debug("Found L1 WardenObjective")
     except KeyError:
         logger.debug("No L1 WardenObjective")
@@ -1208,7 +1208,7 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
         if id_ == 0:raise KeyError
         WardenObjectiveL2 = WardenObjectiveDataBlock.data["Blocks"][WardenObjectiveDataBlock.find(id_)]
         iWardenObjectiveL2 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective", header=None))
-        iWardenObjectiveReactorWavesL2 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective ReactorWaves", header=None))
+        iWardenObjectiveReactorWavesL2 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective Lists", header=None))
         logger.debug("Found L2 WardenObjective")
     except KeyError:
         logger.debug("No L2 WardenObjective")
@@ -1217,7 +1217,7 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
         if id_ == 0:raise KeyError
         WardenObjectiveL3 = WardenObjectiveDataBlock.data["Blocks"][WardenObjectiveDataBlock.find(id_)]
         iWardenObjectiveL3 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective", header=None))
-        iWardenObjectiveReactorWavesL3 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective ReactorWaves", header=None))
+        iWardenObjectiveReactorWavesL3 = XlsxInterfacer.interface(pandas.read_excel(fxlsx, "LX WardenObjective Lists", header=None))
         logger.debug("Found L3 WardenObjective")
     except KeyError:
         logger.debug("No L3 WardenObjective")
@@ -1290,30 +1290,30 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
     #     workbook.copy_worksheet(workbook["a"]).title = "L3 ExpeditionZoneData Lists"
     # except NameError:pass
     # workbook["a"].title = "LX ExpeditionZoneData Lists"
-    # workbook["LX WardenObjective ReactorWaves"].title = "a" # this weird renaming is used to avoid UserWarnings by openpyxl because "LX ExpeditionZoneData Lists Copy" is too long
+    # workbook["LX WardenObjective Lists"].title = "a" # this weird renaming is used to avoid UserWarnings by openpyxl because "LX ExpeditionZoneData Lists Copy" is too long
     # try:
     #     _ = WardenObjectiveL1
     #     workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L1 WardenObjective"
-    #     workbook.copy_worksheet(workbook["a"]).title = "L1 WardenObjective ReactorWaves"
+    #     workbook.copy_worksheet(workbook["a"]).title = "L1 WardenObjective Lists"
     # except NameError:pass
     # try:
     #     _ = WardenObjectiveL2
     #     workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L2 WardenObjective"
-    #     workbook.copy_worksheet(workbook["a"]).title = "L2 WardenObjective ReactorWaves"
+    #     workbook.copy_worksheet(workbook["a"]).title = "L2 WardenObjective Lists"
     # except NameError:pass
     # try:
     #     _ = WardenObjectiveL3
     #     workbook.copy_worksheet(workbook["LX WardenObjective"]).title = "L3 WardenObjective"
-    #     workbook.copy_worksheet(workbook["a"]).title = "L3 WardenObjective ReactorWaves"
+    #     workbook.copy_worksheet(workbook["a"]).title = "L3 WardenObjective Lists"
     # except NameError:pass
-    # workbook["a"].title = "LX WardenObjective ReactorWaves"
+    # workbook["a"].title = "LX WardenObjective Lists"
 
     # NOTE openpyxl does not copy data validation, so lists that are longer than 20 cells could have the color formatting copied but would not copy the validation
     # as such, it is better the user see the cell has no formatting than think the cell does
     workbook.remove(workbook["LX ExpeditionZoneData"])
     workbook.remove(workbook["LX ExpeditionZoneData Lists"])
     workbook.remove(workbook["LX WardenObjective"])
-    workbook.remove(workbook["LX WardenObjective ReactorWaves"])
+    workbook.remove(workbook["LX WardenObjective Lists"])
 
     workbook.save(filename = writepath)
 
@@ -1341,17 +1341,17 @@ def UtilityJob(desiredReverse:str, RundownDataDataBlock:DatablockIO.datablock, L
     try:
         _ = WardenObjectiveL1
         iWardenObjectiveL1.save(writepath, "L1 WardenObjective")
-        iWardenObjectiveReactorWavesL1.save(writepath, "L1 WardenObjective ReactorWaves")
+        iWardenObjectiveReactorWavesL1.save(writepath, "L1 WardenObjective Lists")
     except NameError:pass
     try:
         _ = WardenObjectiveL2
         iWardenObjectiveL2.save(writepath, "L2 WardenObjective")
-        iWardenObjectiveReactorWavesL2.save(writepath, "L2 WardenObjective ReactorWaves")
+        iWardenObjectiveReactorWavesL2.save(writepath, "L2 WardenObjective Lists")
     except NameError:pass
     try:
         _ = WardenObjectiveL3
         iWardenObjectiveL3.save(writepath, "L3 WardenObjective")
-        iWardenObjectiveReactorWavesL3.save(writepath, "L3 WardenObjective ReactorWaves")
+        iWardenObjectiveReactorWavesL3.save(writepath, "L3 WardenObjective Lists")
     except NameError:pass
 
     logger.debug("Data written to sheets")
