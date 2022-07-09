@@ -812,7 +812,7 @@ class ReactorWaveData:
 
         # ReactorWaves
         row = startrow
-        while not(iWardenObjectiveReactorWaves.isEmpty(startcolReactorWaves, row)):
+        while not(iWardenObjectiveReactorWaves.isEmpty(startcolReactorWaves+1, row)): # The Wave No. column may have filled entries when the rest of the wave is not filled, so follow the Warmup
             wave = {}
             waveNo = iWardenObjectiveReactorWaves.read(str, startcolReactorWaves, row)
             iWardenObjectiveReactorWaves.readIntoDict(float, startcolReactorWaves+1, row, wave, "Warmup")
