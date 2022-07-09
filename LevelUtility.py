@@ -425,6 +425,9 @@ def ExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface):
 def LevelLayoutBlock(iExpeditionZoneData:XlsxInterfacer.interface, iExpeditionZoneDataLists:XlsxInterfacer.interface):
     """returns a Level Layout block (name, internalEnabled, and persistentID are set to defaults as their data comes from elsewhere)"""
     data = {}
+
+    iExpeditionZoneDataLists.readIntoDict(int, 0, 2, data, "ZoneAliasStart")
+
     data["Zones"] = []
     listdata = ExpeditionZoneDataLists(iExpeditionZoneDataLists)
 
@@ -681,11 +684,18 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     # NOTE textmode may need a toggle in this file for whether the json should have text enums
     data["LocalIndex"] =  EnumConverter.enumToIndex(ENUMFILE_eLocalZoneIndex, zonestr, textmode=True)
 
+    iExpeditionZoneData.readIntoDict(int, 1, row, data, "AliasOverride")
+    iExpeditionZoneData.readIntoDict(bool, 2, row, data, "OverrideAliasPrefix")
+    iExpeditionZoneData.readIntoDict(str, 3, row, data, "AliasPrefixOverride")
+    iExpeditionZoneData.readIntoDict(str, 4, row, data, "AliasPrefixShortOverride")
     iExpeditionZoneData.readIntoDict(int, 5, row, data, "SubSeed")
+    iExpeditionZoneData.readIntoDict(int, 6, row, data, "MarkerSubSeed")
+    iExpeditionZoneData.readIntoDict(int, 7, row, data, "LightsSubSeed")
     iExpeditionZoneData.readIntoDict(int, 8, row, data, "BulkheadDCScanSeed")
     iExpeditionZoneData.readIntoDict(str, 9, row, data, "SubComplex")
     EnumConverter.enumInDict(ENUMFILE_SubComplex, data, "SubComplex")
     iExpeditionZoneData.readIntoDict(str, 10, row, data, "CustomGeomorph")
+    iExpeditionZoneData.readIntoDict(bool, 11, row, data, "IgnoreRandomGeomorphRotation")
     data["CoverageMinMax"] = {}
     data["CoverageMinMax"]["x"] = iExpeditionZoneData.read(float, 12, row)
     data["CoverageMinMax"]["y"] = iExpeditionZoneData.read(float, 13, row)
@@ -714,8 +724,20 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     data["ProgressionPuzzleToEnter"]["ZonePlacementData"] = listdata.ProgressionPuzzleToEnterZonePlacementData(zonestr)
     iExpeditionZoneData.readIntoDict(str, colPuzzleType+4, row, data, "ChainedPuzzleToEnter")
     DatablockIO.nameInDict(DATABLOCK_ChainedPuzzle, data, "ChainedPuzzleToEnter")
+    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+5, row, data, "IsCheckpointDoor")
+    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+6, row, data, "PlayScannerVoiceAudio")
+    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+7, row, data, "SkipAutomaticProgressionObjective")
     iExpeditionZoneData.readIntoDict(str, colPuzzleType+8, row, data, "SecurityGateToEnter")
     EnumConverter.enumInDict(ENUMFILE_eSecurityGateType, data, "SecurityGateToEnter")
+    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+9, row, data, "UseStaticBioscanPointsInZone")
+    iExpeditionZoneData.readIntoDict(bool, colPuzzleType+10, row, data, "TurnOffAlarmOnTerminal")
+    data["TerminalPuzzleZone"] = {}
+    iExpeditionZoneData.readIntoDict(str, colPuzzleType+11, row, data["TerminalPuzzleZone"], "LocalIndex")
+    EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, data["TerminalPuzzleZone"], "LocalIndex")
+    iExpeditionZoneData.readIntoDict(str, colPuzzleType+12, row, data["TerminalPuzzleZone"], "SeedType")
+    EnumConverter.enumInDict(ENUMFILE_eSeedType, data["TerminalPuzzleZone"], "SeedType")
+    iExpeditionZoneData.readIntoDict(int, colPuzzleType+13, row, data["TerminalPuzzleZone"], "TerminalIndex")
+    iExpeditionZoneData.readIntoDict(int, colPuzzleType+14, row, data["TerminalPuzzleZone"], "StaticSeed")
     data["ActiveEnemyWave"] = {}
     iExpeditionZoneData.readIntoDict(bool, colPuzzleType+16, row, data["ActiveEnemyWave"], "HasActiveEnemyWave")
     iExpeditionZoneData.readIntoDict(str, colPuzzleType+17, row, data["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")

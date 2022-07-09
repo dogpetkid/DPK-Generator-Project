@@ -699,11 +699,18 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, ExpeditionZ
     colHSUClustersInZone = XlsxInterfacer.ctn("BH")
     colHealthMulti = XlsxInterfacer.ctn("BZ")
 
+    iExpeditionZoneData.writeFromDict(1, row, ExpeditionZoneData, "AliasOverride")
+    iExpeditionZoneData.writeFromDict(2, row, ExpeditionZoneData, "OverrideAliasPrefix")
+    iExpeditionZoneData.writeFromDict(3, row, ExpeditionZoneData, "AliasPrefixOverride")
+    iExpeditionZoneData.writeFromDict(4, row, ExpeditionZoneData, "AliasPrefixShortOverride")
     writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneData, 0, row, ExpeditionZoneData, "LocalIndex")
     iExpeditionZoneData.writeFromDict(5, row, ExpeditionZoneData, "SubSeed")
+    iExpeditionZoneData.writeFromDict(6, row, ExpeditionZoneData, "MarkerSubSeed")
+    iExpeditionZoneData.writeFromDict(7, row, ExpeditionZoneData, "LightsSubSeed")
     iExpeditionZoneData.writeFromDict(8, row, ExpeditionZoneData, "BulkheadDCScanSeed")
     writeEnumFromDict(ENUMFILE_SubComplex, iExpeditionZoneData, 9, row, ExpeditionZoneData, "SubComplex")
     iExpeditionZoneData.writeFromDict(10, row, ExpeditionZoneData, "CustomGeomorph")
+    iExpeditionZoneData.writeFromDict(11, row, ExpeditionZoneData, "IgnoreRandomGeomorphRotation")
     try:
         iExpeditionZoneData.writeFromDict(12, row, ExpeditionZoneData["CoverageMinMax"], "x")
         iExpeditionZoneData.writeFromDict(13, row, ExpeditionZoneData["CoverageMinMax"], "y")
@@ -727,7 +734,18 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, ExpeditionZ
         # ProgressionPuzzleToEnter's ZonePlacementData in lists
     except KeyError:pass
     writePublicNameFromDict(DATABLOCK_ChainedPuzzle, iExpeditionZoneData, colPuzzleType+4, row, ExpeditionZoneData, "ChainedPuzzleToEnter")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+5, row, ExpeditionZoneData, "IsCheckpointDoor")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+6, row, ExpeditionZoneData, "PlayScannerVoiceAudio")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+7, row, ExpeditionZoneData, "SkipAutomaticProgressionObjective")
     writeEnumFromDict(ENUMFILE_eSecurityGateType, iExpeditionZoneData, colPuzzleType+8, row, ExpeditionZoneData, "SecurityGateToEnter")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+9, row, ExpeditionZoneData, "UseStaticBioscanPointsInZone")
+    iExpeditionZoneData.writeFromDict(colPuzzleType+10, row, ExpeditionZoneData, "TurnOffAlarmOnTerminal")
+    try:
+        writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneData, colPuzzleType+11, row, ExpeditionZoneData["TerminalPuzzleZone"], "LocalIndex")
+        writeEnumFromDict(ENUMFILE_eSeedType, iExpeditionZoneData, colPuzzleType+12, row, ExpeditionZoneData["TerminalPuzzleZone"], "SeedType")
+        iExpeditionZoneData.writeFromDict(colPuzzleType+13, row, ExpeditionZoneData["TerminalPuzzleZone"], "TerminalIndex")
+        iExpeditionZoneData.writeFromDict(colPuzzleType+14, row, ExpeditionZoneData["TerminalPuzzleZone"], "StaticSeed")
+    except KeyError:pass
     try:
         iExpeditionZoneData.writeFromDict(colPuzzleType+16, row, ExpeditionZoneData["ActiveEnemyWave"], "HasActiveEnemyWave")
         writePublicNameFromDict(DATABLOCK_EnemyGroup, iExpeditionZoneData, colPuzzleType+17, row, ExpeditionZoneData["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")
@@ -784,6 +802,8 @@ def framesLevelLayoutBlock(iExpeditionZoneData:XlsxInterfacer.interface, iExpedi
     """
 
     ExpeditionZoneDataLists(LevelLayout).write(iExpeditionZoneDataLists)
+
+    iExpeditionZoneDataLists.writeFromDict(0, 2, LevelLayout, "ZoneAliasStart")
 
     row = 2
 
