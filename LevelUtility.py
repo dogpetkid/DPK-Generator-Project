@@ -1089,7 +1089,7 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     iWardenObjective.readIntoDict(float, 1, rowWavesOnElevatorLand+47, data, "FogTransitionDurationOnElevatorLand")
     data["WavesOnActivate"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+52, horizontal=True)
     data["EventsOnActivate"] = []
-    col,row = 2,rowWavesOnElevatorLand+60
+    col,row = 3,rowWavesOnElevatorLand+60
     while not(iWardenObjective.isEmpty(col, row)):
         data["EventsOnActivate"].append(WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False))
         col+= 1
@@ -1098,7 +1098,7 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+104, data, "WaveOnGotoWinTrigger")
     EnumConverter.enumInDict(ENUMFILE_eRetrieveExitWaveTrigger, data, "WaveOnGotoWinTrigger")
     data["EventsOnGotoWin"] = []
-    col,row = 2,rowWavesOnElevatorLand+112
+    col,row = 3,rowWavesOnElevatorLand+112
     while not(iWardenObjective.isEmpty(col, row)):
         data["EventsOnGotoWin"].append(WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False))
         col+= 1
@@ -1154,7 +1154,7 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     iWardenObjective.readIntoDict(bool, 1, rowActivateHSU_ItemFromStart+5, data, "ActivateHSU_ObjectiveCompleteAfterInsertion")
     iWardenObjective.readIntoDict(bool, 1, rowActivateHSU_ItemFromStart+6, data, "ActivateHSU_RequireItemAfterActivationInExitScan")
     data["ActivateHSU_Events"] = []
-    col,row = 2,rowActivateHSU_ItemFromStart+9
+    col,row = 3,rowActivateHSU_ItemFromStart+9
     while not(iWardenObjective.isEmpty(col,row)):
         data["ActivateHSU_Events"].append(WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False))
         col+= 1

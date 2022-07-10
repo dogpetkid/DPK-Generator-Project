@@ -1077,7 +1077,7 @@ def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWarde
         GenericEnemyWaveDataList(iWardenObjective, WardenObjective["WavesOnActivate"], 2, rowWavesOnElevatorLand+52, horizontal=True)
     except KeyError:pass
     try:
-        itercol,iterrow = 2, rowWavesOnElevatorLand+60
+        itercol,iterrow = 3, rowWavesOnElevatorLand+60
         for event in WardenObjective["EventsOnActivate"]:
             WardenObjectiveEventData(iWardenObjective, event, itercol, iterrow, horizontal=False)
             itercol+= 1
@@ -1088,7 +1088,7 @@ def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWarde
     except KeyError:pass
     writeEnumFromDict(ENUMFILE_eRetrieveExitWaveTrigger, iWardenObjective, 1, rowWavesOnElevatorLand+104, WardenObjective, "WaveOnGotoWinTrigger")
     try:
-        itercol,iterrow = 2, rowWavesOnElevatorLand+112
+        itercol,iterrow = 3, rowWavesOnElevatorLand+112
         for event in WardenObjective["EventsOnGotoWin"]:
             WardenObjectiveEventData(iWardenObjective, event, itercol, iterrow, horizontal=False)
             itercol+= 1
@@ -1143,7 +1143,7 @@ def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWarde
     iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+5, WardenObjective, "ActivateHSU_ObjectiveCompleteAfterInsertion")
     iWardenObjective.writeFromDict(1, rowActivateHSU_ItemFromStart+6, WardenObjective, "ActivateHSU_RequireItemAfterActivationInExitScan")
     try:
-        itercol,iterrow = 2, rowActivateHSU_ItemFromStart+9
+        itercol,iterrow = 3, rowActivateHSU_ItemFromStart+9
         for event in WardenObjective["ActivateHSU_Events"]:
             WardenObjectiveEventData(iWardenObjective, event, itercol, iterrow, horizontal=False)
     except KeyError:pass
