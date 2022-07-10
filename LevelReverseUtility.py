@@ -304,6 +304,16 @@ def WardenObjectiveEventData(interface:XlsxInterfacer.interface, data:dict, col:
     interface.writeFromDict(col+15*horizontal, row+15*(not horizontal), data, "SoundID")
     # TODO convert sound id to name of sound
 
+def WorldEventFromSourceData(interface:XlsxInterfacer.interface, data:dict, col:int, row:int, horizontal:bool=False):
+    """
+    add WorldEventFromSourceData to the specified interface
+    col and row define the upper left value (not header) \n
+    horizontal is true if the values are in the same row
+    """
+    interface.writeFromDict(col, row, data, "WorldEventTriggerObjectFilter")
+    # piggyback off of WardenObjectiveEventData because it is a subset of WorldEventFromSourceData
+    WardenObjectiveEventData(interface, data, col+horizontal, row+(not horizontal), horizontal=horizontal)
+
 def GeneralFogDataStep(interface:XlsxInterfacer.interface, data:dict, col:int, row:int, horizontal:bool=False):
     """
     add GeneralFogDataStep to the specified interface
@@ -444,9 +454,19 @@ class ExpeditionZoneDataLists:
         """Generates numerous stubs to be iterated through and written to the interface"""
 
         self.stubEventsOnEnter = []
+        self.stubEventsOnPortalWarp = []
+        self.stubEventsOnApproachDoor = []
+        self.stubEventsOnUnlockDoor = []
+        self.stubEventsOnOpenDoor = []
+        self.stubEventsOnDoorScanStart = []
+        self.stubEventsOnDoorScanDone = []
+        self.stubEventsOnBossDeath = []
+        self.stubEventsOnTrigger = []
         self.stubProgressionPuzzleToEnter = []
+        self.stubEventsOnTerminalDeactivateAlarm = []
         self.stubEnemySpawningInZone = []
         self.stubEnemyRespawnExcludeList = []
+        self.stubSpecificPickupSpawningDatas = []
         self.stubTerminalPlacements = []
         self.stubLocalLogFiles = []
         groupedLocalLogFiles = []
@@ -465,10 +485,64 @@ class ExpeditionZoneDataLists:
                     self.stubEventsOnEnter.append(dict({"ZoneIndex":zone},**e))
             except KeyError:pass
 
+            # EventsOnPortalWarp
+            try:
+                for e in ZoneData["EventsOnPortalWarp"]:
+                    self.stubEventsOnPortalWarp.append(dict({"ZoneIndex":zone},**e))
+            except KeyError:pass
+
+            # EventsOnApproachDoor
+            try:
+                for e in ZoneData["EventsOnApproachDoor"]:
+                    self.stubEventsOnApproachDoor.append(dict({"ZoneIndex":zone},**e))
+            except KeyError:pass
+
+            # EventsOnUnlockDoor
+            try:
+                for e in ZoneData["EventsOnUnlockDoor"]:
+                    self.stubEventsOnUnlockDoor.append(dict({"ZoneIndex":zone},**e))
+            except KeyError:pass
+
+            # EventsOnOpenDoor
+            try:
+                for e in ZoneData["EventsOnOpenDoor"]:
+                    self.stubEventsOnOpenDoor.append(dict({"ZoneIndex":zone},**e))
+            except KeyError:pass
+
+            # EventsOnDoorScanStart
+            try:
+                for e in ZoneData["EventsOnDoorScanStart"]:
+                    self.stubEventsOnDoorScanStart.append(dict({"ZoneIndex":zone},**e))
+            except KeyError:pass
+
+            # EventsOnDoorScanDone
+            try:
+                for e in ZoneData["EventsOnDoorScanDone"]:
+                    self.stubEventsOnDoorScanDone.append(dict({"ZoneIndex":zone},**e))
+            except KeyError:pass
+
+            # EventsOnBossDeath
+            try:
+                for e in ZoneData["EventsOnBossDeath"]:
+                    self.stubEventsOnBossDeath.append(dict({"ZoneIndex":zone},**e))
+            except KeyError:pass
+
+            # EventsOnTrigger
+            try:
+                for e in ZoneData["EventsOnTrigger"]:
+                    self.stubEventsOnTrigger.append(dict({"ZoneIndex":zone},**e))
+            except KeyError:pass
+
             # ProgressionPuzzleToEnter
             try:
                 for e in ZoneData["ProgressionPuzzleToEnter"]["ZonePlacementData"]:
                     self.stubProgressionPuzzleToEnter.append({"ZoneIndex":zone, "ZonePlacementData":e})
+            except KeyError:pass
+
+            # EventsOnTerminalDeactivateAlarm
+            try:
+                for e in ZoneData["EventsOnTerminalDeactivateAlarm"]:
+                    self.stubEventsOnTerminalDeactivateAlarm.append(dict({"ZoneIndex":zone},**e))
             except KeyError:pass
 
             # EnemySpawningInZone
@@ -482,6 +556,12 @@ class ExpeditionZoneDataLists:
             try:
                 for e in ZoneData["EnemyRespawnExcludeList"]: # e is an enum, so...
                     self.stubEnemyRespawnExcludeList.append({"ZoneIndex":zone, "value":e}) # it should be added as a value instead of adding dicts together
+            except KeyError:pass
+
+            # SpecificPickupSpawningDatas
+            try:
+                for e in ZoneData["SpecificPickupSpawningDatas"]:
+                    self.stubSpecificPickupSpawningDatas.append(dict({"ZoneIndex":zone},**e))
             except KeyError:pass
 
             # PowerGeneratorPlacements
@@ -587,6 +667,62 @@ class ExpeditionZoneDataLists:
 
             row+= 1
 
+        # EventsOnPortalWarp
+        row = startrow
+        for Snippet in self.stubEventsOnPortalWarp:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEventsOnPortalWarp, row, Snippet, "ZoneIndex")
+            WardenObjectiveEventData(iExpeditionZoneDataLists, Snippet, startcolEventsOnPortalWarp+1, row, horizontal=True)
+            row+= 1
+
+        # EventsOnApproachDoor
+        row = startrow
+        for Snippet in self.stubEventsOnApproachDoor:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEventsOnApproachDoor, row, Snippet, "ZoneIndex")
+            WardenObjectiveEventData(iExpeditionZoneDataLists, Snippet, startcolEventsOnApproachDoor+1, row, horizontal=True)
+            row+= 1
+
+        # EventsOnUnlockDoor
+        row = startrow
+        for Snippet in self.stubEventsOnUnlockDoor:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEventsOnUnlockDoor, row, Snippet, "ZoneIndex")
+            WardenObjectiveEventData(iExpeditionZoneDataLists, Snippet, startcolEventsOnUnlockDoor+1, row, horizontal=True)
+            row+= 1
+
+        # EventsOnOpenDoor
+        row = startrow
+        for Snippet in self.stubEventsOnOpenDoor:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEventsOnOpenDoor, row, Snippet, "ZoneIndex")
+            WardenObjectiveEventData(iExpeditionZoneDataLists, Snippet, startcolEventsOnOpenDoor+1, row, horizontal=True)
+            row+= 1
+
+        # EventsOnDoorScanStart
+        row = startrow
+        for Snippet in self.stubEventsOnDoorScanStart:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEventsOnDoorScanStart, row, Snippet, "ZoneIndex")
+            WardenObjectiveEventData(iExpeditionZoneDataLists, Snippet, startcolEventsOnDoorScanStart+1, row, horizontal=True)
+            row+= 1
+
+        # EventsOnDoorScanDone
+        row = startrow
+        for Snippet in self.stubEventsOnDoorScanDone:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEventsOnDoorScanDone, row, Snippet, "ZoneIndex")
+            WardenObjectiveEventData(iExpeditionZoneDataLists, Snippet, startcolEventsOnDoorScanDone+1, row, horizontal=True)
+            row+= 1
+
+        # EventsOnBossDeath
+        row = startrow
+        for Snippet in self.stubEventsOnBossDeath:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEventsOnBossDeath, row, Snippet, "ZoneIndex")
+            WardenObjectiveEventData(iExpeditionZoneDataLists, Snippet, startcolEventsOnBossDeath+1, row, horizontal=True)
+            row+= 1
+
+        # EventsOnTrigger
+        row = startrow
+        for Snippet in self.stubEventsOnTrigger:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEventsOnTrigger, row, Snippet, "ZoneIndex")
+            WorldEventFromSourceData(iExpeditionZoneDataLists, Snippet, startcolEventsOnTrigger+1, row, horizontal=True)
+            row+= 1
+
         row = startrow
         # ProgressionPuzzleToEnter
         for Snippet in self.stubProgressionPuzzleToEnter:
@@ -596,6 +732,13 @@ class ExpeditionZoneDataLists:
                 ZonePlacementData(iExpeditionZoneDataLists, Snippet["ZonePlacementData"], startcolProgressionPuzzleToEnter+2, row, horizontal=True)
             except KeyError:pass
 
+            row+= 1
+
+        # EventsOnTerminalDeactivateAlarm
+        row = startrow
+        for Snippet in self.stubEventsOnTerminalDeactivateAlarm:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEventsOnTerminalDeactivateAlarm, row, Snippet, "ZoneIndex")
+            WardenObjectiveEventData(iExpeditionZoneDataLists, Snippet, startcolEventsOnTerminalDeactivateAlarm+1, row, horizontal=True)
             row+= 1
 
         row = startrow
@@ -617,6 +760,14 @@ class ExpeditionZoneDataLists:
         for Snippet in self.stubEnemyRespawnExcludeList:
             writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEnemyRespawnExcludeList, row, Snippet, "ZoneIndex")
             writePublicNameFromDict(DATABLOCK_Enemy, iExpeditionZoneDataLists, startcolEnemyRespawnExcludeList+1, row, Snippet, "value")
+            row+= 1
+
+        # SpecificPickupSpawningDatas
+        row = startrow
+        for Snippet in self.stubSpecificPickupSpawningDatas:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolSpecificPickupSpawningDatas, row, Snippet, "ZoneIndex")
+            writePublicNameFromDict(DATABLOCK_Item, iExpeditionZoneDataLists, startcolSpecificPickupSpawningDatas+1, row, Snippet, "PickupToSpawn")
+            iExpeditionZoneDataLists.writeFromDict(startcolSpecificPickupSpawningDatas+2, row, Snippet, "WorldEventObjectFilter")
             row+= 1
 
         row = startrow

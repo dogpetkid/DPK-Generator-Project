@@ -312,6 +312,18 @@ def WardenObjectiveEventData(interface:XlsxInterfacer.interface, col:int, row:in
     # TODO convert sound placeholders
     return data
 
+def WorldEventFromSourceData(interface:XlsxInterfacer.interface, col:int, row:int, horizontal:bool=False):
+    """
+    return a WorldEventFromSourceData dict \n
+    col and row define the upper left value (not header) \n
+    horizontal is true if the values are in the same row
+    """
+    data = {}
+    interface.readIntoDict(str, col, row, data, "WorldEventTriggerObjectFilter")
+    # piggyback off of WardenObjectiveEventData because it is a subset of WorldEventFromSourceData
+    data.update(WardenObjectiveEventData(interface, col+horizontal, row+(not horizontal), horizontal=horizontal))
+    return data
+
 def GeneralFogDataStep(interface:XlsxInterfacer.interface, col:int, row:int, horizontal:bool=False):
     """
     return a GeneralFogDataStep dict \n
@@ -476,9 +488,19 @@ class ExpeditionZoneDataLists:
         startcolStaticSpawnDataContainers =         XlsxInterfacer.ctn("ST")
 
         self.stubEventsOnEnter = {}
+        self.stubEventsOnPortalWarp = {}
+        self.stubEventsOnApproachDoor = {}
+        self.stubEventsOnUnlockDoor = {}
+        self.stubEventsOnOpenDoor = {}
+        self.stubEventsOnDoorScanStart = {}
+        self.stubEventsOnDoorScanDone = {}
+        self.stubEventsOnBossDeath = {}
+        self.stubEventsOnTrigger = {}
         self.stubProgressionPuzzleToEnter = {}
+        self.stubEventsOnTerminalDeactivateAlarm = {}
         self.stubEnemySpawningInZone = {}
         self.stubEnemyRespawnExcludeList = {}
+        self.stubSpecificPickupSpawningDatas = {}
         self.stubTerminalPlacements = {}
         self.stubLocalLogFiles = {}
         self.stubPowerGeneratorPlacements = {}
@@ -506,11 +528,92 @@ class ExpeditionZoneDataLists:
             row+= 1
 
         row = startrow
+        # EventsOnPortalWarp
+        while not(iExpeditionZoneDataLists.isEmpty(startcolEventsOnPortalWarp,row)):
+            Snippet = {}
+            Snippet.update(WardenObjectiveEventData(iExpeditionZoneDataLists, startcolCommandEvents+1, row, horizontal=True))
+            EnsureKeyInDictArray(self.stubEventsOnEnter, iExpeditionZoneDataLists.read(str, startcolEventsOnPortalWarp, row))
+            self.stubEventsOnEnter[iExpeditionZoneDataLists.read(str, startcolEventsOnPortalWarp, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
+        # EventsOnApproachDoor
+        while not(iExpeditionZoneDataLists.isEmpty(startcolEventsOnApproachDoor,row)):
+            Snippet = {}
+            Snippet.update(WardenObjectiveEventData(iExpeditionZoneDataLists, startcolEventsOnApproachDoor+1, row, horizontal=True))
+            EnsureKeyInDictArray(self.stubEventsOnApproachDoor, iExpeditionZoneDataLists.read(str, startcolEventsOnApproachDoor, row))
+            self.stubEventsOnApproachDoor[iExpeditionZoneDataLists.read(str, startcolEventsOnApproachDoor, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
+        # EventsOnUnlockDoor
+        while not(iExpeditionZoneDataLists.isEmpty(startcolEventsOnUnlockDoor,row)):
+            Snippet = {}
+            Snippet.update(WardenObjectiveEventData(iExpeditionZoneDataLists, startcolEventsOnUnlockDoor+1, row, horizontal=True))
+            EnsureKeyInDictArray(self.stubEventsOnUnlockDoor, iExpeditionZoneDataLists.read(str, startcolEventsOnUnlockDoor, row))
+            self.stubEventsOnUnlockDoor[iExpeditionZoneDataLists.read(str, startcolEventsOnUnlockDoor, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
+        # EventsOnOpenDoor
+        while not(iExpeditionZoneDataLists.isEmpty(startcolEventsOnOpenDoor,row)):
+            Snippet = {}
+            Snippet.update(WardenObjectiveEventData(iExpeditionZoneDataLists, startcolEventsOnOpenDoor+1, row, horizontal=True))
+            EnsureKeyInDictArray(self.stubEventsOnOpenDoor, iExpeditionZoneDataLists.read(str, startcolEventsOnOpenDoor, row))
+            self.stubEventsOnOpenDoor[iExpeditionZoneDataLists.read(str, startcolEventsOnOpenDoor, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
+        # EventsOnDoorScanStart
+        while not(iExpeditionZoneDataLists.isEmpty(startcolEventsOnDoorScanStart,row)):
+            Snippet = {}
+            Snippet.update(WardenObjectiveEventData(iExpeditionZoneDataLists, startcolEventsOnDoorScanStart+1, row, horizontal=True))
+            EnsureKeyInDictArray(self.stubEventsOnDoorScanStart, iExpeditionZoneDataLists.read(str, startcolEventsOnDoorScanStart, row))
+            self.stubEventsOnDoorScanStart[iExpeditionZoneDataLists.read(str, startcolEventsOnDoorScanStart, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
+        # EventsOnDoorScanDone
+        while not(iExpeditionZoneDataLists.isEmpty(startcolEventsOnDoorScanDone,row)):
+            Snippet = {}
+            Snippet.update(WardenObjectiveEventData(iExpeditionZoneDataLists, startcolEventsOnDoorScanDone+1, row, horizontal=True))
+            EnsureKeyInDictArray(self.stubEventsOnDoorScanDone, iExpeditionZoneDataLists.read(str, startcolEventsOnDoorScanDone, row))
+            self.stubEventsOnDoorScanDone[iExpeditionZoneDataLists.read(str, startcolEventsOnDoorScanDone, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
+        # EventsOnBossDeath
+        while not(iExpeditionZoneDataLists.isEmpty(startcolEventsOnBossDeath,row)):
+            Snippet = {}
+            Snippet.update(WardenObjectiveEventData(iExpeditionZoneDataLists, startcolEventsOnBossDeath+1, row, horizontal=True))
+            EnsureKeyInDictArray(self.stubEventsOnBossDeath, iExpeditionZoneDataLists.read(str, startcolEventsOnBossDeath, row))
+            self.stubEventsOnBossDeath[iExpeditionZoneDataLists.read(str, startcolEventsOnBossDeath, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
+        # EventsOnTrigger
+        while not(iExpeditionZoneDataLists.isEmpty(startcolEventsOnTrigger,row)):
+            Snippet = {}
+            Snippet.update(WorldEventFromSourceData(iExpeditionZoneDataLists, startcolEventsOnTrigger+1, row, horizontal=True))
+            EnsureKeyInDictArray(self.stubEventsOnTrigger, iExpeditionZoneDataLists.read(str, startcolEventsOnTrigger, row))
+            self.stubEventsOnTrigger[iExpeditionZoneDataLists.read(str, startcolEventsOnTrigger, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
         # ProgressionPuzzleToEnter
         while not(iExpeditionZoneDataLists.isEmpty(startcolProgressionPuzzleToEnter,row)):
             Snippet = ZonePlacementData(iExpeditionZoneDataLists, startcolProgressionPuzzleToEnter+2,row, horizontal=True)
             EnsureKeyInDictArray(self.stubProgressionPuzzleToEnter, iExpeditionZoneDataLists.read(str, startcolProgressionPuzzleToEnter, row))
             self.stubProgressionPuzzleToEnter[iExpeditionZoneDataLists.read(str, startcolProgressionPuzzleToEnter, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
+        # EventsOnTerminalDeactivateAlarm
+        while not(iExpeditionZoneDataLists.isEmpty(startcolEventsOnTerminalDeactivateAlarm,row)):
+            Snippet = {}
+            Snippet.update(WardenObjectiveEventData(iExpeditionZoneDataLists, startcolEventsOnTerminalDeactivateAlarm+1, row, horizontal=True))
+            EnsureKeyInDictArray(self.stubEventsOnTerminalDeactivateAlarm, iExpeditionZoneDataLists.read(str, startcolEventsOnTerminalDeactivateAlarm, row))
+            self.stubEventsOnTerminalDeactivateAlarm[iExpeditionZoneDataLists.read(str, startcolEventsOnTerminalDeactivateAlarm, row)].append(Snippet)
             row+= 1
 
         row = startrow
@@ -541,6 +644,17 @@ class ExpeditionZoneDataLists:
                 self.stubEnemyRespawnExcludeList[iExpeditionZoneDataLists.read(str, startcolEnemyRespawnExcludeList, row)].append(Snippet["value"])
             except KeyError:
                 pass
+            row+= 1
+
+        row = startrow
+        # SpecificPickupSpawningDatas
+        while not(iExpeditionZoneDataLists.isEmpty(startcolSpecificPickupSpawningDatas,row)):
+            Snippet = {}
+            iExpeditionZoneDataLists.readIntoDict(str, startcolSpecificPickupSpawningDatas+1, row, Snippet, "PickupToSpawn")
+            DatablockIO.nameInDict(DATABLOCK_Item, Snippet, "PickupToSpawn")
+            iExpeditionZoneDataLists.readIntoDict(str, startcolSpecificPickupSpawningDatas+2, row, Snippet, "WorldEventObjectFilter")
+            EnsureKeyInDictArray(self.stubSpecificPickupSpawningDatas, iExpeditionZoneDataLists.read(str, startcolSpecificPickupSpawningDatas, row))
+            self.stubSpecificPickupSpawningDatas[iExpeditionZoneDataLists.read(str, startcolSpecificPickupSpawningDatas, row)].append(Snippet)
             row+= 1
 
         row = startrow
@@ -622,9 +736,63 @@ class ExpeditionZoneDataLists:
         except KeyError:pass
         return []
 
+    def EventsOnPortalWarp(self, identifier:str):
+        """returns the EventsOnPortalWarp array for a specific zone"""
+        try:return self.stubEventsOnPortalWarp[identifier]
+        except KeyError:pass
+        return []
+
+    def EventsOnApproachDoor(self, identifier:str):
+        """returns the EventsOnApproachDoor array for a specific zone"""
+        try:return self.stubEventsOnApproachDoor[identifier]
+        except KeyError:pass
+        return []
+
+    def EventsOnUnlockDoor(self, identifier:str):
+        """returns the EventsOnUnlockDoor array for a specific zone"""
+        try:return self.stubEventsOnUnlockDoor[identifier]
+        except KeyError:pass
+        return []
+
+    def EventsOnOpenDoor(self, identifier:str):
+        """returns the EventsOnOpenDoor array for a specific zone"""
+        try:return self.stubEventsOnOpenDoor[identifier]
+        except KeyError:pass
+        return []
+
+    def EventsOnDoorScanStart(self, identifier:str):
+        """returns the EventsOnDoorScanStart array for a specific zone"""
+        try:return self.stubEventsOnDoorScanStart[identifier]
+        except KeyError:pass
+        return []
+
+    def EventsOnDoorScanDone(self, identifier:str):
+        """returns the EventsOnDoorScanDone array for a specific zone"""
+        try:return self.stubEventsOnDoorScanDone[identifier]
+        except KeyError:pass
+        return []
+
+    def EventsOnBossDeath(self, identifier:str):
+        """returns the EventsOnBossDeath array for a specific zone"""
+        try:return self.stubEventsOnBossDeath[identifier]
+        except KeyError:pass
+        return []
+
+    def EventsOnTrigger(self, identifier:str):
+        """returns the EventsOnTrigger array for a specific zone"""
+        try:return self.stubEventsOnTrigger[identifier]
+        except KeyError:pass
+        return []
+
     def ProgressionPuzzleToEnterZonePlacementData(self, identifier:str):
         """returns the ZonePlacementData for the ProgressionPuzzleToEnter for a specific zone"""
         try:return self.stubProgressionPuzzleToEnter[identifier]
+        except KeyError:pass
+        return []
+
+    def EventsOnTerminalDeactivateAlarm(self, identifier:str):
+        """returns the EventsOnTerminalDeactivateAlarm array for a specific zone"""
+        try:return self.stubEventsOnTerminalDeactivateAlarm[identifier]
         except KeyError:pass
         return []
 
@@ -637,6 +805,12 @@ class ExpeditionZoneDataLists:
     def EnemyRespawnExcludeList(self, identifier:str):
         """returns the EnemyRespawnExcludeList array for a specific zone"""
         try:return self.stubEnemyRespawnExcludeList[identifier]
+        except KeyError:pass
+        return []
+
+    def SpecificPickupSpawningDatas(self, identifier:str):
+        """returns the SpecificPickupSpawningDatas array for a specific zone"""
+        try:return self.stubSpecificPickupSpawningDatas[identifier]
         except KeyError:pass
         return []
 
@@ -715,6 +889,14 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     EnumConverter.enumInDict(ENUMFILE_eWantedZoneHeighs, data["AltitudeData"], "AllowedZoneAltitude")
     iExpeditionZoneData.readIntoDict(float, 21, row, data["AltitudeData"], "ChanceToChange")
     data["EventsOnEnter"] = listdata.EventsOnEnter(zonestr)
+    data["EventsOnPortalWarp"] = listdata.EventsOnPortalWarp(zonestr)
+    data["EventsOnApproachDoor"] = listdata.EventsOnApproachDoor(zonestr)
+    data["EventsOnUnlockDoor"] = listdata.EventsOnUnlockDoor(zonestr)
+    data["EventsOnOpenDoor"] = listdata.EventsOnOpenDoor(zonestr)
+    data["EventsOnDoorScanStart"] = listdata.EventsOnDoorScanStart(zonestr)
+    data["EventsOnDoorScanDone"] = listdata.EventsOnDoorScanDone(zonestr)
+    data["EventsOnBossDeath"] = listdata.EventsOnBossDeath(zonestr)
+    data["EventsOnTrigger"] = listdata.EventsOnTrigger(zonestr)
 
     data["ProgressionPuzzleToEnter"] = {}
     iExpeditionZoneData.readIntoDict(str, colPuzzleType, row, data["ProgressionPuzzleToEnter"], "PuzzleType")
@@ -738,6 +920,7 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     EnumConverter.enumInDict(ENUMFILE_eSeedType, data["TerminalPuzzleZone"], "SeedType")
     iExpeditionZoneData.readIntoDict(int, colPuzzleType+13, row, data["TerminalPuzzleZone"], "TerminalIndex")
     iExpeditionZoneData.readIntoDict(int, colPuzzleType+14, row, data["TerminalPuzzleZone"], "StaticSeed")
+    data["EventsOnTerminalDeactivateAlarm"] = listdata.EventsOnTerminalDeactivateAlarm(zonestr)
     data["ActiveEnemyWave"] = {}
     iExpeditionZoneData.readIntoDict(bool, colPuzzleType+16, row, data["ActiveEnemyWave"], "HasActiveEnemyWave")
     iExpeditionZoneData.readIntoDict(str, colPuzzleType+17, row, data["ActiveEnemyWave"], "EnemyGroupInfrontOfDoor")
@@ -772,6 +955,7 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     DatablockIO.nameInDict(DATABLOCK_ConsumableDistribution, data, "ConsumableDistributionInZone")
     iExpeditionZoneData.readIntoDict(str, colHSUClustersInZone+12, row, data, "BigPickupDistributionInZone")
     DatablockIO.nameInDict(DATABLOCK_BigPickupDistribution, data, "BigPickupDistributionInZone")
+    data["SpecificPickupSpawningDatas"] = listdata.SpecificPickupSpawningDatas(zonestr)
     data["TerminalPlacements"] = listdata.TerminalPlacements(zonestr)
     iExpeditionZoneData.readIntoDict(bool, colHSUClustersInZone+15, row, data, "ForbidTerminalsInZone")
     data["PowerGeneratorPlacements"] = listdata.PowerGeneratorPlacements(zonestr)
