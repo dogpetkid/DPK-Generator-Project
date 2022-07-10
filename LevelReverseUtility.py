@@ -263,9 +263,10 @@ def GenericEnemyWaveData(interface:XlsxInterfacer.interface, data:dict, col:int,
     """
     writePublicNameFromDict(DATABLOCK_SurvivalWaveSettings, interface, col, row, data, "WaveSettings")
     writePublicNameFromDict(DATABLOCK_SurvivalWavePopulation, interface, col+horizontal, row+(not horizontal), data, "WavePopulation")
-    interface.writeFromDict(col+2*horizontal, row+2*(not horizontal), data, "SpawnDelay")
-    interface.writeFromDict(col+3*horizontal, row+3*(not horizontal), data, "TriggerAlarm")
-    interface.writeFromDict(col+4*horizontal, row+4*(not horizontal), data, "IntelMessage")
+    interface.writeFromDict(col+2*horizontal, row+2*(not horizontal), data, "AreaDistance")
+    interface.writeFromDict(col+3*horizontal, row+3*(not horizontal), data, "SpawnDelay")
+    interface.writeFromDict(col+4*horizontal, row+4*(not horizontal), data, "TriggerAlarm")
+    interface.writeFromDict(col+5*horizontal, row+5*(not horizontal), data, "IntelMessage")
 
 def GenericEnemyWaveDataList(interface:XlsxInterfacer.interface, data:typing.List[dict], col:int, row:int, horizontal:bool=True):
     """
@@ -296,13 +297,42 @@ def WardenObjectiveEventData(interface:XlsxInterfacer.interface, data:dict, col:
     horizontal is true if the values are in the same row
     """
     writeEnumFromDict(ENUMFILE_eWardenObjectiveEventType, interface, col, row, data, "Type")
+    try:
+        interface.writeFromDict(col+horizontal, row+(not horizontal), data["Condition"], "ConditionIndex")
+        interface.writeFromDict(col+2*horizontal, row+2*(not horizontal), data["Condition"], "IsTrue")
+    except KeyError:pass
     writeEnumFromDict(ENUMFILE_eWardenObjectiveEventTrigger, interface, col+3*horizontal, row+3*(not horizontal), data, "Trigger")
+    writePublicNameFromDict(DATABLOCK_ChainedPuzzle, interface, col+4*horizontal, row+4*(not horizontal), data, "ChainPuzzle")
+    interface.writeFromDict(col+5*horizontal, row+5*(not horizontal), data, "UseStaticBioscanPoints")
     writeEnumFromDict(ENUMFILE_LG_LayerType, interface, col+6*horizontal, row+6*(not horizontal), data, "Layer")
+    writeEnumFromDict(ENUMFILE_eDimensionIndex, interface, col+7*horizontal, row+7*(not horizontal), data, "DimensionIndex")
     writeEnumFromDict(ENUMFILE_eLocalZoneIndex, interface, col+8*horizontal, row+8*(not horizontal), data, "LocalIndex")
     interface.writeFromDict(col+9*horizontal, row+9*(not horizontal), data, "Delay")
+    interface.writeFromDict(col+10*horizontal, row+10*(not horizontal), data, "Duration")
+    interface.writeFromDict(col+11*horizontal, row+11*(not horizontal), data, "ClearDimension")
     interface.writeFromDict(col+12*horizontal, row+12*(not horizontal), data, "WardenIntel")
+    interface.writeFromDict(col+13*horizontal, row+13*(not horizontal), data, "CustomSubObjectiveHeader")
+    interface.writeFromDict(col+14*horizontal, row+14*(not horizontal), data, "CustomSubObjective")
     interface.writeFromDict(col+15*horizontal, row+15*(not horizontal), data, "SoundID")
     # TODO convert sound id to name of sound
+    interface.writeFromDict(col+16*horizontal, row+16*(not horizontal), data, "SoundSubtitle")
+    writePublicNameFromDict(DATABLOCK_PlayerDialog, interface, col+17*horizontal, row+17*(not horizontal), data, "DialogueID")
+    writePublicNameFromDict(DATABLOCK_FogSettings, interface, col+18*horizontal, row+18*(not horizontal), data, "FogSetting")
+    interface.writeFromDict(col+19*horizontal, row+19*(not horizontal), data, "FogTransitionDuration")
+    try:
+        GenericEnemyWaveData(interface, data["EnemyWaveData"], col+20*horizontal, row+20*(not horizontal), horizontal=horizontal)
+    except KeyError:pass
+    writePublicNameFromDict(DATABLOCK_Enemy, interface, col+26*horizontal, row+26*(not horizontal), data, "EnemyID")
+    try:
+        interface.writeFromDict(col+27*horizontal, row+27*(not horizontal), data["Position"], "x")
+        interface.writeFromDict(col+28*horizontal, row+28*(not horizontal), data["Position"], "y")
+        interface.writeFromDict(col+29*horizontal, row+29*(not horizontal), data["Position"], "z")
+    except KeyError:pass
+    interface.writeFromDict(col+30*horizontal, row+30*(not horizontal), data, "Count")
+    interface.writeFromDict(col+31*horizontal, row+31*(not horizontal), data, "Enabled")
+    writeEnumFromDict(ENUMFILE_TERM_Command, interface, col+32*horizontal, row+32*(not horizontal), data, "TerminalCommand")
+    writeEnumFromDict(ENUMFILE_TERM_CommandRule, interface, col+33*horizontal, row+33*(not horizontal), data, "TerminalCommandRule")
+    interface.writeFromDict(col+34*horizontal, row+34*(not horizontal), data, "WorldEventObjectFilter")
 
 def WorldEventFromSourceData(interface:XlsxInterfacer.interface, data:dict, col:int, row:int, horizontal:bool=False):
     """
