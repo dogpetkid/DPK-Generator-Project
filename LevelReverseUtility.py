@@ -1044,7 +1044,7 @@ def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWarde
     rowWavesOnElevatorLand = 25-1
     rowChainedPuzzleToActive = 172-1
     rowLightsOnFromBeginning = 185-1
-    rowActivateHSU_ItemFromStart = 206-1
+    rowActivateHSU_ItemFromStart = 207-1
     rowSurvival_TimeToActivate = 252-1
     rowname = 274-1
 
@@ -1082,19 +1082,19 @@ def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWarde
             WardenObjectiveEventData(iWardenObjective, event, itercol, iterrow, horizontal=False)
             itercol+= 1
     except KeyError:pass
-    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+100, WardenObjective, "StopAllWavesBeforeGotoWin")
+    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+95, WardenObjective, "StopAllWavesBeforeGotoWin")
     try:
-        GenericEnemyWaveDataList(iWardenObjective, WardenObjective["WavesOnGotoWin"], 2, rowWavesOnElevatorLand+103, horizontal=True)
+        GenericEnemyWaveDataList(iWardenObjective, WardenObjective["WavesOnGotoWin"], 2, rowWavesOnElevatorLand+98, horizontal=True)
     except KeyError:pass
     writeEnumFromDict(ENUMFILE_eRetrieveExitWaveTrigger, iWardenObjective, 1, rowWavesOnElevatorLand+104, WardenObjective, "WaveOnGotoWinTrigger")
     try:
-        itercol,iterrow = 3, rowWavesOnElevatorLand+112
+        itercol,iterrow = 3, rowWavesOnElevatorLand+107
         for event in WardenObjective["EventsOnGotoWin"]:
             WardenObjectiveEventData(iWardenObjective, event, itercol, iterrow, horizontal=False)
             itercol+= 1
     except KeyError:pass
-    writePublicNameFromDict(DATABLOCK_FogSettings, iWardenObjective, 1, rowWavesOnElevatorLand+143, WardenObjective, "FogTransitionDataOnGotoWin")
-    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+144, WardenObjective, "FogTransitionDurationOnGotoWin")
+    writePublicNameFromDict(DATABLOCK_FogSettings, iWardenObjective, 1, rowWavesOnElevatorLand+144, WardenObjective, "FogTransitionDataOnGotoWin")
+    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+145, WardenObjective, "FogTransitionDurationOnGotoWin")
 
     writePublicNameFromDict(DATABLOCK_ChainedPuzzle, iWardenObjective, 1, rowChainedPuzzleToActive, WardenObjective, "ChainedPuzzleToActive")
     writePublicNameFromDict(DATABLOCK_ChainedPuzzle, iWardenObjective, 1, rowChainedPuzzleToActive+1, WardenObjective, "ChainedPuzzleMidObjective")

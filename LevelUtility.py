@@ -1055,7 +1055,7 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     rowWavesOnElevatorLand = 25-1
     rowChainedPuzzleToActive = 172-1
     rowLightsOnFromBeginning = 185-1
-    rowActivateHSU_ItemFromStart = 206-1
+    rowActivateHSU_ItemFromStart = 207-1
     rowSurvival_TimeToActivate = 252-1
     rowname = 274-1
 
@@ -1093,18 +1093,18 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     while not(iWardenObjective.isEmpty(col, row)):
         data["EventsOnActivate"].append(WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False))
         col+= 1
-    iWardenObjective.readIntoDict(bool, 1, rowWavesOnElevatorLand+100, data, "StopAllWavesBeforeGotoWin")
-    data["WavesOnGotoWin"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+103, horizontal=True)
+    iWardenObjective.readIntoDict(bool, 1, rowWavesOnElevatorLand+95, data, "StopAllWavesBeforeGotoWin")
+    data["WavesOnGotoWin"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+98, horizontal=True)
     iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+104, data, "WaveOnGotoWinTrigger")
     EnumConverter.enumInDict(ENUMFILE_eRetrieveExitWaveTrigger, data, "WaveOnGotoWinTrigger")
     data["EventsOnGotoWin"] = []
-    col,row = 3,rowWavesOnElevatorLand+112
+    col,row = 3,rowWavesOnElevatorLand+107
     while not(iWardenObjective.isEmpty(col, row)):
         data["EventsOnGotoWin"].append(WardenObjectiveEventData(iWardenObjective, col, row, horizontal=False))
         col+= 1
-    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+143, data, "FogTransitionDataOnGotoWin")
+    iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+144, data, "FogTransitionDataOnGotoWin")
     DatablockIO.nameInDict(DATABLOCK_FogSettings, data, "FogTransitionDataOnGotoWin")
-    iWardenObjective.readIntoDict(float, 1, rowWavesOnElevatorLand+144, data, "FogTransitionDurationOnGotoWin")
+    iWardenObjective.readIntoDict(float, 1, rowWavesOnElevatorLand+145, data, "FogTransitionDurationOnGotoWin")
 
     iWardenObjective.readIntoDict(str, 1, rowChainedPuzzleToActive, data, "ChainedPuzzleToActive")
     DatablockIO.nameInDict(DATABLOCK_ChainedPuzzle, data, "ChainedPuzzleToActive")
