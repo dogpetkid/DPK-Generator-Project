@@ -37,6 +37,8 @@ python ./LevelReverseUtility.py -v DEBUG -n "Unit 23" Evaluation Cargo Dense Vau
 echo "Start forward utility..."
 python ./LevelUtility.py -v DEBUG -n "Unit 23.xlsx" Evaluation.xlsx Cargo.xlsx Dense.xlsx Vault.xlsx Monster.xlsx Sublimation.xlsx Reckless.xlsx Mother.xlsx AWOL.xlsx Chaos.xlsx
 
+echo 
+
 cd "$datablocksfolder"
 if [ "$1" != "-y" ]; then
 	echo "Diff:"
@@ -46,5 +48,4 @@ fi
 
 cd "$here"
 echo "Done."
-echo 
 
