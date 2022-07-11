@@ -895,10 +895,10 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+6, row, Snippet, "Log Group")
 
             try:
-                writeEnumFromDict(ENUMFILE_TERM_State, iExpeditionZoneDataLists, startcolTerminalPlacements+7, row, Snippet["StartingStateData"], "StartingState")
+                writeEnumFromDict(ENUMFILE_TERM_State, iExpeditionZoneDataLists, startcolTerminalPlacements+8, row, Snippet["StartingStateData"], "StartingState")
 
-                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+11, row, Snippet["StartingStateData"], "AudioEventEnter")
-                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+12, row, Snippet["StartingStateData"], "AudioEventExit")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+12, row, Snippet["StartingStateData"], "AudioEventEnter")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+13, row, Snippet["StartingStateData"], "AudioEventExit")
                 # TODO convert sound placeholders
             except KeyError:pass
 

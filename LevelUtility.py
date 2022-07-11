@@ -718,10 +718,10 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+5, row, Snippet, "MarkerSeedOffset")
             Snippet["LocalLogFiles"] = self.LocalLogFiles(iExpeditionZoneDataLists.read(XlsxInterfacer.blankable, startcolTerminalPlacements+6, row))
             Snippet["StartingStateData"] = {}
-            iExpeditionZoneDataLists.readIntoDict(str, startcolTerminalPlacements+7, row, Snippet["StartingStateData"], "StartingState")
+            iExpeditionZoneDataLists.readIntoDict(str, startcolTerminalPlacements+8, row, Snippet["StartingStateData"], "StartingState")
             EnumConverter.enumInDict(ENUMFILE_TERM_State, Snippet["StartingStateData"], "StartingState")
-            iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+11, row, Snippet["StartingStateData"], "AudioEventEnter")
-            iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+12, row, Snippet["StartingStateData"], "AudioEventExit")
+            iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+12, row, Snippet["StartingStateData"], "AudioEventEnter")
+            iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+13, row, Snippet["StartingStateData"], "AudioEventExit")
             # TODO convert sound placeholders
             EnsureKeyInDictArray(self.stubTerminalPlacements, iExpeditionZoneDataLists.read(str, startcolTerminalPlacements, row))
             self.stubTerminalPlacements[iExpeditionZoneDataLists.read(str, startcolTerminalPlacements, row)].append(Snippet)
