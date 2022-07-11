@@ -354,6 +354,113 @@ def GeneralFogDataStep(interface:XlsxInterfacer.interface, data:dict, col:int, r
     interface.writeFromDict(col+horizontal, row+(not horizontal), data, "m_transitionToTime")
 
 
+class instruction():
+    """
+    This class is used in tandum with the multiDimGroup function.
+    The insructions direct the function how to put the stubs together.
+
+    Create this object outside of a for loop otherwise it won't properly track which groups have been handled by this instruction!
+
+    @param name is as it appears in the GTFO dictionary.
+    @param idkeyforcurrent is the identifier column as it appears in this "object" in the sheet.
+    @param idkeyforparent is the identifier column as it appears in the parent "object" in the sheet.
+    @param currentstub is where the objects will separated into unique entries. (Akin to the address to write the return value instead of returning it from the stack.)
+    @param children is instructions of other list fields to sort to be unique from within the current "object".
+    """
+
+    def __init__(self, name:str, idkeyforcurrent:str, idkeyforparent:str, currentstub:typing.List[dict], children:typing.List=[]):
+        # children is of type instruction but python won't it reference itself in it's own definition
+
+        self.currentname = name
+        self.idkeyforparent = idkeyforparent
+        self.idkeyforcurrent = idkeyforcurrent
+        self.currentstub = currentstub
+        self.children = children
+
+        # Keep track of the handled elements with this instruction in an list.
+        # This is we need to track the handled elements across function calls without losing track of the handled elements.
+        self.handledgroups = []
+        # Due to these instructions being generated possibly several times, it is important to keep one instance of this object and not recreate it in a loop.
+        # Recreating this item will lose track of which groups have been handled..
+        # This is deliberately done to not have instructions from different scopes interferring with each other's lists
+        # instead of using a global handled list that does a lookup on the name.
+
+        self.groupstart = 'A' # this is rather arbitrary and could be ultimately any character
+        # capital letters are good since they come numerically before lowercase ones (in case something uses that many groups for whatever reason)
+
+    def getGroup(self, index:int):
+        """Return the letter of the group corresonding to an index in the handled groups list"""
+        return chr(ord(self.groupstart) + index)
+
+def multiDimGroup(data:dict, masterid:str, masterinstructions:instruction):
+    """
+    This function is used to find the unique elements out of nested listed dictionaries.
+    @param masterid is the identifier for the parent of the master instruction.
+    @See instruction
+    """
+
+    # I apologize to anyone who looks at this super hacky function...
+
+    def multiDimGroupHelper(parent:dict, currentinstructions:instruction):
+        """
+        This function handles the actual nested listed dictionaries.
+        By recursively going through the children instructions, the dictionary unique elements are discovered and pulled out.
+        """
+        try: # if there is the specified current item, its children should be handled and then it
+            current = parent[currentinstructions.currentname]
+            # this will jump if the current doesn't exist
+
+            # if the current list is not populated, there is no work to be done
+            if current == []:
+                # since the parent has not children (ie the current of in this scope)
+                # we can mark it's group as empty
+                parent[currentinstructions.idkeyforparent] = ""
+                # jump to where no current list exists
+                raise KeyError
+
+            # before updating the current, recursively handle all children of the current
+            for childinstructions in currentinstructions.children:
+                multiDimGroupHelper(current, childinstructions)
+
+            # after handling all children of the current, the current can be handled on its own
+            try: # current list has been handled...
+                # it already has a group and that can be used
+                currentindex = currentinstructions.handledgroups.index(current)
+
+            except ValueError: # current list has not been handled...
+                # ...so give it a new group
+                currentinstructions.handledgroups.append(current) # keep track that this instance has been handled
+                currentindex = len(currentinstructions.handledgroups) - 1 # it is located at the end of the list since it was just put there
+
+                # handle all elements in the current by
+                # label said elements as part of the new group
+                # NOTE this only has to happen once because we dont want to add duplicates and duplicates
+                # NOTE      will be detected above using .index()
+                for element in current:
+                    currentinstructions.currentstub.append({currentinstructions.idkeyforcurrent:currentinstructions.getGroup(currentindex)} | element)
+                    # note the above adds the current to the correspoding stub with the key-value pair for the assigned group
+
+            finally:
+                # finally, change the parent to reflect it's current's group
+                parent[currentinstructions.idkeyforparent] = currentinstructions.getGroup(currentindex)
+
+        except KeyError:pass # no logs exist, pass
+
+    # opting to not take side effects beyond this master function
+    data = data.copy()
+
+    # check that there is a top level item
+    try: _ = data[masterinstructions.currentname]
+    except KeyError:return # there is no top item and so no work to be done
+
+    for current in data[masterinstructions.currentname]:
+        # before updating the master, recursively handle all children of the current
+        for childinstructions in masterinstructions.children:
+            multiDimGroupHelper(current, childinstructions)
+
+        masterinstructions.currentstub.append({masterinstructions.idkeyforcurrent:masterid} | current)
+
+
 def frameMeta(iMeta:XlsxInterfacer.interface, rundownID:int, tier:str, index:int):
     """
     edit the iMeta pandas dataFrame
@@ -499,12 +606,13 @@ class ExpeditionZoneDataLists:
         self.stubSpecificPickupSpawningDatas = []
         self.stubTerminalPlacements = []
         self.stubLocalLogFiles = []
-        groupedLocalLogFiles = []
         self.stubPowerGeneratorPlacements = []
         self.stubDisinfectionStationPlacements = []
         self.stubStaticSpawnDataContainers = []
 
-        loggroupstart = 'A'
+        TerminalPlacements_instructions = instruction("TerminalPlacements", "ZoneIndex", "", self.stubTerminalPlacements, [
+            instruction("LocalLogFiles", "Log Group", "Log Group", self.stubLocalLogFiles)
+        ])
 
         for ZoneData in LevelLayout["Zones"]:
             zone = EnumConverter.indexToEnum(ENUMFILE_eLocalZoneIndex, ZoneData["LocalIndex"], False)
@@ -612,35 +720,7 @@ class ExpeditionZoneDataLists:
                     self.stubStaticSpawnDataContainers.append(dict({"ZoneIndex":zone},**e))
             except KeyError:pass
 
-            # Unlike the other lists, the terminal placement is several dimentions deep and must be handled piece by piece to find unique Log files
-            try:
-                # TerminalPlacements
-                for placement in ZoneData["TerminalPlacements"]:
-
-                    try: # if there are log files...
-                        logfiles = placement["LocalLogFiles"] # will jump to the except if no logs exist
-
-                        if logfiles == []:
-                            # if there are no logs, keep the group blank
-                            placement["LocalLogFiles"] = ""
-                            raise KeyError # jump to the no logs exist
-
-                        # LocalLogFiles
-                        try: # if log goup has been handled, find it's group
-                            logfilesindex = groupedLocalLogFiles.index(logfiles)
-                        except ValueError: # log group has not already been handled
-                            groupedLocalLogFiles.append(logfiles)
-                            logfilesindex = len(groupedLocalLogFiles) - 1
-                            for logfile in logfiles:
-                                self.stubLocalLogFiles.append(dict({"Log Group":chr(ord(loggroupstart)+logfilesindex)},**logfile))
-                        finally: # finally, change the log file to reflect the parsed group
-                            placement["LocalLogFiles"] = chr(ord(loggroupstart)+logfilesindex)
-
-                    except KeyError:pass # no logs exist, pass
-
-                    self.stubTerminalPlacements.append(dict({"ZoneIndex":zone},**placement))
-
-            except KeyError:pass # no terminals exist, pass
+            multiDimGroup(ZoneData, zone, TerminalPlacements_instructions)
 
 
     def write(self, iExpeditionZoneDataLists:XlsxInterfacer.interface):
@@ -812,7 +892,7 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+4, row, Snippet, "AreaSeedOffset")
             iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+5, row, Snippet, "MarkerSeedOffset")
 
-            iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+6, row, Snippet, "LocalLogFiles")
+            iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+6, row, Snippet, "Log Group")
 
             try:
                 writeEnumFromDict(ENUMFILE_TERM_State, iExpeditionZoneDataLists, startcolTerminalPlacements+7, row, Snippet["StartingStateData"], "StartingState")
