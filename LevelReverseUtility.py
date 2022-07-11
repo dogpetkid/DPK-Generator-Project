@@ -419,8 +419,9 @@ def multiDimGroup(data:dict, masterid:str, masterinstructions:instruction):
                 raise KeyError
 
             # before updating the current, recursively handle all children of the current
-            for childinstructions in currentinstructions.children:
-                multiDimGroupHelper(current, childinstructions)
+            for element in current:
+                for childinstructions in currentinstructions.children:
+                    multiDimGroupHelper(element, childinstructions)
 
             # after handling all children of the current, the current can be handled on its own
             try: # current list has been handled...
@@ -453,12 +454,12 @@ def multiDimGroup(data:dict, masterid:str, masterinstructions:instruction):
     try: _ = data[masterinstructions.currentname]
     except KeyError:return # there is no top item and so no work to be done
 
-    for current in data[masterinstructions.currentname]:
+    for element in data[masterinstructions.currentname]:
         # before updating the master, recursively handle all children of the current
         for childinstructions in masterinstructions.children:
-            multiDimGroupHelper(current, childinstructions)
+            multiDimGroupHelper(element, childinstructions)
 
-        masterinstructions.currentstub.append({masterinstructions.idkeyforcurrent:masterid} | current)
+        masterinstructions.currentstub.append({masterinstructions.idkeyforcurrent:masterid} | element)
 
 
 def frameMeta(iMeta:XlsxInterfacer.interface, rundownID:int, tier:str, index:int):
@@ -606,12 +607,19 @@ class ExpeditionZoneDataLists:
         self.stubSpecificPickupSpawningDatas = []
         self.stubTerminalPlacements = []
         self.stubLocalLogFiles = []
+        self.stubUniqueCommands = []
+        self.stubPostCommandOutputs = []
+        self.stubCommandEvents = []
         self.stubPowerGeneratorPlacements = []
         self.stubDisinfectionStationPlacements = []
         self.stubStaticSpawnDataContainers = []
 
         TerminalPlacements_instructions = instruction("TerminalPlacements", "ZoneIndex", "", self.stubTerminalPlacements, [
-            instruction("LocalLogFiles", "Log Group", "Log Group", self.stubLocalLogFiles)
+            instruction("LocalLogFiles", "Log Group", "Log Group", self.stubLocalLogFiles),
+            instruction("UniqueCommands", "Command Group", "Command Group", self.stubUniqueCommands, [
+                instruction("PostCommandOutputs", "Post Output Group", "Post Output Group", self.stubPostCommandOutputs),
+                instruction("CommandEvents", "Command Event Group", "Command Event Group", self.stubCommandEvents),
+            ]),
         ])
 
         for ZoneData in LevelLayout["Zones"]:
@@ -888,18 +896,25 @@ class ExpeditionZoneDataLists:
             try:
                 ZonePlacementWeights(iExpeditionZoneDataLists, Snippet["PlacementWeights"], startcolTerminalPlacements+1, row, horizontal=True)
             except KeyError:pass
-
             iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+4, row, Snippet, "AreaSeedOffset")
             iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+5, row, Snippet, "MarkerSeedOffset")
-
             iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+6, row, Snippet, "Log Group")
-
+            iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+7, row, Snippet, "Command Group")
             try:
                 writeEnumFromDict(ENUMFILE_TERM_State, iExpeditionZoneDataLists, startcolTerminalPlacements+8, row, Snippet["StartingStateData"], "StartingState")
-
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+9, row, Snippet["StartingStateData"], "UseCustomInfoText")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+10, row, Snippet["StartingStateData"], "CustomInfoText")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+11, row, Snippet["StartingStateData"], "KeepShowingLocalLogCount")
                 iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+12, row, Snippet["StartingStateData"], "AudioEventEnter")
                 iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+13, row, Snippet["StartingStateData"], "AudioEventExit")
                 # TODO convert sound placeholders
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+14, row, Snippet["StartingStateData"], "PasswordProtected")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+15, row, Snippet["StartingStateData"], "Password")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+16, row, Snippet["StartingStateData"], "PasswordHintText")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+17, row, Snippet["StartingStateData"], "GeneratePassword")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+18, row, Snippet["StartingStateData"], "PasswordPartCount")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+19, row, Snippet["StartingStateData"], "ShowPasswordLength")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+20, row, Snippet["StartingStateData"], "ShowPasswordPartPositions")
             except KeyError:pass
 
             row+= 1
@@ -920,6 +935,37 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+6, row, Snippet, "PlayerDialogToTriggerAfterAudio")
             # TODO convert sound placeholders
 
+            row+= 1
+
+        row = startrow
+        # UniqueCommands
+        for Snippet in self.stubUniqueCommands:
+            iExpeditionZoneDataLists.writeFromDict(startcolUniqueCommands, row, Snippet, "Command Group")
+
+            iExpeditionZoneDataLists.writeFromDict(startcolUniqueCommands+1, row, Snippet, "Command")
+            iExpeditionZoneDataLists.writeFromDict(startcolUniqueCommands+2, row, Snippet, "CommandDesc")
+            iExpeditionZoneDataLists.writeFromDict(startcolUniqueCommands+3, row, Snippet, "Post Output Group")
+            iExpeditionZoneDataLists.writeFromDict(startcolUniqueCommands+4, row, Snippet, "Command Event Group")
+            writeEnumFromDict(ENUMFILE_TERM_CommandRule, iExpeditionZoneDataLists, startcolUniqueCommands+5, row, Snippet, "SpecialCommandRule")
+
+            row +=1
+
+        row = startrow
+        # PostCommandOutputs
+        for Snippet in self.stubPostCommandOutputs:
+            iExpeditionZoneDataLists.writeFromDict(startcolPostCommandOutputs, row, Snippet, "Post Output Group")
+
+            writeEnumFromDict(ENUMFILE_TerminalLineType, iExpeditionZoneDataLists, startcolPostCommandOutputs+1, row, Snippet, "LineType")
+            iExpeditionZoneDataLists.writeFromDict(startcolPostCommandOutputs+2, row, Snippet, "Output")
+            iExpeditionZoneDataLists.writeFromDict(startcolPostCommandOutputs+3, row, Snippet, "Time")
+
+            row+= 1
+
+        row = startrow
+        # CommandEvents
+        for Snippet in self.stubCommandEvents:
+            iExpeditionZoneDataLists.writeFromDict(startcolCommandEvents, row, Snippet, "Command Event Group")
+            WardenObjectiveEventData(iExpeditionZoneDataLists, Snippet, startcolCommandEvents+1, row, horizontal=True)
             row+= 1
 
         row = startrow

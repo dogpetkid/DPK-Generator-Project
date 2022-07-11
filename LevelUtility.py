@@ -536,6 +536,9 @@ class ExpeditionZoneDataLists:
         self.stubSpecificPickupSpawningDatas = {}
         self.stubTerminalPlacements = {}
         self.stubLocalLogFiles = {}
+        self.stubUniqueCommands = {}
+        self.stubPostCommandOutputs = {}
+        self.stubCommandEvents = {}
         self.stubPowerGeneratorPlacements = {}
         self.stubDisinfectionStationPlacements = {}
         self.stubStaticSpawnDataContainers = {}
@@ -710,6 +713,40 @@ class ExpeditionZoneDataLists:
             row+= 1
 
         row = startrow
+        # PostCommandOutputs
+        while not(iExpeditionZoneDataLists.isEmpty(startcolPostCommandOutputs,row)):
+            Snippet = {}
+            iExpeditionZoneDataLists.readIntoDict(str, startcolPostCommandOutputs+1, row, Snippet, "LineType")
+            EnumConverter.enumInDict(ENUMFILE_TerminalLineType, Snippet, "LineType")
+            iExpeditionZoneDataLists.readIntoDict(str, startcolPostCommandOutputs+2, row, Snippet, "Output")
+            iExpeditionZoneDataLists.readIntoDict(float, startcolPostCommandOutputs+3, row, Snippet, "Time")
+            EnsureKeyInDictArray(self.stubPostCommandOutputs, iExpeditionZoneDataLists.read(str, startcolPostCommandOutputs, row))
+            self.stubPostCommandOutputs[iExpeditionZoneDataLists.read(str, startcolPostCommandOutputs, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
+        # CommandEvents
+        while not(iExpeditionZoneDataLists.isEmpty(startcolCommandEvents,row)):
+            Snippet = {}
+            Snippet.update(WardenObjectiveEventData(iExpeditionZoneDataLists, startcolCommandEvents+1, row, horizontal=True))
+            EnsureKeyInDictArray(self.stubCommandEvents, iExpeditionZoneDataLists.read(str, startcolCommandEvents, row))
+            self.stubCommandEvents[iExpeditionZoneDataLists.read(str, startcolCommandEvents, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
+        # UniqueCommands
+        while not(iExpeditionZoneDataLists.isEmpty(startcolUniqueCommands,row)):
+            Snippet = {}
+            iExpeditionZoneDataLists.readIntoDict(str, startcolUniqueCommands+1, row, Snippet, "Command")
+            iExpeditionZoneDataLists.readIntoDict(str, startcolUniqueCommands+2, row, Snippet, "CommandDesc")
+            Snippet["PostCommandOutputs"] = self.PostCommandOutputs(iExpeditionZoneDataLists.read(XlsxInterfacer.blankable, startcolUniqueCommands+3, row))
+            Snippet["CommandEvents"] = self.CommandEvents(iExpeditionZoneDataLists.read(XlsxInterfacer.blankable, startcolUniqueCommands+4, row))
+            iExpeditionZoneDataLists.readIntoDict(str, startcolUniqueCommands+5, row, Snippet, "SpecialCommandRule")
+            EnsureKeyInDictArray(self.stubUniqueCommands, iExpeditionZoneDataLists.read(str, startcolUniqueCommands, row))
+            self.stubUniqueCommands[iExpeditionZoneDataLists.read(str, startcolUniqueCommands, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
         # TerminalPlacements
         while not(iExpeditionZoneDataLists.isEmpty(startcolTerminalPlacements,row)):
             Snippet = {}
@@ -717,12 +754,23 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+4, row, Snippet, "AreaSeedOffset")
             iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+5, row, Snippet, "MarkerSeedOffset")
             Snippet["LocalLogFiles"] = self.LocalLogFiles(iExpeditionZoneDataLists.read(XlsxInterfacer.blankable, startcolTerminalPlacements+6, row))
+            Snippet["UniqueCommands"] = self.UniqueCommands(iExpeditionZoneDataLists.read(XlsxInterfacer.blankable, startcolTerminalPlacements+7, row))
             Snippet["StartingStateData"] = {}
             iExpeditionZoneDataLists.readIntoDict(str, startcolTerminalPlacements+8, row, Snippet["StartingStateData"], "StartingState")
             EnumConverter.enumInDict(ENUMFILE_TERM_State, Snippet["StartingStateData"], "StartingState")
+            iExpeditionZoneDataLists.readIntoDict(bool, startcolTerminalPlacements+9, row, Snippet["StartingStateData"], "UseCustomInfoText")
+            iExpeditionZoneDataLists.readIntoDict(str, startcolTerminalPlacements+10, row, Snippet["StartingStateData"], "CustomInfoText")
+            iExpeditionZoneDataLists.readIntoDict(bool, startcolTerminalPlacements+11, row, Snippet["StartingStateData"], "KeepShowingLocalLogCount")
             iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+12, row, Snippet["StartingStateData"], "AudioEventEnter")
             iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+13, row, Snippet["StartingStateData"], "AudioEventExit")
             # TODO convert sound placeholders
+            iExpeditionZoneDataLists.readIntoDict(bool, startcolTerminalPlacements+14, row, Snippet["StartingStateData"], "PasswordProtected")
+            iExpeditionZoneDataLists.readIntoDict(str, startcolTerminalPlacements+15, row, Snippet["StartingStateData"], "Password")
+            iExpeditionZoneDataLists.readIntoDict(str, startcolTerminalPlacements+16, row, Snippet["StartingStateData"], "PasswordHintText")
+            iExpeditionZoneDataLists.readIntoDict(bool, startcolTerminalPlacements+17, row, Snippet["StartingStateData"], "GeneratePassword")
+            iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+18, row, Snippet["StartingStateData"], "PasswordPartCount")
+            iExpeditionZoneDataLists.readIntoDict(bool, startcolTerminalPlacements+19, row, Snippet["StartingStateData"], "ShowPasswordLength")
+            iExpeditionZoneDataLists.readIntoDict(bool, startcolTerminalPlacements+20, row, Snippet["StartingStateData"], "ShowPasswordPartPositions")
             EnsureKeyInDictArray(self.stubTerminalPlacements, iExpeditionZoneDataLists.read(str, startcolTerminalPlacements, row))
             self.stubTerminalPlacements[iExpeditionZoneDataLists.read(str, startcolTerminalPlacements, row)].append(Snippet)
             row+= 1
@@ -856,6 +904,24 @@ class ExpeditionZoneDataLists:
     def LocalLogFiles(self, group:str):
         """returns the LocalLogFiles array for a specific grouping to be used in the TerminalPlacements"""
         try:return self.stubLocalLogFiles[group]
+        except KeyError:pass
+        return []
+
+    def UniqueCommands(self, group:str):
+        """returns the UniqueCommands array for a specific grouping to be used in the TerminalPlacements"""
+        try:return self.stubUniqueCommands[group]
+        except KeyError:pass
+        return []
+
+    def PostCommandOutputs(self, group:str):
+        """returns the PostCommandOutputs array for a specific grouping to be used in the UniqueCommands"""
+        try:return self.stubPostCommandOutputs[group]
+        except KeyError:pass
+        return []
+
+    def CommandEvents(self, group:str):
+        """returns the CommandEvents array for a specific grouping to be used in the UniqueCommands"""
+        try:return self.stubCommandEvents[group]
         except KeyError:pass
         return []
 
