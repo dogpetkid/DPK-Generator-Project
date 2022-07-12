@@ -507,6 +507,7 @@ class ExpeditionZoneDataLists:
         startcolProgressionPuzzleToEnter =          XlsxInterfacer.ctn("KX")
         startcolEventsOnTerminalDeactivateAlarm =   XlsxInterfacer.ctn("LF")
         startcolWorldEventChainedPuzzleDatas =      XlsxInterfacer.ctn("MQ")
+        startcolEventsOnScanDone =                  XlsxInterfacer.ctn("MV")
         startcolEnemySpawningInZone =               XlsxInterfacer.ctn("OG")
         startcolEnemyRespawnExcludeList =           XlsxInterfacer.ctn("ON")
         startcolSpecificPickupSpawningDatas =       XlsxInterfacer.ctn("OQ")
@@ -531,6 +532,8 @@ class ExpeditionZoneDataLists:
         self.stubEventsOnTrigger = {}
         self.stubProgressionPuzzleToEnter = {}
         self.stubEventsOnTerminalDeactivateAlarm = {}
+        self.stubWorldEventChainedPuzzleDatas = {}
+        self.stubEventsOnScanDone = {}
         self.stubEnemySpawningInZone = {}
         self.stubEnemyRespawnExcludeList = {}
         self.stubSpecificPickupSpawningDatas = {}
@@ -650,6 +653,27 @@ class ExpeditionZoneDataLists:
             Snippet.update(WardenObjectiveEventData(iExpeditionZoneDataLists, startcolEventsOnTerminalDeactivateAlarm+1, row, horizontal=True))
             EnsureKeyInDictArray(self.stubEventsOnTerminalDeactivateAlarm, iExpeditionZoneDataLists.read(str, startcolEventsOnTerminalDeactivateAlarm, row))
             self.stubEventsOnTerminalDeactivateAlarm[iExpeditionZoneDataLists.read(str, startcolEventsOnTerminalDeactivateAlarm, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
+        # EventsOnScanDone
+        while not(iExpeditionZoneDataLists.isEmpty(startcolEventsOnScanDone,row)):
+            Snippet = {}
+            Snippet.update(WardenObjectiveEventData(iExpeditionZoneDataLists, startcolEventsOnScanDone+1, row, horizontal=True))
+            EnsureKeyInDictArray(self.stubEventsOnScanDone, iExpeditionZoneDataLists.read(str, startcolEventsOnScanDone, row))
+            self.stubEventsOnScanDone[iExpeditionZoneDataLists.read(str, startcolEventsOnScanDone, row)].append(Snippet)
+            row+= 1
+
+        row = startrow
+        # WorldEventChainedPuzzleDatas
+        while not(iExpeditionZoneDataLists.isEmpty(startcolWorldEventChainedPuzzleDatas,row)):
+            Snippet = {}
+            iExpeditionZoneDataLists.readIntoDict(str, startcolWorldEventChainedPuzzleDatas+1, row, Snippet, "ChainedPuzzle")
+            DatablockIO.nameInDict(DATABLOCK_ChainedPuzzle, Snippet, "ChainedPuzzle")
+            iExpeditionZoneDataLists.readIntoDict(str, startcolWorldEventChainedPuzzleDatas+2, row, Snippet, "WorldEventObjectFilter")
+            Snippet["EventsOnScanDone"] = self.EventsOnScanDone(iExpeditionZoneDataLists.read(XlsxInterfacer.blankable, startcolWorldEventChainedPuzzleDatas+3, row))
+            EnsureKeyInDictArray(self.stubWorldEventChainedPuzzleDatas, iExpeditionZoneDataLists.read(str, startcolWorldEventChainedPuzzleDatas, row))
+            self.stubWorldEventChainedPuzzleDatas[iExpeditionZoneDataLists.read(str, startcolWorldEventChainedPuzzleDatas, row)].append(Snippet)
             row+= 1
 
         row = startrow
@@ -877,6 +901,18 @@ class ExpeditionZoneDataLists:
         except KeyError:pass
         return []
 
+    def WorldEventChainedPuzzleDatas(self, identifier:str):
+        """returns the WorldEventChainedPuzzleDatas array for a specific zone"""
+        try:return self.stubWorldEventChainedPuzzleDatas[identifier]
+        except KeyError:pass
+        return []
+
+    def EventsOnScanDone(self, identifier:str):
+        """returns the EventsOnScanDone array for a specific grouping to be used in the WorldEventChainedPuzzleDatas"""
+        try:return self.stubEventsOnScanDone[identifier]
+        except KeyError:pass
+        return []
+
     def EnemySpawningInZone(self, identifier:str):
         """returns the EnemySpawningInZone array for a specific zone"""
         try:return self.stubEnemySpawningInZone[identifier]
@@ -1027,6 +1063,7 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     iExpeditionZoneData.readIntoDict(str, colPuzzleType+18, row, data["ActiveEnemyWave"], "EnemyGroupInArea")
     DatablockIO.nameInDict(DATABLOCK_EnemyGroup, data["ActiveEnemyWave"], "EnemyGroupInArea")
     iExpeditionZoneData.readIntoDict(int, colPuzzleType+19, row, data["ActiveEnemyWave"], "EnemyGroupsInArea")
+    data["WorldEventChainedPuzzleDatas"] = listdata.WorldEventChainedPuzzleDatas(zonestr)
     data["EnemySpawningInZone"] = listdata.EnemySpawningInZone(zonestr)
     iExpeditionZoneData.readIntoDict(bool, colPuzzleType+22, row, data, "EnemyRespawning")
     iExpeditionZoneData.readIntoDict(bool, colPuzzleType+23, row, data, "EnemyRespawnRequireOtherZone")

@@ -602,6 +602,8 @@ class ExpeditionZoneDataLists:
         self.stubEventsOnTrigger = []
         self.stubProgressionPuzzleToEnter = []
         self.stubEventsOnTerminalDeactivateAlarm = []
+        self.stubWorldEventChainedPuzzleDatas = []
+        self.stubEventsOnScanDone = []
         self.stubEnemySpawningInZone = []
         self.stubEnemyRespawnExcludeList = []
         self.stubSpecificPickupSpawningDatas = []
@@ -613,6 +615,10 @@ class ExpeditionZoneDataLists:
         self.stubPowerGeneratorPlacements = []
         self.stubDisinfectionStationPlacements = []
         self.stubStaticSpawnDataContainers = []
+
+        WorldEventChainedPuzzleDatas_instructions = instruction("WorldEventChainedPuzzleDatas", "ZoneIndex", "", self.stubWorldEventChainedPuzzleDatas, [
+            instruction("EventsOnScanDone", "Identifier", "EventsOnScanDone Group", self.stubEventsOnScanDone)
+        ])
 
         TerminalPlacements_instructions = instruction("TerminalPlacements", "ZoneIndex", "", self.stubTerminalPlacements, [
             instruction("LocalLogFiles", "Log Group", "Log Group", self.stubLocalLogFiles),
@@ -691,6 +697,8 @@ class ExpeditionZoneDataLists:
                     self.stubEventsOnTerminalDeactivateAlarm.append(dict({"ZoneIndex":zone},**e))
             except KeyError:pass
 
+            multiDimGroup(ZoneData, zone, WorldEventChainedPuzzleDatas_instructions)
+
             # EnemySpawningInZone
             try:
                 for e in ZoneData["EnemySpawningInZone"]:
@@ -747,6 +755,7 @@ class ExpeditionZoneDataLists:
         startcolProgressionPuzzleToEnter =          XlsxInterfacer.ctn("KX")
         startcolEventsOnTerminalDeactivateAlarm =   XlsxInterfacer.ctn("LF")
         startcolWorldEventChainedPuzzleDatas =      XlsxInterfacer.ctn("MQ")
+        startcolEventsOnScanDone =                  XlsxInterfacer.ctn("MV")
         startcolEnemySpawningInZone =               XlsxInterfacer.ctn("OG")
         startcolEnemyRespawnExcludeList =           XlsxInterfacer.ctn("ON")
         startcolSpecificPickupSpawningDatas =       XlsxInterfacer.ctn("OQ")
@@ -857,6 +866,22 @@ class ExpeditionZoneDataLists:
         for Snippet in self.stubEventsOnTerminalDeactivateAlarm:
             writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolEventsOnTerminalDeactivateAlarm, row, Snippet, "ZoneIndex")
             WardenObjectiveEventData(iExpeditionZoneDataLists, Snippet, startcolEventsOnTerminalDeactivateAlarm+1, row, horizontal=True)
+            row+= 1
+
+        row = startrow
+        # WorldEventChainedPuzzleDatas
+        for Snippet in self.stubWorldEventChainedPuzzleDatas:
+            writeEnumFromDict(ENUMFILE_eLocalZoneIndex, iExpeditionZoneDataLists, startcolWorldEventChainedPuzzleDatas, row, Snippet, "ZoneIndex")
+            writePublicNameFromDict(DATABLOCK_ChainedPuzzle, iExpeditionZoneDataLists, startcolWorldEventChainedPuzzleDatas+1, row, Snippet, "ChainedPuzzle")
+            iExpeditionZoneDataLists.writeFromDict(startcolWorldEventChainedPuzzleDatas+2, row, Snippet, "WorldEventObjectFilter")
+            iExpeditionZoneDataLists.writeFromDict(startcolWorldEventChainedPuzzleDatas+3, row, Snippet, "EventsOnScanDone Group")
+            row+= 1
+
+        row = startrow
+        # EventsOnScanDone
+        for Snippet in self.stubEventsOnScanDone:
+            iExpeditionZoneDataLists.writeFromDict(startcolEventsOnScanDone, row, Snippet, "Identifier")
+            WardenObjectiveEventData(iExpeditionZoneDataLists, Snippet, startcolEventsOnScanDone+1, row, horizontal=True)
             row+= 1
 
         row = startrow
