@@ -70,19 +70,17 @@ def writePublicNameFromDict(datablock:DatablockIO.datablock, interface:XlsxInter
         # This is to catch and not write any "0" datablocks used by the devs
         # This should let past all non-zero, even ones not in the blocks
     except KeyError:return
+    dictionary = dictionary.copy() # prevent side effects (at the cost of memory)
     DatablockIO.idInDict(datablock, dictionary, key)
     interface.writeFromDict(x, y, dictionary, key)
-    # convert the name back into a persistentID since the value that was changed is still part of the dictionary
-    DatablockIO.nameInDict(datablock, dictionary, key)
 
 def writeEnumFromDict(enum:io.FileIO, interface:XlsxInterfacer.interface, x:int, y:int, dictionary:dict, key:str):
     """
     Takes an enum's index from a dictionary and convert it to a name to write in the specified cell
     """
+    dictionary = dictionary.copy() # prevent side effects (at the cost of memory)
     EnumConverter.indexInDict(enum, dictionary, key)
     interface.writeFromDict(x, y, dictionary, key)
-    # convert the index back to an enum since the value that was changed is still a part of the dictionary
-    EnumConverter.enumInDict(enum, dictionary, key)
 
 
 # load all datablock files
