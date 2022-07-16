@@ -300,10 +300,10 @@ def WardenObjectiveEventData(interface:XlsxInterfacer.interface, col:int, row:in
     """
     data = {}
     interface.readIntoDict(str, col, row, data, "Type")
+    EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveEventType, data, "Type")
     data["Condition"] = {}
     interface.readIntoDict(int, col+horizontal, row+(not horizontal), data["Condition"], "ConditionIndex")
     interface.readIntoDict(bool, col+2*horizontal, row+2*(not horizontal), data["Condition"], "IsTrue")
-    EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveEventType, data, "Type")
     interface.readIntoDict(str, col+3*horizontal, row+3*(not horizontal), data, "Trigger")
     EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveEventTrigger, data, "Trigger")
     interface.readIntoDict(str, col+4*horizontal, row+4*(not horizontal), data, "ChainPuzzle")
