@@ -260,7 +260,7 @@ def GenericEnemyWaveData(interface:XlsxInterfacer.interface, col:int, row:int, h
     DatablockIO.nameInDict(DATABLOCK_SurvivalWaveSettings, data, "WaveSettings")
     interface.readIntoDict(str, col+horizontal, row+(not horizontal), data, "WavePopulation")
     DatablockIO.nameInDict(DATABLOCK_SurvivalWavePopulation, data, "WavePopulation")
-    interface.readIntoDict(float, col+2*horizontal, row+2*(not horizontal), data, "AreaDistance")
+    interface.readIntoDict(int, col+2*horizontal, row+2*(not horizontal), data, "AreaDistance")
     interface.readIntoDict(float, col+3*horizontal, row+3*(not horizontal), data, "SpawnDelay")
     interface.readIntoDict(bool, col+4*horizontal, row+4*(not horizontal), data, "TriggerAlarm")
     interface.readIntoDict(str, col+5*horizontal, row+5*(not horizontal), data, "IntelMessage")
