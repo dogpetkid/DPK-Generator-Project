@@ -79,8 +79,10 @@ def compareLanguageById(a:typing.Union[str,int], b:typing.Union[str,int]):
 # GH-1 there has to be a better way than passing the TextDataBlock to every call of the below functions, same goes for the language setting
 def idToLocalizedText(textdatablock:DatablockIO.datablock, persistentId:int, language:typing.Union[str, int]="English"):
     """
-    Return the specific localization of a datablock using its id.
+    Return the specific localization of a datablock using its id. Returns "" when there is no corresponding block.
     """
+    if type(persistentId) != int: return "" # GH-1 should this raise an error instead?
+    if persistentId == 0: return "" # save time since the devs use id 0 as a placeholder to mean nothing
     index = textdatablock.find(persistentId)
     if index == None:
         return ""
@@ -91,8 +93,10 @@ def idToLocalizedText(textdatablock:DatablockIO.datablock, persistentId:int, lan
 
 def localizedtextToId(textdatablock:DatablockIO.datablock, text:str, language:typing.Union[str, int]="English"):
     """
-    Return the id of a block that contains the specific localization.
+    Return the id of a block that contains the specific localization. Returns 0 when there is no corresponding block.
     """
+    if type(text) != str: return 0 # GH-1 should this raise an error instead?
+    if text == "": return 0 # save time since an empty string shouldn't have a localization
     if compareLanguageById("English", language):
         getlocalization = lambda data: data["English"]
     else:
@@ -105,30 +109,43 @@ def localizedtextToId(textdatablock:DatablockIO.datablock, text:str, language:ty
                 return block["persistentID"]
                # GH-1 handle missing persistentID in a block in a separate try catch to actually raise the error
         except KeyError: pass
-    return None
+    return 0
+    # despite None being the better fail return value,
+    # the devs give the id 0 to things that are unused so that should be used for the function
 
-def localizeFromIdInDict(textdatablock:DatablockIO.datablock, dictionary:dict, key:str, language:typing.Union[str, int]="English"):
+def localizeFromIdInDict(textdatablock:DatablockIO.datablock, dictionary:dict, key:str, passthrough:bool=False, language:typing.Union[str, int]="English"):
     """
-    Convert an id into a localized text from inside a dictionary
+    Convert an id into a localized text from inside a dictionary.
+    @param passthrough will make the function do nothing.
     """
+    if passthrough:return
     try: _ = dictionary[key]
     except KeyError:return
-    dictionary[key] = idToLocalizedText(textdatablock, dictionary[key], language=language)
+    if type(dictionary[key]) == int:
+        dictionary[key] = idToLocalizedText(textdatablock, dictionary[key], language=language)
 
-def localizeToIdInDict(textdatablock:DatablockIO.datablock, dictionary:dict, key:str, language:typing.Union[str, int]="English"):
+def localizeToIdInDict(textdatablock:DatablockIO.datablock, dictionary:dict, key:str, passthrough:bool=False, force:bool=False, language:typing.Union[str, int]="English"):
     """
-    Convert a localized text into an id from inside a dictionary
+    Convert a localized text into an id from inside a dictionary.
+    @param passthrough will make the function do nothing.
+    @param force will write the id 0 into the dict when the localization isn't found. (Otherwise it will let text without a localiztion pass through. This excludes "" which always localizes to 0.)
     """
+    if passthrough: return
     try: _ = dictionary[key]
     except KeyError:return
-    dictionary[key] = localizedtextToId(textdatablock, dictionary[key], language=language)
+    if dictionary[key] == "":
+        dictionary[key] = 0
+        return
+    if type(dictionary[key]) == str:
+        id = localizedtextToId(textdatablock, dictionary[key], language=language)
+        if force or id != 0: dictionary[key] = id
 
 if __name__ == "__main__":
     textdatablock = DatablockIO.datablock(open("../OriginalDatablocks/TextDataBlock.json", "r", encoding="UTF-8"))
 
     # I'm unsure why, but the debug messages of the test get messed up, it doesn't matter because it properly asserts when incorrect.
 
-    ids = [2, 966, 4233525490, 99999999999999999999999999, 2992419498]
+    ids = [2, 966, 4233525490, 0, 2992419498]
     texts = ["CONNECT TO RUNDOWN", "[Voice chat active]", "Bat", "",
         "D-Lock Block Cipher\r\nalias:int_server.1024_ciph.tier5.phys_ops/DLockwoodA074.flagged\r\n\nMr. Lockwood,\r\n\nYou requested an update. Here it is.\r\n\nThrough my experiments, I have discovered the virus has a multipronged attack strategy, which not only\r\nincreases the R0, but also allows it to be highly contagious in multiple environments. Infected individual\r\ncan release create pathogens and fomites through any bodily fluid. The virus has been observed in fluids\r\nextracted from anywhere on the patient - sweat, blood, saliva, bile, urine, even in the aqueous and\r\nvitreous humors. The virus can also survive for several weeks while airborne or on surfaces. In my control\r\ntests, subjects exposed to locations that had been contaminated up to 4 weeks prior to exposure still\r\ncontracted the virus. This was also true of subjects immersed in various solutions (I tried fresh water, salt\r\nwater, and several synthetic oils and polymers). 85% of the subjects contracted the virus within a few\r\nhours. The remaining 15% who survived other exposure methods contracted the virus when exposed to a\r\nvaporous environment heavily dosed with infected fomites.\r\n\nThe parasite that we had previously attributed as the primary carrier of the virus is, in my opinion, merely\r\nanother victim of this remarkable lifeform. The only difference is the virus does not mutate the parasites,\r\nrather it prolongs the life cycle of the parasite indefinitely. The relationship is symbiotic. The parasite\r\ncarries the virus to new hosts, and the virus helps the parasite live for an extended (and currently\r\nunknown) period. Perhaps indefinitely.\r\n\nThe virus is remarkable. It appears to have been perfectly designed to infect regardless of the\r\ncircumstance. When it finds a host, it induces coughing, sweating, sneezing, and ultimately violent attacks\r\nto draw blood and saliva. Without a host, it can transfer itself through any medium. The only test I have\r\nnot been able to perform yet is in a vacuum, but I am planning such experiments next week as soon as I\r\nreceive new subjects from Mr. Piros.\r\n\nResearch continues.\r\n\nDr Abeo Dauda A153"
     ]
@@ -143,7 +160,7 @@ if __name__ == "__main__":
     texts = ["CONNECT TO RUNDOWN", "[Voice chat active]", "Bat", "unga bunga",
         "D-Lock Block Cipher\r\nalias:int_server.1024_ciph.tier5.phys_ops/DLockwoodA074.flagged\r\n\nMr. Lockwood,\r\n\nYou requested an update. Here it is.\r\n\nThrough my experiments, I have discovered the virus has a multipronged attack strategy, which not only\r\nincreases the R0, but also allows it to be highly contagious in multiple environments. Infected individual\r\ncan release create pathogens and fomites through any bodily fluid. The virus has been observed in fluids\r\nextracted from anywhere on the patient - sweat, blood, saliva, bile, urine, even in the aqueous and\r\nvitreous humors. The virus can also survive for several weeks while airborne or on surfaces. In my control\r\ntests, subjects exposed to locations that had been contaminated up to 4 weeks prior to exposure still\r\ncontracted the virus. This was also true of subjects immersed in various solutions (I tried fresh water, salt\r\nwater, and several synthetic oils and polymers). 85% of the subjects contracted the virus within a few\r\nhours. The remaining 15% who survived other exposure methods contracted the virus when exposed to a\r\nvaporous environment heavily dosed with infected fomites.\r\n\nThe parasite that we had previously attributed as the primary carrier of the virus is, in my opinion, merely\r\nanother victim of this remarkable lifeform. The only difference is the virus does not mutate the parasites,\r\nrather it prolongs the life cycle of the parasite indefinitely. The relationship is symbiotic. The parasite\r\ncarries the virus to new hosts, and the virus helps the parasite live for an extended (and currently\r\nunknown) period. Perhaps indefinitely.\r\n\nThe virus is remarkable. It appears to have been perfectly designed to infect regardless of the\r\ncircumstance. When it finds a host, it induces coughing, sweating, sneezing, and ultimately violent attacks\r\nto draw blood and saliva. Without a host, it can transfer itself through any medium. The only test I have\r\nnot been able to perform yet is in a vacuum, but I am planning such experiments next week as soon as I\r\nreceive new subjects from Mr. Piros.\r\n\nResearch continues.\r\n\nDr Abeo Dauda A153"
     ]
-    ids = [2, 966, 4233525490, None, 2992419498]
+    ids = [2, 966, 4233525490, 0, 2992419498]
 
     print("Testing localizedtextToId")
     for i in range(len(texts)):
@@ -156,7 +173,7 @@ if __name__ == "__main__":
         "a": 2,
         "b": 966,
         "c": 4233525490,
-        "d": 99999999999999999999999999,
+        "d": 0,
         "e": 2992419498
     }
     texts = {
@@ -170,7 +187,7 @@ if __name__ == "__main__":
     print("Testing localizeFromIdInDict")
     for key, value in dictids.items():
         # check functionality
-        localizeFromIdInDict(textdatablock, dictids, key, language="English")
+        localizeFromIdInDict(textdatablock, dictids, key, passthrough=False, language="English")
         assert dictids[key]==texts[key], "Result does not match expected text."
     for key, _ in dictids.items():
         # check crash proof
@@ -187,14 +204,14 @@ if __name__ == "__main__":
         "a": 2,
         "b": 966,
         "c": 4233525490,
-        "d": None,
+        "d": 0,
         "e": 2992419498
     }
 
     print("Testing localizeToIdInDict")
     for key, value in dictids.items():
         # check functionality
-        localizeToIdInDict(textdatablock, texts, key, language="English")
+        localizeToIdInDict(textdatablock, texts, key, passthrough=False, force=True, language="English")
         assert texts[key]==dictids[key], "Result does not match expected ids."
     for key, _ in dictids.items():
         # check crash proof

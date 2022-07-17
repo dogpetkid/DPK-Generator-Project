@@ -21,6 +21,7 @@ import xlrd
 import ConfigManager
 import DatablockIO
 import EnumConverter
+import Localizer
 import XlsxInterfacer
 
 # argparse: used to get arguments in CLI (to decide which files to turn into levels encoding/decoding and which file)
@@ -82,6 +83,15 @@ def writeEnumFromDict(enum:io.FileIO, interface:XlsxInterfacer.interface, x:int,
     EnumConverter.indexInDict(enum, dictionary, key)
     interface.writeFromDict(x, y, dictionary, key)
 
+# GH-1 if parameter redudancy is reduced in Localization.py, we don't need to be redundant here either
+def writeLocalizationFromDict(textdatablock:DatablockIO.datablock, interface:XlsxInterfacer.interface, x:int, y:int, dictionary:dict, key:str, passthrough:bool=False, language:typing.Union[str,int]="English"):
+    """
+    Takes a localization id from a dictionary and convert it to text to write in the specified cell
+    """
+    dictionary = dictionary.copy() # prevent side effects (at the cost of memory)
+    Localizer.localizeFromIdInDict(textdatablock, dictionary, key, passthrough=passthrough, language=language)
+    interface.writeFromDict(x, y, dictionary, key)
+
 
 # load all datablock files
 if True:
@@ -111,6 +121,7 @@ if True:
         DATABLOCK_StaticSpawn = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"StaticSpawnDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
         DATABLOCK_SurvivalWavePopulation = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"SurvivalWavePopulationDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
         DATABLOCK_SurvivalWaveSettings = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"SurvivalWaveSettingsDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
+        DATABLOCK_Text = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"TextDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
         DATABLOCK_VanityItemsGroup = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"VanityItemsGroupDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
         DATABLOCK_VanityItemsLayerDrops = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"VanityItemsLayerDropsDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
         DATABLOCK_WardenObjective = DatablockIO.datablock(open(os.path.join(blockpath,ConfigManager.config["Project"]["blockprefix"]+"WardenObjectiveDataBlock"+ConfigManager.config["Project"]["blocksuffix"]), 'r', encoding="utf8"))
