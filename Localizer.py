@@ -4,6 +4,7 @@ This is a tool created by DPK
 This tool can handle the data used for GTFO's Localization system from TextDataBlock.
 """
 
+import re
 import typing
 
 import DatablockIO
@@ -76,6 +77,18 @@ def compareLanguageById(a:typing.Union[str,int], b:typing.Union[str,int]):
     except LanguageError:
         return False
 
+def sanitize(string:str):
+    """
+    Sanitizes strings of problematic characters the GTFO devs use.
+    The characters removed cause IllegalCharacterError and/or UnicodeError.
+    @see https://openpyxl.readthedocs.io/en/stable/_modules/openpyxl/utils/exceptions.html?highlight=IllegalCharacterError
+    @see https://docs.python.org/3/library/exceptions.html#UnicodeError
+    """
+    # GH-1 there has a way to escape the character rather than just replacing it
+    string = re.sub(chr(0x9d), "?", string)
+    string = re.sub(chr(0x8d), "?", string)
+    return string
+
 # GH-1 there has to be a better way than passing the TextDataBlock to every call of the below functions, same goes for the language setting
 def idToLocalizedText(textdatablock:DatablockIO.datablock, persistentId:int, language:typing.Union[str, int]="English"):
     """
@@ -87,7 +100,7 @@ def idToLocalizedText(textdatablock:DatablockIO.datablock, persistentId:int, lan
     if index == None:
         return ""
     if compareLanguageById("English", language):
-        return textdatablock.data["Blocks"][index]["English"]
+        return sanitize(textdatablock.data["Blocks"][index]["English"])
     else:
         LanguageError.notSupported(language)
 
@@ -105,7 +118,7 @@ def localizedtextToId(textdatablock:DatablockIO.datablock, text:str, language:ty
     for block in textdatablock.data["Blocks"]:
         try:
             # return the block with the text matching the localization we are looking for
-            if text == getlocalization(block):
+            if mangle(sanitize(text)) == mangle(sanitize(getlocalization(block))):
                 return block["persistentID"]
                # GH-1 handle missing persistentID in a block in a separate try catch to actually raise the error
         except KeyError: pass
@@ -216,3 +229,38 @@ if __name__ == "__main__":
     for key, _ in dictids.items():
         # check crash proof
         localizeToIdInDict(textdatablock, texts, key+key, language="English")
+
+    # some extra code to debug Monster because it has an invalid character according to openpyxl
+    # here is the error produced by openpyxl: https://openpyxl.readthedocs.io/en/stable/_modules/openpyxl/utils/exceptions.html?highlight=IllegalCharacterError
+    print("Extra debug for Monster")
+    ids = [
+        # all unique text ids used throughout the first layer
+        0,
+        1460368036,
+        1561677308,
+        1562516213,
+        1681134989,
+        1704474804,
+        1775975616,
+        1775975616,
+        2374160068,
+        2532265839,
+        2565679904,
+        2565679904,
+        2668534995,
+        2782882580,
+        3171715834,
+        3993990468,
+        4025272896,
+        4028253467,
+        420980446, # <-- this string is the issue and even crashes python's print
+        # here is the error it produces: https://docs.python.org/3/library/exceptions.html#UnicodeError
+        972,
+        972465867,
+    ]
+    for id in ids:
+        print("id " + str(id))
+        text = idToLocalizedText(textdatablock, id)
+        print("Text:\n", text)
+        print("--------------------------------------------------")
+    # the invalid characters in question is \x9d and \x8d
