@@ -264,6 +264,7 @@ def GenericEnemyWaveData(interface:XlsxInterfacer.interface, col:int, row:int, h
     interface.readIntoDict(float, col+3*horizontal, row+3*(not horizontal), data, "SpawnDelay")
     interface.readIntoDict(bool, col+4*horizontal, row+4*(not horizontal), data, "TriggerAlarm")
     interface.readIntoDict(str, col+5*horizontal, row+5*(not horizontal), data, "IntelMessage")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "IntelMessage", passthrough=False, force=False, language="English")
     return data
 
 def GenericEnemyWaveDataList(interface:XlsxInterfacer.interface, col:int, row:int, horizontal:bool=True):
@@ -321,11 +322,15 @@ def WardenObjectiveEventData(interface:XlsxInterfacer.interface, col:int, row:in
     interface.readIntoDict(float, col+10*horizontal, row+10*(not horizontal), data, "Duration")
     interface.readIntoDict(bool, col+11*horizontal, row+11*(not horizontal), data, "ClearDimension")
     interface.readIntoDict(str, col+12*horizontal, row+12*(not horizontal), data, "WardenIntel")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "WardenIntel", passthrough=False, force=False, language="English")
     interface.readIntoDict(str, col+13*horizontal, row+13*(not horizontal), data, "CustomSubObjectiveHeader")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "CustomSubObjectiveHeader", passthrough=False, force=False, language="English")
     interface.readIntoDict(str, col+14*horizontal, row+14*(not horizontal), data, "CustomSubObjective")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "CustomSubObjective", passthrough=False, force=False, language="English")
     interface.readIntoDict(int, col+15*horizontal, row+15*(not horizontal), data, "SoundID")
     # TODO convert sound placeholders
     interface.readIntoDict(str, col+16*horizontal, row+16*(not horizontal), data, "SoundSubtitle")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "SoundSubtitle", passthrough=False, force=False, language="English")
     interface.readIntoDict(str, col+17*horizontal, row+17*(not horizontal), data, "DialogueID")
     DatablockIO.nameInDict(DATABLOCK_PlayerDialog, data, "DialogueID")
     interface.readIntoDict(str, col+18*horizontal, row+18*(not horizontal), data, "FogSetting")
@@ -424,8 +429,11 @@ def ExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface):
     iExpeditionInTier.readIntoDict(bool, 14, 12, data["Descriptive"], "IsExtraExpedition")
     iExpeditionInTier.readIntoDict(int, 14, 17, data["Descriptive"], "ExpeditionDepth")
     data["Descriptive"]["EstimatedDuration"] = iExpeditionInTier.read(XlsxInterfacer.blankable, 14, 18)
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data["Descriptive"], "EstimatedDuration", passthrough=False, force=False, language="English")
     data["Descriptive"]["ExpeditionDescription"] = re.sub(sheetnewlnregex, devcrlf, iExpeditionInTier.read(XlsxInterfacer.blankable, 14, 19))
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data["Descriptive"], "ExpeditionDescription", passthrough=False, force=False, language="English")
     data["Descriptive"]["RoleplayedWardenIntel"] = re.sub(sheetnewlnregex, devcrlf, iExpeditionInTier.read(XlsxInterfacer.blankable, 14, 20))
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data["Descriptive"], "RoleplayedWardenIntel", passthrough=False, force=False, language="English")
     data["Descriptive"]["DevInfo"] = re.sub(sheetnewlnregex, devlf, iExpeditionInTier.read(XlsxInterfacer.blankable, 14, 21))
     data["Seeds"] = {}
     iExpeditionInTier.readIntoDict(int, 5, 10, data["Seeds"], "BuildSeed")
@@ -725,6 +733,7 @@ class ExpeditionZoneDataLists:
             Snippet = {}
             iExpeditionZoneDataLists.readIntoDict(str, startcolLocalLogFiles+1, row, Snippet, "FileName")
             iExpeditionZoneDataLists.readIntoDict(str, startcolLocalLogFiles+2, row, Snippet, "FileContent")
+            Localizer.localizeToIdInDict(DATABLOCK_Text, Snippet, "FileContent", passthrough=False, force=False, language="English")
             try:
                 Snippet["FileContent"] = re.sub(sheetnewlnregex, devcrlf, Snippet["FileContent"])
                 Snippet["FileContent"] = re.sub(sheettabregex, devtb, Snippet["FileContent"])
@@ -745,6 +754,7 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.readIntoDict(str, startcolPostCommandOutputs+1, row, Snippet, "LineType")
             EnumConverter.enumInDict(ENUMFILE_TerminalLineType, Snippet, "LineType")
             iExpeditionZoneDataLists.readIntoDict(str, startcolPostCommandOutputs+2, row, Snippet, "Output")
+            Localizer.localizeToIdInDict(DATABLOCK_Text, Snippet, "Output", passthrough=False, force=False, language="English")
             iExpeditionZoneDataLists.readIntoDict(float, startcolPostCommandOutputs+3, row, Snippet, "Time")
             EnsureKeyInDictArray(self.stubPostCommandOutputs, iExpeditionZoneDataLists.read(str, startcolPostCommandOutputs, row))
             self.stubPostCommandOutputs[iExpeditionZoneDataLists.read(str, startcolPostCommandOutputs, row)].append(Snippet)
@@ -765,6 +775,7 @@ class ExpeditionZoneDataLists:
             Snippet = {}
             iExpeditionZoneDataLists.readIntoDict(str, startcolUniqueCommands+1, row, Snippet, "Command")
             iExpeditionZoneDataLists.readIntoDict(str, startcolUniqueCommands+2, row, Snippet, "CommandDesc")
+            Localizer.localizeToIdInDict(DATABLOCK_Text, Snippet, "CommandDesc", passthrough=False, force=False, language="English")
             Snippet["PostCommandOutputs"] = self.PostCommandOutputs(iExpeditionZoneDataLists.read(XlsxInterfacer.blankable, startcolUniqueCommands+3, row))
             Snippet["CommandEvents"] = self.CommandEvents(iExpeditionZoneDataLists.read(XlsxInterfacer.blankable, startcolUniqueCommands+4, row))
             iExpeditionZoneDataLists.readIntoDict(str, startcolUniqueCommands+5, row, Snippet, "SpecialCommandRule")
@@ -785,6 +796,7 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.readIntoDict(str, startcolTerminalPlacements+8, row, Snippet["StartingStateData"], "StartingState")
             EnumConverter.enumInDict(ENUMFILE_TERM_State, Snippet["StartingStateData"], "StartingState")
             iExpeditionZoneDataLists.readIntoDict(bool, startcolTerminalPlacements+9, row, Snippet["StartingStateData"], "UseCustomInfoText")
+            Localizer.localizeToIdInDict(DATABLOCK_Text, Snippet["StartingStateData"], "UseCustomInfoText", passthrough=False, force=False, language="English")
             iExpeditionZoneDataLists.readIntoDict(str, startcolTerminalPlacements+10, row, Snippet["StartingStateData"], "CustomInfoText")
             iExpeditionZoneDataLists.readIntoDict(bool, startcolTerminalPlacements+11, row, Snippet["StartingStateData"], "KeepShowingLocalLogCount")
             iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+12, row, Snippet["StartingStateData"], "AudioEventEnter")
@@ -1039,6 +1051,7 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, listdata:Ex
     iExpeditionZoneData.readIntoDict(str, colPuzzleType, row, data["ProgressionPuzzleToEnter"], "PuzzleType")
     EnumConverter.enumInDict(ENUMFILE_eProgressionPuzzleType, data["ProgressionPuzzleToEnter"], "PuzzleType")
     iExpeditionZoneData.readIntoDict(str, colPuzzleType+1, row, data["ProgressionPuzzleToEnter"], "CustomText")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data["ProgressionPuzzleToEnter"], "CustomText", passthrough=False, force=False, language="English")
     iExpeditionZoneData.readIntoDict(int, colPuzzleType+2, row, data["ProgressionPuzzleToEnter"], "PlacementCount")
     data["ProgressionPuzzleToEnter"]["ZonePlacementData"] = listdata.ProgressionPuzzleToEnterZonePlacementData(zonestr)
     iExpeditionZoneData.readIntoDict(str, colPuzzleType+4, row, data, "ChainedPuzzleToEnter")
@@ -1203,6 +1216,8 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveType, data, "Type")
     data["Header"] =                            iWardenObjective.read(XlsxInterfacer.blankable, 1, 3)
     data["MainObjective"] =                     iWardenObjective.read(XlsxInterfacer.blankable, 1, 4)
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "Header",                            passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "MainObjective",                     passthrough=False, force=False, language="English")
 
     data["FindLocationInfo"] =                  iWardenObjective.read(XlsxInterfacer.blankable, 1, 8)
     data["FindLocationInfoHelp"] =              iWardenObjective.read(XlsxInterfacer.blankable, 1, 9)
@@ -1218,10 +1233,25 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     data["GoToWinConditionHelp_CustomGeo"] =    iWardenObjective.read(XlsxInterfacer.blankable, 1, 19)
     data["GoToWinCondition_ToMainLayer"] =      iWardenObjective.read(XlsxInterfacer.blankable, 1, 20)
     data["GoToWinConditionHelp_ToMainLayer"] =  iWardenObjective.read(XlsxInterfacer.blankable, 1, 21)
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "FindLocationInfo",                  passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "FindLocationInfoHelp",              passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "GoToZone",                          passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "GoToZoneHelp",                      passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "InZoneFindItem",                    passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "InZoneFindItemHelp",                passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "SolveItem",                         passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "SolveItemHelp",                     passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "GoToWinCondition_Elevator",         passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "GoToWinConditionHelp_Elevator",     passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "GoToWinCondition_CustomGeo",        passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "GoToWinConditionHelp_CustomGeo",    passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "GoToWinCondition_ToMainLayer",      passthrough=False, force=False, language="English")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "GoToWinConditionHelp_ToMainLayer",  passthrough=False, force=False, language="English")
     iWardenObjective.readIntoDict(float, 1, 22, data, "ShowHelpDelay")
 
     data["WavesOnElevatorLand"] = GenericEnemyWaveDataList(iWardenObjective, 2, rowWavesOnElevatorLand+1, horizontal=True)
     iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+44, data, "WaveOnElevatorWardenIntel")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "WaveOnElevatorWardenIntel", passthrough=False, force=False, language="English")
     iWardenObjective.readIntoDict(str, 1, rowWavesOnElevatorLand+46, data, "FogTransitionDataOnElevatorLand")
     DatablockIO.nameInDict(DATABLOCK_FogSettings, data, "FogTransitionDataOnElevatorLand")
     iWardenObjective.readIntoDict(float, 1, rowWavesOnElevatorLand+47, data, "FogTransitionDurationOnElevatorLand")
@@ -1268,6 +1298,7 @@ def WardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWardenObjec
     iWardenObjective.readIntoDict(bool, 1, rowLightsOnFromBeginning+2, data, "LightsOnWhenStartupComplete")
     iWardenObjective.readIntoDict(str, 1, rowLightsOnFromBeginning+5, data, "SpecialTerminalCommand")
     iWardenObjective.readIntoDict(str, 1, rowLightsOnFromBeginning+6, data, "SpecialTerminalCommandDesc")
+    Localizer.localizeToIdInDict(DATABLOCK_Text, data, "SpecialTerminalCommandDesc", passthrough=False, force=False, language="English")
     data["PostCommandOutput"] = []
     col,row = 1,rowLightsOnFromBeginning+7
     while not(iWardenObjective.isEmpty(col, row)):

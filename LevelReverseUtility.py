@@ -275,7 +275,7 @@ def GenericEnemyWaveData(interface:XlsxInterfacer.interface, data:dict, col:int,
     interface.writeFromDict(col+2*horizontal, row+2*(not horizontal), data, "AreaDistance")
     interface.writeFromDict(col+3*horizontal, row+3*(not horizontal), data, "SpawnDelay")
     interface.writeFromDict(col+4*horizontal, row+4*(not horizontal), data, "TriggerAlarm")
-    interface.writeFromDict(col+5*horizontal, row+5*(not horizontal), data, "IntelMessage")
+    writeLocalizationFromDict(DATABLOCK_Text, interface, col+5*horizontal, row+5*(not horizontal), data, "IntelMessage", passthrough=False, language="English")
 
 def GenericEnemyWaveDataList(interface:XlsxInterfacer.interface, data:typing.List[dict], col:int, row:int, horizontal:bool=True):
     """
@@ -319,12 +319,12 @@ def WardenObjectiveEventData(interface:XlsxInterfacer.interface, data:dict, col:
     interface.writeFromDict(col+9*horizontal, row+9*(not horizontal), data, "Delay")
     interface.writeFromDict(col+10*horizontal, row+10*(not horizontal), data, "Duration")
     interface.writeFromDict(col+11*horizontal, row+11*(not horizontal), data, "ClearDimension")
-    interface.writeFromDict(col+12*horizontal, row+12*(not horizontal), data, "WardenIntel")
-    interface.writeFromDict(col+13*horizontal, row+13*(not horizontal), data, "CustomSubObjectiveHeader")
-    interface.writeFromDict(col+14*horizontal, row+14*(not horizontal), data, "CustomSubObjective")
+    writeLocalizationFromDict(DATABLOCK_Text, interface, col+12*horizontal, row+12*(not horizontal), data, "WardenIntel", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, interface, col+13*horizontal, row+13*(not horizontal), data, "CustomSubObjectiveHeader", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, interface, col+14*horizontal, row+14*(not horizontal), data, "CustomSubObjective", passthrough=False, language="English")
     interface.writeFromDict(col+15*horizontal, row+15*(not horizontal), data, "SoundID")
     # TODO convert sound id to name of sound
-    interface.writeFromDict(col+16*horizontal, row+16*(not horizontal), data, "SoundSubtitle")
+    writeLocalizationFromDict(DATABLOCK_Text, interface, col+16*horizontal, row+16*(not horizontal), data, "SoundSubtitle", passthrough=False, language="English")
     writePublicNameFromDict(DATABLOCK_PlayerDialog, interface, col+17*horizontal, row+17*(not horizontal), data, "DialogueID")
     writePublicNameFromDict(DATABLOCK_FogSettings, interface, col+18*horizontal, row+18*(not horizontal), data, "FogSetting")
     interface.writeFromDict(col+19*horizontal, row+19*(not horizontal), data, "FogTransitionDuration")
@@ -532,18 +532,22 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
         iExpeditionInTier.writeFromDict(14, 11, ExpeditionInTierData["Descriptive"], "PublicName")
         iExpeditionInTier.writeFromDict(14, 12, ExpeditionInTierData["Descriptive"], "IsExtraExpedition")
         iExpeditionInTier.writeFromDict(14, 17, ExpeditionInTierData["Descriptive"], "ExpeditionDepth")
-        iExpeditionInTier.writeFromDict(14, 18, ExpeditionInTierData["Descriptive"], "EstimatedDuration")
+        writeLocalizationFromDict(DATABLOCK_Text, iExpeditionInTier, 14, 18, ExpeditionInTierData["Descriptive"], "EstimatedDuration", passthrough=False, language="English")
         # TODO regex replace new lines to be "\n"
         try:
-            desc = re.sub(devnewlnregex, sheetcrlf, str(ExpeditionInTierData["Descriptive"]["ExpeditionDescription"])) # TODO fix this bodge for localization
+            desc = ExpeditionInTierData["Descriptive"]["ExpeditionDescription"]
+            if type(desc)==int: desc = Localizer.idToLocalizedText(DATABLOCK_Text, desc, language="English")
+            if type(desc)==str: desc = re.sub(devnewlnregex, sheetcrlf, desc)
             iExpeditionInTier.write(desc, 14, 19)
         except KeyError:pass
         try:
-            desc = re.sub(devnewlnregex, sheetcrlf, str(ExpeditionInTierData["Descriptive"]["RoleplayedWardenIntel"])) # TODO fix this bodge for localization
+            desc = ExpeditionInTierData["Descriptive"]["RoleplayedWardenIntel"]
+            if type(desc)==int: desc = Localizer.idToLocalizedText(DATABLOCK_Text, desc, language="English")
+            if type(desc)==str: desc = re.sub(devnewlnregex, sheetcrlf, desc)
             iExpeditionInTier.write(desc, 14, 20)
         except KeyError:pass
         try:
-            desc = re.sub(devnewlnregex, sheetlf, str(ExpeditionInTierData["Descriptive"]["DevInfo"])) # TODO fix this bodge for localization
+            desc = re.sub(devnewlnregex, sheetlf, ExpeditionInTierData["Descriptive"]["DevInfo"])
             iExpeditionInTier.write(desc, 14, 21)
         except KeyError:pass
     except KeyError:pass
@@ -936,7 +940,7 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+7, row, Snippet, "Command Group")
             try:
                 writeEnumFromDict(ENUMFILE_TERM_State, iExpeditionZoneDataLists, startcolTerminalPlacements+8, row, Snippet["StartingStateData"], "StartingState")
-                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+9, row, Snippet["StartingStateData"], "UseCustomInfoText")
+                writeLocalizationFromDict(DATABLOCK_Text, iExpeditionZoneDataLists, startcolTerminalPlacements+9, row, Snippet["StartingStateData"], "UseCustomInfoText", passthrough=False, language="English")
                 iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+10, row, Snippet["StartingStateData"], "CustomInfoText")
                 iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+11, row, Snippet["StartingStateData"], "KeepShowingLocalLogCount")
                 iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+12, row, Snippet["StartingStateData"], "AudioEventEnter")
@@ -960,8 +964,11 @@ class ExpeditionZoneDataLists:
 
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+1, row, Snippet, "FileName")
             try:
-                content = re.sub(devnewlnregex, sheetcrlf, str(Snippet["FileContent"])) # TODO fix this bodge for localization
-                content = re.sub(devtabregex, sheettb, content)
+                content = Snippet["FileContent"]
+                if type(content)==int: content = Localizer.idToLocalizedText(DATABLOCK_Text, content, language="English")
+                if type(content)==str:
+                    content = re.sub(devnewlnregex, sheetcrlf, content)
+                    content = re.sub(devtabregex, sheettb, content)
                 iExpeditionZoneDataLists.write(content, startcolLocalLogFiles+2, row)
             except KeyError:pass
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+4, row, Snippet, "AttachedAudioFile")
@@ -990,7 +997,7 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.writeFromDict(startcolPostCommandOutputs, row, Snippet, "Post Output Group")
 
             writeEnumFromDict(ENUMFILE_TerminalLineType, iExpeditionZoneDataLists, startcolPostCommandOutputs+1, row, Snippet, "LineType")
-            iExpeditionZoneDataLists.writeFromDict(startcolPostCommandOutputs+2, row, Snippet, "Output")
+            writeLocalizationFromDict(DATABLOCK_Text, iExpeditionZoneDataLists, startcolPostCommandOutputs+2, row, Snippet, "Output", passthrough=False, language="English")
             iExpeditionZoneDataLists.writeFromDict(startcolPostCommandOutputs+3, row, Snippet, "Time")
 
             row+= 1
@@ -1070,7 +1077,7 @@ def ExpeditionZoneData(iExpeditionZoneData:XlsxInterfacer.interface, ExpeditionZ
 
     try:
         writeEnumFromDict(ENUMFILE_eProgressionPuzzleType, iExpeditionZoneData, colPuzzleType, row, ExpeditionZoneData["ProgressionPuzzleToEnter"], "PuzzleType")
-        iExpeditionZoneData.writeFromDict(colPuzzleType+1, row, ExpeditionZoneData["ProgressionPuzzleToEnter"], "CustomText")
+        writeLocalizationFromDict(DATABLOCK_Text, iExpeditionZoneData, colPuzzleType+1, row, ExpeditionZoneData["ProgressionPuzzleToEnter"], "CustomText", passthrough=False, language="English")
         iExpeditionZoneData.writeFromDict(colPuzzleType+2, row, ExpeditionZoneData["ProgressionPuzzleToEnter"], "PlacementCount")
         # ProgressionPuzzleToEnter's ZonePlacementData in lists
     except KeyError:pass
@@ -1239,28 +1246,28 @@ def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWarde
     rowname = 274-1
 
     writeEnumFromDict(ENUMFILE_eWardenObjectiveType, iWardenObjective, 1, 1, WardenObjective, "Type")
-    iWardenObjective.writeFromDict(1, 3, WardenObjective, "Header")
-    iWardenObjective.writeFromDict(1, 4, WardenObjective, "MainObjective")
-    iWardenObjective.writeFromDict(1, 8, WardenObjective, "FindLocationInfo")
-    iWardenObjective.writeFromDict(1, 9, WardenObjective, "FindLocationInfoHelp")
-    iWardenObjective.writeFromDict(1, 10, WardenObjective, "GoToZone")
-    iWardenObjective.writeFromDict(1, 11, WardenObjective, "GoToZoneHelp")
-    iWardenObjective.writeFromDict(1, 12, WardenObjective, "InZoneFindItem")
-    iWardenObjective.writeFromDict(1, 13, WardenObjective, "InZoneFindItemHelp")
-    iWardenObjective.writeFromDict(1, 14, WardenObjective, "SolveItem")
-    iWardenObjective.writeFromDict(1, 15, WardenObjective, "SolveItemHelp")
-    iWardenObjective.writeFromDict(1, 16, WardenObjective, "GoToWinCondition_Elevator")
-    iWardenObjective.writeFromDict(1, 17, WardenObjective, "GoToWinConditionHelp_Elevator")
-    iWardenObjective.writeFromDict(1, 18, WardenObjective, "GoToWinCondition_CustomGeo")
-    iWardenObjective.writeFromDict(1, 19, WardenObjective, "GoToWinConditionHelp_CustomGeo")
-    iWardenObjective.writeFromDict(1, 20, WardenObjective, "GoToWinCondition_ToMainLayer")
-    iWardenObjective.writeFromDict(1, 21, WardenObjective, "GoToWinConditionHelp_ToMainLayer")
-    iWardenObjective.writeFromDict(1, 22, WardenObjective, "ShowHelpDelay")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 3, WardenObjective, "Header", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 4, WardenObjective, "MainObjective", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 8, WardenObjective, "FindLocationInfo", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 9, WardenObjective, "FindLocationInfoHelp", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 10, WardenObjective, "GoToZone", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 11, WardenObjective, "GoToZoneHelp", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 12, WardenObjective, "InZoneFindItem", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 13, WardenObjective, "InZoneFindItemHelp", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 14, WardenObjective, "SolveItem", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 15, WardenObjective, "SolveItemHelp", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 16, WardenObjective, "GoToWinCondition_Elevator", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 17, WardenObjective, "GoToWinConditionHelp_Elevator", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 18, WardenObjective, "GoToWinCondition_CustomGeo", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 19, WardenObjective, "GoToWinConditionHelp_CustomGeo", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 20, WardenObjective, "GoToWinCondition_ToMainLayer", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 21, WardenObjective, "GoToWinConditionHelp_ToMainLayer", passthrough=False, language="English")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, 22, WardenObjective, "ShowHelpDelay", passthrough=False, language="English")
 
     try:
         GenericEnemyWaveDataList(iWardenObjective, WardenObjective["WavesOnElevatorLand"], 2, rowWavesOnElevatorLand+1, horizontal=True)
     except KeyError:pass
-    iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+44, WardenObjective, "WaveOnElevatorWardenIntel")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, rowWavesOnElevatorLand+44, WardenObjective, "WaveOnElevatorWardenIntel", passthrough=False, language="English")
     writePublicNameFromDict(DATABLOCK_FogSettings, iWardenObjective, 1, rowWavesOnElevatorLand+46, WardenObjective, "FogTransitionDataOnElevatorLand")
     iWardenObjective.writeFromDict(1, rowWavesOnElevatorLand+47, WardenObjective, "FogTransitionDurationOnElevatorLand")
     try:
@@ -1307,7 +1314,7 @@ def framesWardenObjectiveBlock(iWardenObjective:XlsxInterfacer.interface, iWarde
     iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+1, WardenObjective, "LightsOnDuringIntro")
     iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+2, WardenObjective, "LightsOnWhenStartupComplete")
     iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+5, WardenObjective, "SpecialTerminalCommand")
-    iWardenObjective.writeFromDict(1, rowLightsOnFromBeginning+6, WardenObjective, "SpecialTerminalCommandDesc")
+    writeLocalizationFromDict(DATABLOCK_Text, iWardenObjective, 1, rowLightsOnFromBeginning+6, WardenObjective, "SpecialTerminalCommandDesc", passthrough=False, language="English")
     try:
         # TODO if an output string is blank, it will not be placed on the list which may leave a hole in the list
         itercol,iterrow = 1, rowLightsOnFromBeginning+7
