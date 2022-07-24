@@ -89,6 +89,15 @@ def sanitize(string:str):
     string = re.sub(chr(0x8d), "?", string)
     return string
 
+def mangle(string:str):
+    """
+    Mangle any characters that could be replaced to be the same.
+    E.g. linebreaks could be represented as \\n or \\r\\n
+    """
+    # GH-1 there has to be a way to more intelligent way to compare strings rather than mangling strings to be the same before compraing them
+    string = re.sub("\r?\n", "\r\n", string)
+    return string
+
 # GH-1 there has to be a better way than passing the TextDataBlock to every call of the below functions, same goes for the language setting
 def idToLocalizedText(textdatablock:DatablockIO.datablock, persistentId:int, language:typing.Union[str, int]="English"):
     """
