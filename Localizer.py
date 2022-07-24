@@ -85,8 +85,33 @@ def sanitize(string:str):
     @see https://docs.python.org/3/library/exceptions.html#UnicodeError
     """
     # GH-1 there has a way to escape the character rather than just replacing it
-    string = re.sub(chr(0x9d), "?", string)
-    string = re.sub(chr(0x8d), "?", string)
+    string = re.sub(chr(0x202c), "?", string)   # used in         16 @   37
+    string = re.sub(chr(0x0420), "?", string)   # used in        926 @    0
+    string = re.sub(chr(0x0443), "?", string)   # used in        926 @    1
+    string = re.sub(chr(0x0441), "?", string)   # used in        926 @    2 &        926 @    3
+    string = re.sub(chr(0x043a), "?", string)   # used in        926 @    4
+    string = re.sub(chr(0x0438), "?", string)   # used in        926 @    5
+    string = re.sub(chr(0x0439), "?", string)   # used in        926 @    6
+    string = re.sub(chr(0x65e5), "?", string)   # used in       1383 @    0
+    string = re.sub(chr(0x672c), "?", string)   # used in       1383 @    1
+    string = re.sub(chr(0x8a9e), "?", string)   # used in       1383 @    2
+    string = re.sub(chr(0xd55c), "?", string)   # used in       1384 @    0
+    string = re.sub(chr(0xad6d), "?", string)   # used in       1384 @    1
+    string = re.sub(chr(0xc5b4), "?", string)   # used in       1384 @    2
+    string = re.sub(chr(0x7e41), "?", string)   # used in       1385 @    0
+    string = re.sub(chr(0x9ad4), "?", string)   # used in       1385 @    1
+    string = re.sub(chr(0x4e2d), "?", string)   # used in       1385 @    2 &       1386 @    2
+    string = re.sub(chr(0x6587), "?", string)   # used in       1385 @    3 &       1386 @    3
+    string = re.sub(chr(0x7b80), "?", string)   # used in       1386 @    0
+    string = re.sub(chr(0x4f53), "?", string)   # used in       1386 @    1
+    string = re.sub(chr(0x009d), "?", string)   # used in  420980446 @   71 &  420980446 @  250
+    string = re.sub(chr(0x008d), "?", string)   # used in  420980446 @  162
+    string = re.sub(chr(0x0103), "?", string)   # used in 2180421988 @  367
+    string = re.sub(chr(0x2032), "?", string)   # used in 2180421988 @  369
+    string = re.sub(chr(0x0259), "?", string)   # used in 2180421988 @  371
+    string = re.sub(chr(0x2033), "?", string)   # used in 2180421988 @  376
+    string = re.sub(chr(0x0113), "?", string)   # used in 2180421988 @  377
+    string = re.sub(chr(0x2009), "?", string)   # used in 3295463044 @ 1247 & 3295463044 @ 1249
     return string
 
 def mangle(string:str):
@@ -273,3 +298,60 @@ if __name__ == "__main__":
         print("Text:\n", text)
         print("--------------------------------------------------")
     # the invalid characters in question is \x9d and \x8d
+
+    # of course there are other strings that cause issues, so instead it may be more useful to just print them all and see who crashes
+    print("\n==================================================\n")
+    print("Dumping ALL localizations (this may take a while)...")
+
+    def problempositions(errorstring):
+        """
+        Take a UnicodeError string and parse out the indexes of characters causing the issue
+        """
+        # find the hex of the problem characters
+        strings = re.split("position |: ", errorstring)
+        if (len(strings) < 2): raise Exception("error string lacks positional information" + errorstring) # if the positions in the error string cannot be found, continue
+        positions = strings[1].split("-")
+        start = int(positions[0])
+        end = int(positions[1]) if len(positions) > 1 else int(positions[0])
+        return start,end
+
+    problemcharacterlist=[]
+    problems=[]
+    for localization in textdatablock.data["Blocks"]:
+    # if True:
+        # localization = textdatablock.data["Blocks"][textdatablock.find(3295463044)]
+        print("--------------------------------------------------")
+        text = localization["English"]
+        id = localization["persistentID"]
+
+        offset = 0
+        while offset < len(text):
+            remainingtext = text[offset:]
+            errorstring = ""
+            try:
+                # all breaks need to be replaced to normal characters
+                remainingtext = re.sub("\r|\n", "N", remainingtext)
+                # this is because UnicodeError treats \r\n as taking 1 position where as indexing the string treats \r\n as 2 positions
+                # using a normal character will make both treat \r and \n as individual characters
+                print(remainingtext)
+            except UnicodeError as e:
+                errorstring = str(e)
+
+            if len(errorstring) == 0: break # if there was no current or caught issue, continue
+
+            start,end = problempositions(errorstring)
+            tmp = []
+            for i in range(start, end+1):
+                problemcharacter = ord(remainingtext[i])
+                try:
+                    usedindex = problemcharacterlist.index(problemcharacter)
+                    problems[usedindex]+= " & %10u @%5u" % (id, offset+i)
+                except ValueError:
+                    problemcharacterlist.append(problemcharacter)
+                    problems.append("    string = re.sub(chr(0x%04x), \"?\", string)   # used in %10u @%5u" % (ord(remainingtext[i]), id, offset+i))
+
+            offset+= end+1
+
+    print("--------------------------------------------------")
+    print("This code should be used as the code in the sanitize() function:")
+    print("\n".join(problems))
