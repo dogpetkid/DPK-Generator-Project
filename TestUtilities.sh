@@ -40,9 +40,11 @@ python ./LevelUtility.py -v DEBUG -n "Unit 23.xlsx" Evaluation.xlsx Cargo.xlsx D
 echo 
 
 cd "$datablocksfolder"
+echo "Filtering diff..."
+git diff --color=never > diffout
+python "$generatorfolder/DiffHelper.py" diffout
 if [ "$1" != "-y" ]; then
-	echo "Diff:"
-	git diff
+	vim diffout
 fi
 # don't reset again, leave results to be examined
 
