@@ -22,6 +22,11 @@ patternstoignore = [
     '\\S\\s*"CustomSubObjectiveHeader": 0',
     '\\S\\s*"CustomSubObjective": 0',
     '\\S\\s*"ConsumableDistributionInZone": 0',
+    '\\S\\s*"CustomInfoText": 0',
+    '\\S\\s*"Output": 0',
+    '\\S\\s*"CommandDesc": 0',
+    '\\S\\s*"CustomText": 0',
+    '\\S\\s*"LightSettings": 0',
     # empty arrays
     '\\S\\s*"EventsOnBossDeath": \\[\\]',
     '\\S\\s*"WorldEventChainedPuzzleDatas": \\[\\]',
@@ -31,6 +36,15 @@ patternstoignore = [
     '\\S\\s*"TerminalZoneSelectionDatas": \\[\\]',
     '\\S\\s*"EventsOnTrigger": \\[\\]',
     '\\S\\s*"TerminalPlacements": \\[\\]',
+    '\\S\\s*"EventsOnEnter": \\[\\]',
+    '\\S\\s*"EventsOnPortalWarp": \\[\\]',
+    # empty strings
+    '\\S\\s*"AliasPrefixShortOverride": ""',
+    '\\S\\s*"AliasPrefixOverride": ""',
+    '\\S\\s*"CustomGeomorph": ""',
+    '\\S\\s*"PasswordHintText": ""',
+    '\\S\\s*"Command": ""',
+    '\\S\\s*"WardenIntel": ""',
 ]
 
 if __name__ == "__main__":

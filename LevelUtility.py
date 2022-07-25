@@ -186,7 +186,9 @@ def ZonePlacementData(interface:XlsxInterfacer.interface, col:int, row:int, hori
     horizontal is true if the values are in the same row
     """
     data = {}
-    interface.readIntoDict(str, col, row, data, "LocalIndex")
+    interface.readIntoDict(str, col, row, data, "DimensionIndex")
+    EnumConverter.enumInDict(ENUMFILE_eDimensionIndex, data, "DimensionIndex")
+    interface.readIntoDict(str, col+horizontal, row+(not horizontal), data, "LocalIndex")
     EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, data, "LocalIndex")
     data["Weights"] = ZonePlacementWeights(interface, col+2*horizontal, row+2*(not horizontal), horizontal)
     return data
@@ -227,6 +229,8 @@ def ZonePlacementWeightsList(interface:XlsxInterfacer.interface, col:int, row:in
     while not(interface.isEmpty(col, row)):
         Snippet = {}
         identifier = interface.read(str, col, row)
+        interface.readIntoDict(str, col+(not horizontal), row+horizontal, Snippet, "DimensionIndex")
+        EnumConverter.enumInDict(ENUMFILE_eDimensionIndex, Snippet, "DimensionIndex")
         interface.readIntoDict(str, col+2*(not horizontal), row+2*horizontal, Snippet, "LocalIndex")
         EnumConverter.enumInDict(ENUMFILE_eLocalZoneIndex, Snippet, "LocalIndex")
         # the direction of the set of weights and values in the data are perpendicular
@@ -581,8 +585,8 @@ class ExpeditionZoneDataLists:
         while not(iExpeditionZoneDataLists.isEmpty(startcolEventsOnPortalWarp,row)):
             Snippet = {}
             Snippet.update(WardenObjectiveEventData(iExpeditionZoneDataLists, startcolCommandEvents+1, row, horizontal=True))
-            EnsureKeyInDictArray(self.stubEventsOnEnter, iExpeditionZoneDataLists.read(str, startcolEventsOnPortalWarp, row))
-            self.stubEventsOnEnter[iExpeditionZoneDataLists.read(str, startcolEventsOnPortalWarp, row)].append(Snippet)
+            EnsureKeyInDictArray(self.stubEventsOnPortalWarp, iExpeditionZoneDataLists.read(str, startcolEventsOnPortalWarp, row))
+            self.stubEventsOnPortalWarp[iExpeditionZoneDataLists.read(str, startcolEventsOnPortalWarp, row)].append(Snippet)
             row+= 1
 
         row = startrow
@@ -738,6 +742,8 @@ class ExpeditionZoneDataLists:
                 Snippet["FileContent"] = re.sub(sheetnewlnregex, devcrlf, Snippet["FileContent"])
                 Snippet["FileContent"] = re.sub(sheettabregex, devtb, Snippet["FileContent"])
             except KeyError:pass
+            iExpeditionZoneDataLists.readIntoDict(str, startcolLocalLogFiles+3, row, Snippet, "FileContentOriginalLanguage")
+            EnumConverter.enumInDict(ENUMFILE_Language, Snippet, "FileContentOriginalLanguage")
             iExpeditionZoneDataLists.readIntoDict(int, startcolLocalLogFiles+4, row, Snippet, "AttachedAudioFile")
             # TODO convert sound placeholders
             iExpeditionZoneDataLists.readIntoDict(int, startcolLocalLogFiles+5, row, Snippet, "AttachedAudioByteSize")
@@ -796,8 +802,8 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.readIntoDict(str, startcolTerminalPlacements+8, row, Snippet["StartingStateData"], "StartingState")
             EnumConverter.enumInDict(ENUMFILE_TERM_State, Snippet["StartingStateData"], "StartingState")
             iExpeditionZoneDataLists.readIntoDict(bool, startcolTerminalPlacements+9, row, Snippet["StartingStateData"], "UseCustomInfoText")
-            Localizer.localizeToIdInDict(DATABLOCK_Text, Snippet["StartingStateData"], "UseCustomInfoText", passthrough=False, force=False, language="English")
             iExpeditionZoneDataLists.readIntoDict(str, startcolTerminalPlacements+10, row, Snippet["StartingStateData"], "CustomInfoText")
+            Localizer.localizeToIdInDict(DATABLOCK_Text, Snippet["StartingStateData"], "CustomInfoText", passthrough=False, force=False, language="English")
             iExpeditionZoneDataLists.readIntoDict(bool, startcolTerminalPlacements+11, row, Snippet["StartingStateData"], "KeepShowingLocalLogCount")
             iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+12, row, Snippet["StartingStateData"], "AudioEventEnter")
             iExpeditionZoneDataLists.readIntoDict(int, startcolTerminalPlacements+13, row, Snippet["StartingStateData"], "AudioEventExit")

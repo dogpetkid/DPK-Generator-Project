@@ -211,7 +211,8 @@ def ZonePlacementData(interface:XlsxInterfacer.interface, data:dict, col:int, ro
     col and row define the upper left value (not header) \n
     horizontal is true if the values are in the same row
     """
-    writeEnumFromDict(ENUMFILE_eLocalZoneIndex, interface, col, row, data, "LocalIndex")
+    writeEnumFromDict(ENUMFILE_eDimensionIndex, interface, col, row, data, "DimensionIndex")
+    writeEnumFromDict(ENUMFILE_eLocalZoneIndex, interface, col+horizontal, row+(not horizontal), data, "LocalIndex")
     try:ZonePlacementWeights(interface, data["Weights"], col+2*horizontal, row+2*(not horizontal), horizontal)
     except KeyError:pass
 
@@ -248,6 +249,7 @@ def ZonePlacementWeightsList(interface:XlsxInterfacer.interface, data:typing.Lis
     for group in data:
         for placement in group:
             interface.write(letter, col, row)
+            writeEnumFromDict(ENUMFILE_eDimensionIndex, interface, col+(not horizontal), row+horizontal, placement, "DimensionIndex")
             writeEnumFromDict(ENUMFILE_eLocalZoneIndex, interface, col+2*(not horizontal), row+2*horizontal, placement, "LocalIndex")
             ZonePlacementWeights(interface, placement["Weights"], col+3*(not horizontal), row+3*horizontal, horizontal=(not horizontal))
             col+= horizontal 
@@ -940,8 +942,8 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+7, row, Snippet, "Command Group")
             try:
                 writeEnumFromDict(ENUMFILE_TERM_State, iExpeditionZoneDataLists, startcolTerminalPlacements+8, row, Snippet["StartingStateData"], "StartingState")
-                writeLocalizationFromDict(DATABLOCK_Text, iExpeditionZoneDataLists, startcolTerminalPlacements+9, row, Snippet["StartingStateData"], "UseCustomInfoText", passthrough=False, language="English")
-                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+10, row, Snippet["StartingStateData"], "CustomInfoText")
+                iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+9, row, Snippet["StartingStateData"], "UseCustomInfoText")
+                writeLocalizationFromDict(DATABLOCK_Text, iExpeditionZoneDataLists, startcolTerminalPlacements+10, row, Snippet["StartingStateData"], "CustomInfoText", passthrough=False, language="English")
                 iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+11, row, Snippet["StartingStateData"], "KeepShowingLocalLogCount")
                 iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+12, row, Snippet["StartingStateData"], "AudioEventEnter")
                 iExpeditionZoneDataLists.writeFromDict(startcolTerminalPlacements+13, row, Snippet["StartingStateData"], "AudioEventExit")
@@ -971,6 +973,7 @@ class ExpeditionZoneDataLists:
                     content = re.sub(devtabregex, sheettb, content)
                 iExpeditionZoneDataLists.write(content, startcolLocalLogFiles+2, row)
             except KeyError:pass
+            writeEnumFromDict(ENUMFILE_Language, iExpeditionZoneDataLists, startcolLocalLogFiles+3, row, Snippet, "FileContentOriginalLanguage")
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+4, row, Snippet, "AttachedAudioFile")
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+5, row, Snippet, "AttachedAudioByteSize")
             iExpeditionZoneDataLists.writeFromDict(startcolLocalLogFiles+6, row, Snippet, "PlayerDialogToTriggerAfterAudio")
@@ -984,7 +987,7 @@ class ExpeditionZoneDataLists:
             iExpeditionZoneDataLists.writeFromDict(startcolUniqueCommands, row, Snippet, "Command Group")
 
             iExpeditionZoneDataLists.writeFromDict(startcolUniqueCommands+1, row, Snippet, "Command")
-            iExpeditionZoneDataLists.writeFromDict(startcolUniqueCommands+2, row, Snippet, "CommandDesc")
+            writeLocalizationFromDict(DATABLOCK_Text, iExpeditionZoneDataLists, startcolUniqueCommands+2, row, Snippet, "CommandDesc", passthrough=False, language="English")
             iExpeditionZoneDataLists.writeFromDict(startcolUniqueCommands+3, row, Snippet, "Post Output Group")
             iExpeditionZoneDataLists.writeFromDict(startcolUniqueCommands+4, row, Snippet, "Command Event Group")
             writeEnumFromDict(ENUMFILE_TERM_CommandRule, iExpeditionZoneDataLists, startcolUniqueCommands+5, row, Snippet, "SpecialCommandRule")
