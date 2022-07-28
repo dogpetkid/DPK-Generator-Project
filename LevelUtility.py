@@ -737,11 +737,11 @@ class ExpeditionZoneDataLists:
             Snippet = {}
             iExpeditionZoneDataLists.readIntoDict(str, startcolLocalLogFiles+1, row, Snippet, "FileName")
             iExpeditionZoneDataLists.readIntoDict(str, startcolLocalLogFiles+2, row, Snippet, "FileContent")
-            Localizer.localizeToIdInDict(DATABLOCK_Text, Snippet, "FileContent", passthrough=False, force=False, language="English")
             try:
                 Snippet["FileContent"] = re.sub(sheetnewlnregex, devcrlf, Snippet["FileContent"])
                 Snippet["FileContent"] = re.sub(sheettabregex, devtb, Snippet["FileContent"])
             except KeyError:pass
+            Localizer.localizeToIdInDict(DATABLOCK_Text, Snippet, "FileContent", passthrough=False, force=False, language="English")
             iExpeditionZoneDataLists.readIntoDict(str, startcolLocalLogFiles+3, row, Snippet, "FileContentOriginalLanguage")
             EnumConverter.enumInDict(ENUMFILE_Language, Snippet, "FileContentOriginalLanguage")
             iExpeditionZoneDataLists.readIntoDict(int, startcolLocalLogFiles+4, row, Snippet, "AttachedAudioFile")
