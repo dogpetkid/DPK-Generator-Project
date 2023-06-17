@@ -506,6 +506,7 @@ def LayerData(interface:XlsxInterfacer.interface, data:dict, col:int, row:int):
         writeEnumFromDict(ENUMFILE_eWardenObjectiveWinCondition, interface, col, row+14, data["ObjectiveData"], "WinCondition")
         ZonePlacementWeightsList(interface, data["ObjectiveData"]["ZonePlacementDatas"], col, row+15, horizontal=True)
     except KeyError:pass
+    # XXX ChainedObjectiveData
     try:
         interface.writeFromDict(col, row+22, data["ArtifactData"], "ArtifactAmountMulti")
         writePublicNameFromDict(DATABLOCK_ArtifactDistribution, interface, col, row+23, data["ArtifactData"], "ArtifactLayerDistributionDataID")
@@ -520,7 +521,15 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
     edit the iExpeditionInTier pandas dataFrame
     """
     iExpeditionInTier.writeFromDict(0, 2, ExpeditionInTierData, "Enabled")
+    iExpeditionInTier.writeFromDict(1, 2, ExpeditionInTierData, "IsSinglePlayer")
+    iExpeditionInTier.writeFromDict(2, 2, ExpeditionInTierData, "SkipLobby")
+    iExpeditionInTier.writeFromDict(3, 2, ExpeditionInTierData, "PutIconAboveTier")
+    iExpeditionInTier.writeFromDict(4, 2, ExpeditionInTierData, "DisablePlayerVoicelines")
+    iExpeditionInTier.writeFromDict(5, 2, ExpeditionInTierData, "ExcludeFromProgression")
     writeEnumFromDict(ENUMFILE_eExpeditionAccessibility, iExpeditionInTier, 6, 2, ExpeditionInTierData, "Accessibility")
+
+    writeEnumFromDict(ENUMFILE_eRundownTier, iExpeditionInTier, 0, 6, ExpeditionInTierData, "Tier")
+    writeEnumFromDict(ENUMFILE_eBuildAutoExpeditionNumber, iExpeditionInTier, 1, 6, ExpeditionInTierData, "Exp")
 
     try:
         iExpeditionInTier.writeFromDict(0, 10, ExpeditionInTierData["CustomProgressionLock"], "MainSectors")
@@ -533,6 +542,10 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
         iExpeditionInTier.writeFromDict(14, 10, ExpeditionInTierData["Descriptive"], "Prefix")
         iExpeditionInTier.writeFromDict(14, 11, ExpeditionInTierData["Descriptive"], "PublicName")
         iExpeditionInTier.writeFromDict(14, 12, ExpeditionInTierData["Descriptive"], "IsExtraExpedition")
+        iExpeditionInTier.writeFromDict(14, 13, ExpeditionInTierData["Descriptive"], "IsExtraExpedition")
+        iExpeditionInTier.writeFromDict(14, 14, ExpeditionInTierData["Descriptive"], "IsExtraExpedition")
+        writeEnumFromDict(ENUMFILE_eRundownTier, iExpeditionInTier, 14, 15, ExpeditionInTierData, "CustomMatchmakingTier")
+        writeEnumFromDict(ENUMFILE_eProgressionVisualStyle, iExpeditionInTier, 14, 16, ExpeditionInTierData, "ProgressionVisualStyle")
         iExpeditionInTier.writeFromDict(14, 17, ExpeditionInTierData["Descriptive"], "ExpeditionDepth")
         writeLocalizationFromDict(DATABLOCK_Text, iExpeditionInTier, 14, 18, ExpeditionInTierData["Descriptive"], "EstimatedDuration", passthrough=False, language="English")
         # TODO regex replace new lines to be "\n"
@@ -562,14 +575,32 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
     except KeyError:pass
 
     try:
-        writePublicNameFromDict(DATABLOCK_ComplexResourceSet,       iExpeditionInTier, 0, 14, ExpeditionInTierData["Expedition"], "ComplexResourceData")
-        writePublicNameFromDict(DATABLOCK_LightSettings,            iExpeditionInTier, 2, 14, ExpeditionInTierData["Expedition"], "LightSettings")
-        writePublicNameFromDict(DATABLOCK_FogSettings,              iExpeditionInTier, 3, 14, ExpeditionInTierData["Expedition"], "FogSettings")
-        writePublicNameFromDict(DATABLOCK_EnemyPopulation,          iExpeditionInTier, 4, 14, ExpeditionInTierData["Expedition"], "EnemyPopulation")
-        writePublicNameFromDict(DATABLOCK_ExpeditionBalance,        iExpeditionInTier, 5, 14, ExpeditionInTierData["Expedition"], "ExpeditionBalance")
-        writePublicNameFromDict(DATABLOCK_SurvivalWaveSettings,     iExpeditionInTier, 6, 14, ExpeditionInTierData["Expedition"], "ScoutWaveSettings")
-        writePublicNameFromDict(DATABLOCK_SurvivalWavePopulation,   iExpeditionInTier, 7, 14, ExpeditionInTierData["Expedition"], "ScoutWavePopulation")
+        writePublicNameFromDict(DATABLOCK_ComplexResourceSet,           iExpeditionInTier, 0, 14, ExpeditionInTierData["Expedition"], "ComplexResourceData")
+        writePublicNameFromDict(DATABLOCK_MLSArrayDescriptorReference,  iExpeditionInTier, 1, 14, ExpeditionInTierData["Expedition"], "MLSLevelKit")
+        writePublicNameFromDict(DATABLOCK_LightSettings,                iExpeditionInTier, 2, 14, ExpeditionInTierData["Expedition"], "LightSettings")
+        writePublicNameFromDict(DATABLOCK_FogSettings,                  iExpeditionInTier, 3, 14, ExpeditionInTierData["Expedition"], "FogSettings")
+        writePublicNameFromDict(DATABLOCK_EnemyPopulation,              iExpeditionInTier, 4, 14, ExpeditionInTierData["Expedition"], "EnemyPopulation")
+        writePublicNameFromDict(DATABLOCK_ExpeditionBalance,            iExpeditionInTier, 5, 14, ExpeditionInTierData["Expedition"], "ExpeditionBalance")
+        writePublicNameFromDict(DATABLOCK_SurvivalWaveSettings,         iExpeditionInTier, 6, 14, ExpeditionInTierData["Expedition"], "ScoutWaveSettings")
+        writePublicNameFromDict(DATABLOCK_SurvivalWavePopulation,       iExpeditionInTier, 7, 14, ExpeditionInTierData["Expedition"], "ScoutWavePopulation")
+
+        iExpeditionInTier.writeFromDict(8, 14, ExpeditionInTierData["Expedition"], "EnvironmentWetness")
+        try:
+            iExpeditionInTier.writeFromDict(9, 14, ExpeditionInTierData["Expedition"]["DustColor"], "a")
+            iExpeditionInTier.writeFromDict(10, 14, ExpeditionInTierData["Expedition"]["DustColor"], "r")
+            iExpeditionInTier.writeFromDict(11, 14, ExpeditionInTierData["Expedition"]["DustColor"], "g")
+            iExpeditionInTier.writeFromDict(12, 14, ExpeditionInTierData["Expedition"]["DustColor"], "b")
+        except KeyError:pass
+        iExpeditionInTier.writeFromDict(13, 14, ExpeditionInTierData["Expedition"], "DustTurbulence")
     except KeyError:pass
+
+    # XXX VanityItemsDropData
+
+    iExpeditionInTier.writeFromDict(0, 18, ExpeditionInTierData, "UseGearPicker")
+    writePublicNameFromDict(DATABLOCK_GearCategory, iExpeditionInTier, 1, 18, "StandardGear")
+    writePublicNameFromDict(DATABLOCK_GearCategory, iExpeditionInTier, 2, 18, "SpecialGear")
+    writePublicNameFromDict(DATABLOCK_GearCategory, iExpeditionInTier, 3, 18, "ToolGear")
+    writePublicNameFromDict(DATABLOCK_GearCategory, iExpeditionInTier, 4, 18, "MeleeGear")
 
     iExpeditionInTier.writeFromDict(0, 21, ExpeditionInTierData, "LevelLayoutData")
     try:
@@ -596,9 +627,20 @@ def frameExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface, Expedition
         LayerData(iExpeditionInTier, ExpeditionInTierData["ThirdLayerData"], 5, 97)
     except KeyError:pass
 
+    # XXX DimensionDatas
+    iExpeditionInTier.writeFromDict(0, 29, ExpeditionInTierData, "SoundEventOnWarpToReality")
+
     try:
         iExpeditionInTier.writeFromDict(2, 29, ExpeditionInTierData["SpecialOverrideData"], "WeakResourceContainerWithPackChanceForLocked")
+        iExpeditionInTier.writeFromDict(3, 29, ExpeditionInTierData["SpecialOverrideData"], "InfectionLevelAtExpeditionStart")
+        iExpeditionInTier.writeFromDict(4, 29, ExpeditionInTierData["SpecialOverrideData"], "HealthLevelAtExpeditionStart")
+        iExpeditionInTier.writeFromDict(5, 29, ExpeditionInTierData["SpecialOverrideData"], "StandardAmmoAtExpeditionStart")
+        iExpeditionInTier.writeFromDict(6, 29, ExpeditionInTierData["SpecialOverrideData"], "SpecialAmmoAtExpeditionStart")
+        iExpeditionInTier.writeFromDict(7, 29, ExpeditionInTierData["SpecialOverrideData"], "ToolAmmoAtExpeditionStart")
     except KeyError:pass
+
+    iExpeditionInTier.writeFromDict(0, 32, ExpeditionInTierData, "HasExternalStyle")
+    iExpeditionInTier.writeFromDict(0, 33, ExpeditionInTierData, "HasStoryStyle")
 
 class ExpeditionZoneDataLists:
     """a class that decreases the dimentions of the dictionaries in ExpeditionZoneData (since the sheet cannot contain 2d-3d data)"""

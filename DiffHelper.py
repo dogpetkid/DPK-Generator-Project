@@ -27,6 +27,8 @@ patternstoignore = [
     '\\S\\s*"CommandDesc": 0',
     '\\S\\s*"CustomText": 0',
     '\\S\\s*"LightSettings": 0',
+    '\\S\\s*"MLSLevelKit": 0',
+    '\\S\\s*"ArtifactLayerDistributionDataID": 0',
     # empty arrays
     '\\S\\s*"EventsOnBossDeath": \\[\\]',
     '\\S\\s*"WorldEventChainedPuzzleDatas": \\[\\]',
@@ -45,6 +47,7 @@ patternstoignore = [
     '\\S\\s*"PasswordHintText": ""',
     '\\S\\s*"Command": ""',
     '\\S\\s*"WardenIntel": ""',
+    '\\S\\s*"DevInfo": ""',
 ]
 
 if __name__ == "__main__":

@@ -405,6 +405,7 @@ def LayerData(interface:XlsxInterfacer.interface, col:int, row:int):
     interface.readIntoDict(str, col, row+14, data["ObjectiveData"], "WinCondition")
     EnumConverter.enumInDict(ENUMFILE_eWardenObjectiveWinCondition, data["ObjectiveData"], "WinCondition")
     data["ObjectiveData"]["ZonePlacementDatas"] = ZonePlacementWeightsList(interface, col, row+15, horizontal=True)
+    # XXX ChainedObjectiveData
     data["ArtifactData"] = {}
     interface.readIntoDict(float, col, row+22, data["ArtifactData"], "ArtifactAmountMulti")
     interface.readIntoDict(str, col, row+23, data["ArtifactData"], "ArtifactLayerDistributionDataID")
@@ -420,8 +421,17 @@ def ExpeditionInTier(iExpeditionInTier:XlsxInterfacer.interface):
     """returns the expedition in tier piece to be inserted into the rundown data block"""
     data = {}
     data["Enabled"] = iExpeditionInTier.read(bool, 0, 2)
+    iExpeditionInTier.readIntoDict(bool, 1, 2, data, "IsSinglePlayer")
+    iExpeditionInTier.readIntoDict(bool, 2, 2, data, "SkipLobby")
+    iExpeditionInTier.readIntoDict(bool, 3, 2, data, "PutIconAboveTier")
+    iExpeditionInTier.readIntoDict(bool, 4, 2, data, "DisablePlayerVoicelines")
+    iExpeditionInTier.readIntoDict(bool, 5, 2, data, "ExcludeFromProgression")
     data["Accessibility"] = iExpeditionInTier.read(str, 6, 2)
     EnumConverter.enumInDict(ENUMFILE_eExpeditionAccessibility, data, "Accessibility")
+    data["Tier"] = iExpeditionInTier.read(str, 0, 6)
+    EnumConverter.enumInDict(ENUMFILE_eExpeditionAccessibility, data, "Tier")
+    data["Exp"] = iExpeditionInTier.read(str, 1, 6)
+    EnumConverter.enumInDict(ENUMFILE_eExpeditionAccessibility, data, "Exp")
     data["CustomProgressionLock"] = {}
     iExpeditionInTier.readIntoDict(int, 10, 0, data["CustomProgressionLock"], "MainSectors")
     iExpeditionInTier.readIntoDict(int, 10, 1, data["CustomProgressionLock"], "SecondarySectors")
